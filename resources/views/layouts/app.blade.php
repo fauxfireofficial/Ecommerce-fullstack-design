@@ -53,14 +53,15 @@
             <div class="mobile-header-top desktop-contents">
                 <i class="fa-solid fa-bars mobile-menu-icon mobile-only"></i>
                 
-                <a href="#" class="logo mobile-logo-center">
-                    <div class="logo-icon"><i class="fa-solid fa-bag-shopping"></i></div>
-                    <span>Brand</span>
+                <a href="{{ url('/') }}" class="logo mobile-logo-center">
+                    <img src="{{ asset('Images/brand-logos/logo-colored.png') }}" alt="Brand Logo" class="main-logo-img">
                 </a>
                 
                 <div class="mobile-icons mobile-only">
-                    <i class="fa-solid fa-cart-shopping"></i>
-                    <i class="fa-solid fa-user"></i>
+                    <a href="{{ route('products.cart') }}" style="color: inherit;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                    </a>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
 
                 <!-- Desktop Search (hidden on mobile via CSS) -->
@@ -72,34 +73,36 @@
                     <button>Search</button>
                 </div>
 
-                <!-- Desktop Action Icons (hidden on mobile) -->
+                <!-- Header Actions -->
                 <div class="header-actions desktop-only">
                     <div class="action-item">
-                        <i class="fa-solid fa-user"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <span>Profile</span>
                     </div>
                     <div class="action-item">
-                        <i class="fa-solid fa-comment-dots"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         <span>Message</span>
                     </div>
                     <div class="action-item">
-                        <i class="fa-solid fa-heart"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                         <span>Orders</span>
                     </div>
-                    <div class="action-item">
-                        <i class="fa-solid fa-cart-shopping"></i>
+                    <a href="{{ route('products.cart') }}" class="action-item" style="color: inherit; text-decoration: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         <span>My cart</span>
-                    </div>
+                    </a>
                 </div>
             </div>
 
             <!-- Mobile Search Bar (hidden on desktop) -->
             <div class="search-box mobile-only">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="text" placeholder="Search">
             </div>
         </div>
     </header>
 
+    @if(Route::currentRouteName() != 'products.cart')
     <!-- Navigation Section -->
     <nav class="navbar desktop-only">
         <div class="container nav-wrap">
@@ -126,9 +129,10 @@
     <div class="mobile-nav-scroll">
         <div class="mobile-nav-pill active">All category</div>
         <div class="mobile-nav-pill">Gadgets</div>
-        <div class="mobile-nav-pill">Clocthes</div>
-        <div class="mobile-nav-pill">Accessories</div>
+        <div class="mobile-nav-pill">Clocthing</div>
+        <div class="mobile-nav-pill">Accessory</div>
     </div>
+    @endif
 
     @yield('content')
 
@@ -143,9 +147,11 @@
     </section>
 
     <footer>
-        <div class="container footer-grid desktop-only">
+        <div class="container footer-grid">
             <div class="footer-brand">
-                <a href="#" class="logo"><div class="logo-icon"><i class="fa-solid fa-bag-shopping"></i></div> Brand</a>
+                <a href="{{ url('/') }}" class="logo">
+                    <img src="{{ asset('Images/brand-logos/logo-colored.png') }}" alt="Brand Logo" style="height: 35px; width: auto;">
+                </a>
                 <p>Best information about the company<br>gies here but now lorem ipsum is</p>
                 <div class="socials">
                     <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
@@ -167,7 +173,7 @@
         </div>
         <div class="footer-bottom">
             <div class="container" style="display: flex; justify-content: space-between; width: 100%;">
-                <span>&copy; 2023 Ecommerce.</span>
+                <span>&copy; 2026 Ecommerce.</span>
                 <span class="desktop-only" style="display: flex; align-items: center; gap: 5px;"><img src="https://flagcdn.com/w20/us.png" alt="US" style="width: 16px;"> English <i class="fa-solid fa-chevron-up" style="font-size: 10px;"></i></span>
             </div>
         </div>

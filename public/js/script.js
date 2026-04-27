@@ -56,5 +56,66 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Product Detail Page Logic
+    // 1. Image Gallery Switching
+    const mainImage = document.getElementById('mainProductImage');
+    const thumbnails = document.querySelectorAll('.thumbnail');
+    
+    if (mainImage && thumbnails.length > 0) {
+        thumbnails.forEach(thumb => {
+            thumb.addEventListener('click', function() {
+                // Update main image source
+                const newSrc = this.querySelector('img').src;
+                mainImage.src = newSrc;
+                
+                // Update active thumbnail state
+                thumbnails.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    }
+
+    // 2. Quantity Selector (handles multiple items)
+    const quantitySelectors = document.querySelectorAll('.item-quantity, .quantity-selector');
+    
+    quantitySelectors.forEach(selector => {
+        const qtyInput = selector.querySelector('.qty-input');
+        const minusBtn = selector.querySelector('.qty-btn.minus');
+        const plusBtn = selector.querySelector('.qty-btn.plus');
+        
+        if (qtyInput && minusBtn && plusBtn) {
+            minusBtn.addEventListener('click', () => {
+                let val = parseInt(qtyInput.value);
+                if (val > 1) qtyInput.value = val - 1;
+            });
+            
+            plusBtn.addEventListener('click', () => {
+                let val = parseInt(qtyInput.value);
+                qtyInput.value = val + 1;
+            });
+        }
+    });
+
+    // 3. Tab Switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    
+    if (tabBtns.length > 0) {
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-tab');
+                
+                // Remove active classes
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                
+                // Add active class to current
+                this.classList.add('active');
+                const targetContent = document.getElementById(targetId);
+                if (targetContent) targetContent.classList.add('active');
+            });
+        });
+    }
+
     console.log("Ecommerce UI initialized.");
 });

@@ -21,7 +21,7 @@
                 </aside>
 
                 <div class="hero-banner">
-                    <img src="{{ asset('images/Banner-img.jpg') }}" alt="Banner-Image" class="hero-banner-bg">
+                    <img src="{{ asset('images/cardbg/Banner-img.jpg') }}" alt="Banner-Image" class="hero-banner-bg">
                     <div class="hero-banner-content">
                         <h2>Latest trending<br><span>Electronic items</span></h2>
                         <a href="{{ route('products.index') }}" class="btn btn-white" style="display: inline-block; text-decoration: none;">Learn more</a>
@@ -95,7 +95,7 @@
         <!-- Category Block: Home and outdoor -->
         <section class="category-block card">
             <div class="cat-main home-outdoor">
-                <img src="images/outdoor.jpg" alt="image" class="cat-main-bg">
+                <img src="images/cardbg/outdoor.jpg" alt="image" class="cat-main-bg">
                 <h3>Home and outdoor</h3>
                 <a href="{{ route('products.index') }}" class="btn btn-white desktop-only" style="display: inline-block; text-decoration: none;">Source now</a>
             </div>
@@ -117,7 +117,7 @@
         <!-- Category Block: Consumer electronics -->
         <section class="category-block card">
             <div class="cat-main electronics">
-                <img src="images/gadgets.png" alt="image" class="cat-main-bg">
+                <img src="images/cardbg/gadgets.png" alt="image" class="cat-main-bg">
                 <h3>Consumer electronics</h3>
                 <a href="{{ route('products.index') }}" class="btn btn-white desktop-only" style="display: inline-block; text-decoration: none;">Source now</a>
             </div>
@@ -138,7 +138,7 @@
 
         <!-- Inquiry Section -->
         <section class="inquiry-section">
-              <img src="images/Quotebg.jpg" alt="Error" class="inquiry-bg">
+              <img src="images/cardbg/Quotebg.jpg" alt="Error" class="inquiry-bg">
 
             <div class="inquiry-text">
                 <h2>An easy way to send requests to all suppliers</h2>
@@ -177,10 +177,10 @@
         <!-- Our Extra Services -->
         <h3 class="section-title desktop-only">Our extra services</h3>
         <section class="services-grid desktop-only">
-            <div class="card service-card"><div class="service-img"><img src="images/industrybg.png" alt="Service 1"></div><div class="service-icon"><i class="fa-solid fa-magnifying-glass"></i></div><div class="service-body"><h4>Source from Industry Hubs</h4></div></div>
-            <div class="card service-card"><div class="service-img"><img src="images/Customizebg.png" alt="Service 2"></div><div class="service-icon"><i class="fa-solid fa-box-open"></i></div><div class="service-body"><h4>Customize Your Products</h4></div></div>
-            <div class="card service-card"><div class="service-img"><img src="images/shippingbg.png" alt="Service 3"></div><div class="service-icon"><i class="fa-solid fa-paper-plane"></i></div><div class="service-body"><h4>Fast, reliable shipping by ocean or air</h4></div></div>
-            <div class="card service-card"><div class="service-img"><img src="images/monitoring.png" alt="Service 4"></div><div class="service-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="service-body"><h4>Product monitoring and inspection</h4></div></div>
+            <div class="card service-card"><div class="service-img"><img src="images/cardbg/industrybg.png" alt="Service 1"></div><div class="service-icon"><i class="fa-solid fa-magnifying-glass"></i></div><div class="service-body"><h4>Source from Industry Hubs</h4></div></div>
+            <div class="card service-card"><div class="service-img"><img src="images/cardbg/Customizebg.png" alt="Service 2"></div><div class="service-icon"><i class="fa-solid fa-box-open"></i></div><div class="service-body"><h4>Customize Your Products</h4></div></div>
+            <div class="card service-card"><div class="service-img"><img src="images/cardbg/shippingbg.png" alt="Service 3"></div><div class="service-icon"><i class="fa-solid fa-paper-plane"></i></div><div class="service-body"><h4>Fast, reliable shipping by ocean or air</h4></div></div>
+            <div class="card service-card"><div class="service-img"><img src="images/cardbg/monitoring.png" alt="Service 4"></div><div class="service-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="service-body"><h4>Product monitoring and inspection</h4></div></div>
         </section>
 
         <!-- Suppliers by Region -->

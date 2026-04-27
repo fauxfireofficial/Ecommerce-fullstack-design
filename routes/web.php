@@ -5,18 +5,18 @@ use Illuminate\Support\Facades\Route;
 // Home Page
 Route::get('/', function () {
     return view('home');
-});
+})->name('home');
 
 // Product List Page (Grid/List View)
 Route::get('/products', function () {
-    return view('web-list'); // Yahan file ka naam aayega bina .blade.php ke
+    return view('web-list'); 
 })->name('products.index');
 
-// Future pages ke liye abhi se structure rakh lein (Optional)
+
 Route::get('/product-details', function () {
-    return view('web-details');
-})->name('products.show');
+    return view('product-details');
+})->name('products.details');
 
 Route::get('/cart', function () {
     return view('cart');
-})->name('cart');
+})->name('products.cart');
