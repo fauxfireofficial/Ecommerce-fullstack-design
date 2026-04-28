@@ -55,10 +55,10 @@
                     <p>Electronic equipments</p>
                 </div>
                 <div class="timer">
-                    <div class="timer-box desktop-only">04<span>Days</span></div>
-                    <div class="timer-box">13<span>Hour</span></div>
-                    <div class="timer-box">34<span>Min</span></div>
-                    <div class="timer-box">56<span>Sec</span></div>
+                    <div class="timer-box desktop-only"><span id="days">04</span><span>Days</span></div>
+                    <div class="timer-box"><span id="hours">13</span><span>Hour</span></div>
+                    <div class="timer-box"><span id="mins">34</span><span>Min</span></div>
+                    <div class="timer-box"><span id="secs">56</span><span>Sec</span></div>
                 </div>
             </div>
             <div class="deals-items">
@@ -74,17 +74,17 @@
                     <span class="badge-discount">-15%</span>
                 </div>
                
-                <div class="deal-item desktop-only">
+                <div class="deal-item">
                     <img src="images/tech/GoPro-Camera.jpg" alt="GoPro">
                     <h4>GoPro cameras</h4>
                     <span class="badge-discount">-40%</span>
                 </div>
-                <div class="deal-item desktop-only">
+                <div class="deal-item">
                     <img src="images/tech/Gaming-Headset.jpg" alt="Headphones">
                     <h4>Headphones</h4>
                     <span class="badge-discount">-25%</span>
                 </div>
-                <div class="deal-item desktop-only">
+                <div class="deal-item">
                     <img src="images/tech/Smartphone.jpg" alt="Phone">
                     <h4>Smartphone</h4>
                     <span class="badge-discount">-25%</span>
@@ -102,12 +102,12 @@
             <div class="cat-grid">
                 <div class="cat-item"><div class="cat-item-text"><h4>Soft Chairs</h4><p>From USD 19</p></div><img src="images/interior/Armchair.jpg" alt="Chair"></div>
                 <div class="cat-item"><div class="cat-item-text"><h4>Table Lamp</h4><p>From USD 19</p></div><img src="images/interior/Table-Lamp.jpg" alt="Lamp"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Air-Mattress</h4><p>From USD 19</p></div><img src="images/interior/Air-Mattress.jpg" alt="Mattress"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Clay Pot</h4><p>From USD 19</p></div><img src="images/interior/Clay-Pot.jpg" alt="Pot"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Juicer</h4><p>From USD 100</p></div><img src="images/interior/Juicer.jpg" alt="Juicer"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Coffe Maker</h4><p>From USD 39</p></div><img src="images/interior/Coffee-Maker.jpg" alt="Coffe-Maker"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Rack</h4><p>From USD 19</p></div><img src="images/interior/Rack.jpg" alt="Appliance"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Potted Plant</h4><p>From USD 10</p></div><img src="images/interior/Potted-Plant.jpg" alt="Pot"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Air-Mattress</h4><p>From USD 19</p></div><img src="images/interior/Air-Mattress.jpg" alt="Mattress"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Clay Pot</h4><p>From USD 19</p></div><img src="images/interior/Clay-Pot.jpg" alt="Pot"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Juicer</h4><p>From USD 100</p></div><img src="images/interior/Juicer.jpg" alt="Juicer"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Coffe Maker</h4><p>From USD 39</p></div><img src="images/interior/Coffee-Maker.jpg" alt="Coffe-Maker"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Rack</h4><p>From USD 19</p></div><img src="images/interior/Rack.jpg" alt="Appliance"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Potted Plant</h4><p>From USD 10</p></div><img src="images/interior/Potted-Plant.jpg" alt="Pot"></div>
             </div>
             <div class="source-now-mobile">
                 Source now <i class="fa-solid fa-arrow-right"></i>
@@ -125,11 +125,11 @@
                 <div class="cat-item"><div class="cat-item-text"><h4>Smart Watches</h4><p>From USD 19</p></div><img src="images/tech/Smart-Watch.jpg" alt="Phone"></div>
                 <div class="cat-item"><div class="cat-item-text"><h4>Cameras</h4><p>From USD 89</p></div><img src="images/tech/GoPro-Camera.jpg" alt="Cameras"></div>
                 <div class="cat-item"><div class="cat-item-text"><h4>Headphones</h4><p>From USD 10</p></div><img src="images/tech/Headphones.jpg" alt="Headphones"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Electric kettle</h4><p>From USD 90</p></div><img src="images/tech/Electric-Kettle.jpg" alt="Kettles"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Gaming set</h4><p>From USD 35</p></div><img src="images/tech/Gaming-Headset.jpg" alt="Gaming"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Laptops & PC</h4><p>From USD 340</p></div><img src="images/tech/Laptop.jpg" alt="Laptop"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Tablets</h4><p>From USD 19</p></div><img src="images/tech/Tablet.jpg" alt="Tablet"></div>
-                <div class="cat-item desktop-only"><div class="cat-item-text"><h4>Smart Phones</h4><p>From USD 19</p></div><img src="images/tech/iPhone.jpg" alt="Phone"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Electric kettle</h4><p>From USD 90</p></div><img src="images/tech/Electric-Kettle.jpg" alt="Kettles"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Gaming set</h4><p>From USD 35</p></div><img src="images/tech/Gaming-Headset.jpg" alt="Gaming"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Laptops & PC</h4><p>From USD 340</p></div><img src="images/tech/Laptop.jpg" alt="Laptop"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Tablets</h4><p>From USD 19</p></div><img src="images/tech/Tablet.jpg" alt="Tablet"></div>
+                <div class="cat-item"><div class="cat-item-text"><h4>Smart Phones</h4><p>From USD 19</p></div><img src="images/tech/iPhone.jpg" alt="Phone"></div>
             </div>
             <div class="source-now-mobile">
                 Source now <i class="fa-solid fa-arrow-right"></i>
@@ -166,12 +166,12 @@
             <div class="card rec-card"><img src="images/cloth/jacket.jpg" alt="Jacket"><p class="price">$10.30</p><p class="title">Mens winter jacket, stylish brown color</p></div>
             <div class="card rec-card"><img src="images/cloth/Blazer.jpg" alt="Wallet"><p class="price">$10.30</p><p class="title">Casual blazer for men, formal fit</p></div>
             <div class="card rec-card"><img src="images/cloth/leather-wallet.jpg" alt="Pot"><p class="price">$10.30</p><p class="title">Genuine leather wallet for men, brown</p></div>
-            <div class="card rec-card desktop-only"><img src="images/cloth/jeans-bag.jpg" alt="Bag"><p class="price">$99.00</p><p class="title">Jeans bag for travel and daily use</p></div>
-            <div class="card rec-card desktop-only"><img src="images/cloth/jeans-shorts.jpg" alt="Shorts"><p class="price">$9.99</p><p class="title">Mens denim jeans shorts, summer style</p></div>
-            <div class="card rec-card desktop-only"><img src="images/tech/headphones.jpg" alt="Headphone"><p class="price">$8.99</p><p class="title">Headset for gaming with high-quality mic</p></div>
-            <div class="card rec-card desktop-only"><img src="images/book/book.jpg" alt="Backpack"><p class="price">$2.50</p><p class="title">Hardcover book for reading and education</p></div>
-            <div class="card rec-card desktop-only"><img src="images/interior/Washing-Machine.jpg" alt="Pot"><p class="price">$40.30</p><p class="title">Automatic washing machine, high efficiency</p></div>
-            <div class="card rec-card desktop-only"><img src="images/interior/Swivel-Chair.jpg" alt="Kettle"><p class="price">$19</p><p class="title">Modern swivel office chairr</p></div>
+            <div class="card rec-card"><img src="images/cloth/jeans-bag.jpg" alt="Bag"><p class="price">$99.00</p><p class="title">Jeans bag for travel and daily use</p></div>
+            <div class="card rec-card"><img src="images/cloth/jeans-shorts.jpg" alt="Shorts"><p class="price">$9.99</p><p class="title">Mens denim jeans shorts, summer style</p></div>
+            <div class="card rec-card"><img src="images/tech/headphones.jpg" alt="Headphone"><p class="price">$8.99</p><p class="title">Headset for gaming with high-quality mic</p></div>
+            <div class="card rec-card"><img src="images/book/book.jpg" alt="Backpack"><p class="price">$2.50</p><p class="title">Hardcover book for reading and education</p></div>
+            <div class="card rec-card"><img src="images/interior/Washing-Machine.jpg" alt="Pot"><p class="price">$40.30</p><p class="title">Automatic washing machine, high efficiency</p></div>
+            <div class="card rec-card"><img src="images/interior/Swivel-Chair.jpg" alt="Kettle"><p class="price">$19</p><p class="title">Modern swivel office chairr</p></div>
         </section>
 
         <!-- Our Extra Services -->

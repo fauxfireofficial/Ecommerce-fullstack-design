@@ -145,224 +145,47 @@
                 </div>
 
                 <div class="product-view list-view" id="productContainer">
-                    <!-- Item 1 -->
+                    @forelse($products as $product)
                     <div class="product-card card">
-                        <div class="product-img"><img src="images/tech/iPhone.jpg" alt="iPhone"></div>
+                        <div class="product-img">
+                            <img src="{{ asset($product->image ?? 'Images/items/1.png') }}" alt="{{ $product->name }}">
+                        </div>
                         <div class="product-info">
-                            <h4 class="product-title">GoPro HERO6 4K Action Camera - Black</h4>
+                            <h4 class="product-title">{{ $product->name }}</h4>
                             <div class="product-price-wrapper">
                                 <div class="product-price">
-                                    <span class="price-current">$99.50</span> <span class="price-old list-only">$1128.00</span>
+                                    <span class="price-current">${{ number_format($product->price, 2) }}</span>
                                 </div>
-                                <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
+                                <div class="card-actions">
+                                    <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
+                                    <button class="btn-add-cart btn-primary" data-id="{{ $product->id }}">
+                                        <i class="fa-solid fa-cart-shopping"></i> Add to cart
+                                    </button>
+                                </div>
                             </div>
                             <div class="product-meta">
-                                <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
+                                <div class="stars">
+                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> 
+                                    <span class="rating-score">4.5</span>
+                                </div>
                                 <span class="dot list-only"></span>
-                                <span class="orders list-only">154 orders</span>
+                                <span class="orders list-only">{{ rand(100, 500) }} orders</span>
                                 <span class="dot list-only"></span>
                                 <span class="shipping list-only">Free Shipping</span>
                             </div>
-                            <p class="product-desc list-only">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit</p>
-                            <a href="#" class="view-details list-only">View details</a>
+                            <p class="product-desc list-only">{{ Str::limit($product->description, 150) }}</p>
+                            <a href="{{ route('products.details', $product->slug) }}" class="view-details list-only">View details</a>
                         </div>
                     </div>
-                    <!-- Item 2 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/Smartphone.jpg" alt="Phone"></div>
-    <div class="product-info">
-        <h4 class="product-title">Samsung Galaxy S23 Ultra - 256GB Phantom Black</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$999.50</span> <span class="price-old list-only">$1299.00</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">5.9</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">Experience the ultimate smartphone with 200MP camera, Snapdragon 8 Gen 2 processor, and all-day battery life.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-
-<!-- Item 3 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/GoPro-Camera.jpg" alt="Camera"></div>
-    <div class="product-info">
-        <h4 class="product-title">GoPro HERO11 Black - Waterproof Action Camera</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$399.50</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">Capture stunning 5.3K video and 27MP photos with HyperSmooth 5.0 stabilization, waterproof up to 33ft.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-
-<!-- Item 4 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/Tablet.jpg" alt="Tablet"></div>
-    <div class="product-info">
-        <h4 class="product-title">iPad Pro 12.9-inch M2 Chip - Wi-Fi 512GB</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$1299.50</span> <span class="price-old list-only">$1499.00</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">Liquid Retina XDR display, M2 chip for ultimate performance, perfect for creatives and professionals.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-
-<!-- Item 5 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/Laptop.jpg" alt="Laptop"></div>
-    <div class="product-info">
-        <h4 class="product-title">MacBook Pro 14-inch M3 Max - 1TB SSD</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$2499.50</span> <span class="price-old list-only">$2799.00</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">Latest M3 Max chip with 40-core GPU, 36GB memory, Liquid Retina XDR display - ultimate power for pros.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-
-<!-- Item 6 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/iPhone.jpg" alt="iPhone"></div>
-    <div class="product-info">
-        <h4 class="product-title">iPhone 15 Pro Max - Titanium 256GB</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$1199.50</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">A17 Pro chip, 48MP main camera with 5x optical zoom, USB-C connector, titanium design.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-
-<!-- Item 7 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/Laptop.jpg" alt="Laptop"></div>
-    <div class="product-info">
-        <h4 class="product-title">Dell XPS 15 - OLED 3.5K Touch</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$1899.50</span> <span class="price-old list-only">$2199.00</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">13th Gen Intel Core i9, 32GB RAM, NVIDIA RTX 4070, stunning OLED display for creators.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-
-<!-- Item 8 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/Smart-Watch.jpg" alt="Watch"></div>
-    <div class="product-info">
-        <h4 class="product-title">Apple Watch Ultra 2 - 49mm Titanium</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$799.50</span> <span class="price-old list-only">$899.00</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">GPS + Cellular, 100m water resistant, 36hr battery life, precision dual-frequency GPS.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-
-<!-- Item 9 -->
-<div class="product-card card">
-    <div class="product-img"><img src="images/tech/iPhone.jpg" alt="iPhone"></div>
-    <div class="product-info">
-        <h4 class="product-title">Google Pixel 8 Pro - 512GB Bay Blue</h4>
-        <div class="product-price-wrapper">
-            <div class="product-price">
-                <span class="price-current">$999.50</span> <span class="price-old list-only">$1099.00</span>
-            </div>
-            <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
-        </div>
-        <div class="product-meta">
-            <div class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> <span class="rating-score">7.5</span></div>
-            <span class="dot list-only"></span>
-            <span class="orders list-only">154 orders</span>
-            <span class="dot list-only"></span>
-            <span class="shipping list-only">Free Shipping</span>
-        </div>
-        <p class="product-desc list-only">Google Tensor G3 chip, pro-level camera with AI features, 120Hz LTPO display, 7 years of updates.</p>
-        <a href="#" class="view-details list-only">View details</a>
-    </div>
-</div>
-                 
-
+                    @empty
+                    <div class="no-products">
+                        <p>No products found in this category.</p>
+                    </div>
+                    @endforelse
                 </div>
 
                 <div class="pagination-wrapper">
-                    <select class="form-control" style="width: auto;"><option>Show 10</option></select>
-                    <div class="pagination">
-                        <button class="page-btn"><i class="fa-solid fa-chevron-left"></i></button>
-                        <button class="page-btn active">1</button>
-                        <button class="page-btn">2</button>
-                        <button class="page-btn">3</button>
-                        <button class="page-btn"><i class="fa-solid fa-chevron-right"></i></button>
-                    </div>
+                    {{ $products->links('vendor.pagination.custom') }}
                 </div>
             </div>
         </div>

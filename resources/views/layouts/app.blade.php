@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Brand - Ecommerce Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -22,7 +23,7 @@
                 <i class="fa-solid fa-user"></i>
             </div>
             <i class="fa-solid fa-xmark close-btn" id="closeSidebar"></i>
-            <p>Sign in | Register</p>
+            <p><a href="{{ route('login') }}" style="color: inherit;">Sign in</a> | <a href="{{ route('register') }}" style="color: inherit;">Register</a></p>
         </div>
         <div class="sidebar-content">
             <ul class="sidebar-list">
@@ -46,6 +47,7 @@
         </div>
     </div>
 
+    @if(!in_array(Route::currentRouteName(), ['login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page']))
     <!-- Header Section -->
     <header class="header-main">
         <div class="container header-wrap">
@@ -58,7 +60,7 @@
                 </a>
                 
                 <div class="mobile-icons mobile-only">
-                    <a href="{{ route('products.cart') }}" style="color: inherit;">
+                    <a href="{{ route('cart.index') }}" style="color: inherit;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     </a>
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -75,10 +77,10 @@
 
                 <!-- Header Actions -->
                 <div class="header-actions desktop-only">
-                    <div class="action-item">
+                    <a href="{{ route('login') }}" class="action-item" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                         <span>Profile</span>
-                    </div>
+                    </a>
                     <div class="action-item">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         <span>Message</span>
@@ -87,7 +89,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                         <span>Orders</span>
                     </div>
-                    <a href="{{ route('products.cart') }}" class="action-item" style="color: inherit; text-decoration: none;">
+                    <a href="{{ route('cart.index') }}" class="action-item" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         <span>My cart</span>
                     </a>
@@ -101,8 +103,9 @@
             </div>
         </div>
     </header>
+    @endif
 
-    @if(Route::currentRouteName() != 'products.cart')
+    @if(!in_array(Route::currentRouteName(), ['cart.index', 'login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page']))
     <!-- Navigation Section -->
     <nav class="navbar desktop-only">
         <div class="container nav-wrap">
@@ -136,6 +139,7 @@
 
     @yield('content')
 
+    @if(!in_array(Route::currentRouteName(), ['login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page']))
     <section class="newsletter desktop-only">
         <h3>Subscribe on our newsletter</h3>
         <p>Get daily news on upcoming offers from many suppliers all over the world</p>
@@ -164,7 +168,7 @@
             <div class="footer-col"><h4>About</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
             <div class="footer-col"><h4>Partnership</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
             <div class="footer-col"><h4>Information</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Money Refund</a></li><li><a href="#">Shipping</a></li><li><a href="#">Contact us</a></li></ul></div>
-            <div class="footer-col"><h4>For users</h4><ul><li><a href="#">Login</a></li><li><a href="#">Register</a></li><li><a href="#">Settings</a></li><li><a href="#">My Orders</a></li></ul></div>
+            <div class="footer-col"><h4>For users</h4><ul><li><a href="{{ route('login') }}">Login</a></li><li><a href="{{ route('register') }}">Register</a></li><li><a href="#">Settings</a></li><li><a href="#">My Orders</a></li></ul></div>
             <div class="footer-col app-buttons">
                 <h4>Get app</h4>
                 <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
@@ -178,8 +182,16 @@
             </div>
         </div>
     </footer>
+    @endif
 
     <!-- External JS file -->
+    <script>
+        window.routes = {
+            cartAdd: "{{ route('cart.add') }}",
+            cartUpdate: "{{ route('cart.update') }}",
+            cartRemove: "{{ route('cart.remove') }}"
+        };
+    </script>
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
 </html>
