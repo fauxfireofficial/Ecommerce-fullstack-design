@@ -60,3 +60,41 @@ Route::post('/reset-password', [OTPController::class, 'resetPassword'])->name('p
 Route::get('/terms', function () {
     return "Terms and Conditions Page (Design Placeholder)";
 })->name('terms');
+
+// --- Admin Portal Routes ---
+use App\Http\Controllers\AdminAuthController;
+
+Route::prefix('admin')->group(function () {
+    // Guest Admin Routes
+    Route::middleware(['guest'])->group(function () {
+        Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('admin.login');
+        Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+        Route::get('/register', [AdminAuthController::class, 'showRegisterForm'])->name('admin.register');
+        Route::post('/register', [AdminAuthController::class, 'register'])->name('admin.register.submit');
+        
+        // Admin OTP Routes
+        Route::get('/verify-otp', [AdminAuthController::class, 'showOTPVerifyPage'])->name('admin.otp.verify');
+        Route::post('/verify-otp', [AdminAuthController::class, 'verifyOTP'])->name('admin.otp.submit');
+    });
+
+    // Protected Admin Routes
+    Route::middleware(['auth', 'admin'])->group(function () {
+        Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('admin.dashboard');
+        
+        // User Management
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->names([
+            'index' => 'admin.users.index',
+            'store' => 'admin.users.store',
+            'edit' => 'admin.users.edit',
+            'update' => 'admin.users.update',
+            'destroy' => 'admin.users.destroy',
+        ]);
+        Route::post('users/bulk-delete', [\App\Http\Controllers\Admin\UserController::class, 'bulkDelete'])->name('admin.users.bulkDelete');
+
+        Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+    });
+
+    Route::get('/terms', function () {
+        return "Admin Portal Terms and Conditions";
+    })->name('admin.terms');
+});

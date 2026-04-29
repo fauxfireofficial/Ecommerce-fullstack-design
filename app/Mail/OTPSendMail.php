@@ -30,9 +30,13 @@ class OTPSendMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $subject = $this->purpose == 'registration' ? 'Verify Your Account' : 'Reset Your Password';
+        $subject = 'OTP Code';
+        if ($this->purpose == 'registration') $subject = 'Verify Your Account';
+        elseif ($this->purpose == 'admin_registration') $subject = 'Admin Portal Verification';
+        elseif ($this->purpose == 'password_reset') $subject = 'Reset Your Password';
+
         return new Envelope(
-            subject: $subject . ' - OTP Code',
+            subject: $subject . ' - Brand Store',
         );
     }
 
@@ -41,8 +45,14 @@ class OTPSendMail extends Mailable
      */
     public function content(): Content
     {
+        $view = 'emails.otp'; // Default
+        
+        if ($this->purpose == 'password_reset') {
+            $view = 'emails.reset-otp';
+        }
+        
         return new Content(
-            view: 'emails.otp',
+            view: $view,
         );
     }
 

@@ -4107,3 +4107,428 @@ hr {
         padding: 28px;
     }
 }
+/* ==========================================
+ * ADMIN REGISTER PAGE STYLES
+ * ========================================== */
+
+.admin-auth-page {
+    background: var(--bg-body);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Background pattern removed to match auth page */
+
+.admin-auth-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+    background-color: #f8f9fa;
+}
+
+.admin-auth-card {
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Admin Badge */
+.admin-badge {
+    background: var(--primary);
+    padding: 8px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.admin-badge i {
+    font-size: 20px;
+    color: white;
+}
+
+.admin-badge span {
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    letter-spacing: 1px;
+}
+
+/* Admin Header */
+.admin-header {
+    text-align: center;
+    padding: 15px 32px 0 32px;
+}
+
+.admin-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px;
+}
+
+.admin-header p {
+    color: var(--gray-500);
+    font-size: 14px;
+}
+
+/* Admin Form */
+.admin-auth-form {
+    padding: 20px 32px 24px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Form Groups */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.required-badge {
+    background: #fee2e2;
+    color: var(--danger-text);
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+
+/* Input with Icon */
+.input-with-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-with-icon i:first-child {
+    position: absolute;
+    left: 14px;
+    color: var(--gray-500);
+    font-size: 16px;
+    pointer-events: none;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 13px 45px 13px 42px;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-size: 15px;
+    transition: all 0.2s;
+    background: var(--white);
+}
+
+.input-with-icon input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+/* Security Key Input Special Styling */
+#admin_key {
+    background: var(--white);
+}
+
+#admin_key:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
+}
+
+/* Form Hint */
+.form-hint {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--gray-500);
+    margin-top: 4px;
+}
+
+.form-hint i {
+    font-size: 12px;
+}
+
+/* Toggle Password */
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    color: var(--gray-500);
+    font-size: 16px;
+    cursor: pointer;
+    transition: color 0.2s;
+    z-index: 1;
+}
+
+.toggle-password:hover {
+    color: var(--primary);
+}
+
+/* Checkbox */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--gray-600);
+}
+
+.checkbox-label a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+.checkbox-label a:hover {
+    text-decoration: underline;
+}
+
+/* Admin Button */
+.btn-admin {
+    background: var(--primary);
+    color: white;
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-top: 8px;
+    transition: all 0.2s;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-admin:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+/* Error Messages */
+.error-message {
+    font-size: 12px;
+    color: var(--danger-text);
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.error-message::before {
+    content: '⚠';
+    font-size: 10px;
+}
+
+/* Admin Footer */
+.admin-footer {
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-200);
+    margin-top: 8px;
+}
+
+.admin-footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-footer a:hover {
+    text-decoration: underline;
+}
+
+/* Security Note */
+.security-note {
+    background: #f8f9fa;
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border-top: 1px solid var(--gray-200);
+}
+
+.security-note i {
+    color: #00b517;
+    font-size: 14px;
+}
+
+.security-note p {
+    font-size: 12px;
+    color: var(--gray-500);
+    margin: 0;
+}
+
+/* ==========================================
+ * ADMIN REGISTER RESPONSIVE
+ * ========================================== */
+@media (max-width: 576px) {
+    .admin-auth-container, .auth-container {
+        padding: 10px 8px;
+    }
+    
+    .admin-header, .auth-header {
+        padding: 5px 10px 0 10px;
+    }
+    
+    .admin-header h2, .auth-header h2 {
+        font-size: 22px;
+    }
+    
+    .admin-auth-form, .auth-form {
+        padding: 10px 15px 15px 15px;
+        gap: 4px;
+    }
+
+    .otp-box {
+        width: 45px;
+        height: 50px;
+        font-size: 22px;
+    }
+
+    .otp-input-group {
+        gap: 6px;
+    }
+    
+    .input-with-icon input {
+        padding: 11px 40px 11px 38px;
+        font-size: 14px;
+    }
+    
+    .btn-admin, .btn-primary {
+        padding: 10px;
+        font-size: 14px;
+    }
+    
+    .security-note {
+        padding: 10px 15px;
+        font-size: 12px;
+    }
+}
+
+/* ==========================================
+ * OTP VERIFICATION ENHANCEMENTS
+ * ========================================== */
+.otp-input-group {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 10px 0;
+}
+
+.otp-box {
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    border: 2px solid var(--gray-300);
+    border-radius: 8px;
+    background: var(--white);
+    transition: all 0.3s ease;
+    color: var(--primary);
+}
+
+.otp-box:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
+    outline: none;
+    background: #fff;
+}
+
+.otp-box.filled {
+    border-color: var(--primary);
+}
+
+.alert-success {
+    background-color: #d4edda !important;
+    color: #155724 !important;
+    border-color: #c3e6cb !important;
+    padding: 12px 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-success i {
+    color: #28a745;
+    font-size: 18px;
+}
+
+.btn-resend {
+    background: transparent;
+    border: none;
+    color: var(--primary);
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    font-size: inherit;
+    transition: all 0.3s ease;
+}
+
+.btn-resend:disabled {
+    color: var(--gray-400);
+    cursor: not-allowed;
+}
+
+.resend-timer {
+    font-size: 13px;
+    color: var(--gray-500);
+    font-weight: 400;
+}
+
+.otp-footer-nav {
+    margin-top: 5px;
+    padding-top: 5px;
+}
+
+.resend-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--gray-50);
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+}

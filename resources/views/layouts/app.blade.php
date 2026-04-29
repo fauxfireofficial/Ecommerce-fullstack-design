@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    @if(!in_array(Route::currentRouteName(), ['login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page']))
+    @if(!in_array(Route::currentRouteName(), ['login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page', 'admin.login', 'admin.register', 'admin.otp.verify', 'admin.otp.submit']))
     <!-- Header Section -->
     <header class="header-main">
         <div class="container header-wrap">
@@ -105,7 +105,7 @@
     </header>
     @endif
 
-    @if(!in_array(Route::currentRouteName(), ['cart.index', 'login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page']))
+    @if(!in_array(Route::currentRouteName(), ['cart.index', 'login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page', 'admin.login', 'admin.register', 'admin.otp.verify', 'admin.otp.submit']))
     <!-- Navigation Section -->
     <nav class="navbar desktop-only">
         <div class="container nav-wrap">
@@ -139,7 +139,7 @@
 
     @yield('content')
 
-    @if(!in_array(Route::currentRouteName(), ['login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page']))
+    @if(!in_array(Route::currentRouteName(), ['login', 'register', 'auth', 'otp.verify.page', 'password.request', 'password.verify.page', 'password.reset.page', 'admin.login', 'admin.register', 'admin.otp.verify', 'admin.otp.submit']))
     <section class="newsletter desktop-only">
         <h3>Subscribe on our newsletter</h3>
         <p>Get daily news on upcoming offers from many suppliers all over the world</p>
