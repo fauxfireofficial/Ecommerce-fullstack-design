@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin-pages.css') }}">
     <style>
         :root {
             --admin-sidebar-width: 260px;
@@ -192,11 +193,11 @@
             <a href="{{ route('admin.dashboard') }}" class="menu-item {{ Route::currentRouteName() == 'admin.dashboard' ? 'active' : '' }}">
                 <i class="fa-solid fa-chart-line"></i> Dashboard
             </a>
-            <a href="#" class="menu-item">
-                <i class="fa-solid fa-box"></i> Products
+            <a href="{{ route('admin.products.index') }}" class="menu-item {{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-box"></i> Manage Products
             </a>
-            <a href="#" class="menu-item">
-                <i class="fa-solid fa-cart-shopping"></i> Orders
+            <a href="{{ route('admin.orders.index') }}" class="menu-item {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-truck"></i> Orders List
             </a>
             <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-users"></i> Users Management

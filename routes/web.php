@@ -91,6 +91,29 @@ Route::prefix('admin')->group(function () {
         ]);
         Route::post('users/bulk-delete', [\App\Http\Controllers\Admin\UserController::class, 'bulkDelete'])->name('admin.users.bulkDelete');
 
+        // Order Management
+        Route::get('/orders', [\App\Http\Controllers\Admin\OrderController::class, 'index'])->name('admin.orders.index');
+        Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
+        Route::put('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
+        Route::get('/orders/{id}/invoice', [\App\Http\Controllers\Admin\OrderController::class, 'invoice'])->name('admin.orders.invoice');
+        Route::post('/orders/bulk-update', [\App\Http\Controllers\Admin\OrderController::class, 'bulkUpdate'])->name('admin.orders.bulkUpdate');
+
+        // Product Management
+        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->names([
+            'index' => 'admin.products.index',
+            'create' => 'admin.products.create',
+            'store' => 'admin.products.store',
+            'edit' => 'admin.products.edit',
+            'update' => 'admin.products.update',
+            'destroy' => 'admin.products.destroy',
+        ]);
+        Route::put('products/{id}/toggle-status', [\App\Http\Controllers\Admin\ProductController::class, 'toggleStatus'])->name('admin.products.toggleStatus');
+        Route::get('products/{id}', [\App\Http\Controllers\Admin\ProductController::class, 'show'])->name('admin.products.show');
+        Route::post('products/bulk-delete', [\App\Http\Controllers\Admin\ProductController::class, 'bulkDelete'])->name('admin.products.bulkDelete');
+        Route::post('products/bulk-activate', [\App\Http\Controllers\Admin\ProductController::class, 'bulkActivate'])->name('admin.products.bulkActivate');
+        Route::post('products/bulk-deactivate', [\App\Http\Controllers\Admin\ProductController::class, 'bulkDeactivate'])->name('admin.products.bulkDeactivate');
+
+
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });
 
