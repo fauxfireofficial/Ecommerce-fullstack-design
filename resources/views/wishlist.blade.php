@@ -1,103 +1,132 @@
 @extends('layouts.app')
 
 @section('content')
-<main class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1 class="h3 mb-0">My Wishlist</h1>
-        <span class="text-muted">{{ count($wishlist) }} items</span>
-    </div>
+<!-- Tailwind CSS CDN for the Royal Shop Wishlist Theme -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    royalBlue: '#0056b3',
+                    royalGold: '#D4AF37',
+                    offWhite: '#f8fafc',
+                },
+                fontFamily: {
+                    sans: ['Inter', 'Poppins', 'sans-serif'],
+                },
+            }
+        }
+    }
+</script>
 
-    @if(count($wishlist) > 0)
-    <div class="card border-0 shadow-sm overflow-hidden">
-        <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-                <thead class="bg-light">
-                    <tr>
-                        <th class="ps-4">Product</th>
-                        <th>Price</th>
-                        <th>Stock Status</th>
-                        <th class="text-end pe-4">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($wishlist as $item)
-                    <tr>
-                        <td class="ps-4">
-                            <div class="d-flex align-items-center">
-                                <img src="{{ asset($item->product->image ?? 'Images/items/1.png') }}" alt="{{ $item->product->name }}" class="rounded" style="width: 60px; height: 60px; object-fit: contain; border: 1px solid #eee;">
-                                <div class="ms-3">
-                                    <h5 class="mb-0 fs-6"><a href="{{ route('products.show', $item->product->id) }}" class="text-dark text-decoration-none">{{ $item->product->name }}</a></h5>
-                                    <small class="text-muted">SKU: {{ $item->product->sku ?? 'N/A' }}</small>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="fw-bold text-dark">${{ number_format($item->product->price, 2) }}</span>
-                        </td>
-                        <td>
-                            @if($item->product->stock > 0)
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">In Stock</span>
-                            @else
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3">Out of Stock</span>
-                            @endif
-                        </td>
-                        <td class="text-end pe-4">
-                            <div class="d-flex justify-content-end gap-2">
-                                <form action="{{ route('cart.add') }}" method="POST">
-                                    @csrf
-                                    <input type="hidden" name="product_id" value="{{ $item->product->id }}">
-                                    <button type="submit" class="btn btn-primary btn-sm px-3" {{ $item->product->stock <= 0 ? 'disabled' : '' }}>
-                                        <i class="fa-solid fa-cart-plus me-1"></i> Add to Cart
-                                    </button>
-                                </form>
-                                <form action="{{ route('wishlist.remove', $item->id) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm px-3">
-                                        <i class="fa-regular fa-trash-can"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-    @else
-    <div class="text-center py-5 card border-0 shadow-sm">
-        <div class="py-5">
-            <div class="mb-4">
-                <i class="fa-regular fa-heart text-muted" style="font-size: 64px;"></i>
+<div class="bg-offWhite min-h-screen py-8 md:py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900 tracking-tight">My Wishlist</h1>
+                <p class="text-slate-500 mt-1 flex items-center gap-2">
+                    <span class="inline-flex items-center justify-center bg-royalBlue/10 text-royalBlue text-xs font-bold px-2.5 py-0.5 rounded-full">
+                        {{ count($wishlist) }} items
+                    </span>
+                    <span>Saved for later in Brand</span>
+                </p>
             </div>
-            <h3 class="h4">Your wishlist is empty</h3>
-            <p class="text-muted mb-4">Start browsing products and add them to your wishlist!</p>
-            <a href="{{ route('products.index') }}" class="btn btn-primary px-4">Browse Products</a>
+            <a href="{{ route('products.index') }}" class="inline-flex items-center text-sm font-semibold text-royalBlue hover:underline group">
+                <i class="fa-solid fa-arrow-left me-2 transition-transform group-hover:-translate-x-1"></i>
+                Continue Shopping
+            </a>
         </div>
+
+        @if(count($wishlist) > 0)
+        <!-- Wishlist Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            @foreach($wishlist as $item)
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-300 group relative flex flex-col h-full">
+                
+                <!-- Remove Button -->
+                <form action="{{ route('wishlist.remove', $item->id) }}" method="POST" class="absolute top-3 right-3 z-10">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="bg-white/80 backdrop-blur-sm text-slate-400 hover:text-red-500 p-2 rounded-full shadow-sm hover:shadow-md transition-all">
+                        <i class="fa-solid fa-trash-can text-sm"></i>
+                    </button>
+                </form>
+
+                <!-- Product Image -->
+                <a href="{{ route('products.show', $item->product->id) }}" class="block p-4 aspect-square overflow-hidden bg-slate-50 rounded-t-xl">
+                    <img src="{{ asset($item->product->image ?? 'Images/items/1.png') }}" 
+                         alt="{{ $item->product->name }}" 
+                         class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500">
+                </a>
+
+                <!-- Product Info -->
+                <div class="p-5 flex flex-col flex-grow">
+                    <div class="flex items-center gap-2 mb-2">
+                        @if($item->product->stock > 0)
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100 uppercase tracking-wider">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                In Stock
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-100 uppercase tracking-wider">
+                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                Out of Stock
+                            </span>
+                        @endif
+                    </div>
+
+                    <h3 class="font-bold text-slate-800 text-base mb-1 line-clamp-2 hover:text-royalBlue transition-colors h-12">
+                        <a href="{{ route('products.show', $item->product->id) }}">{{ $item->product->name }}</a>
+                    </h3>
+
+                    <div class="mt-auto pt-4 flex items-baseline gap-2">
+                        <span class="text-xl font-bold text-royalGold">${{ number_format($item->product->price, 2) }}</span>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="mt-4">
+                        <form action="{{ route('cart.add') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $item->product->id }}">
+                            <button type="submit" 
+                                    class="w-full bg-royalBlue text-white font-bold py-2.5 rounded-lg hover:bg-royalBlue/90 active:scale-95 transition-all flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
+                                    {{ $item->product->stock <= 0 ? 'disabled' : '' }}>
+                                <i class="fa-solid fa-cart-plus"></i>
+                                Add to Cart
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endforeach
+        </div>
+        @else
+        <!-- Empty State -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center max-w-2xl mx-auto mt-10">
+            <div class="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 text-slate-300">
+                <i class="fa-regular fa-heart text-5xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-3">Your wishlist is empty</h2>
+            <p class="text-slate-500 mb-8 max-w-md mx-auto">
+                Seems like you haven't added anything to your wishlist yet. Explore our premium collections and find something you love!
+            </p>
+            <a href="{{ route('products.index') }}" class="inline-flex items-center gap-2 bg-royalBlue text-white font-bold px-8 py-3 rounded-xl hover:bg-royalBlue/90 transition-all shadow-md shadow-royalBlue/20">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                Browse Collections
+            </a>
+        </div>
+        @endif
+
     </div>
-    @endif
-</main>
+</div>
 
 <style>
-    .bg-success-subtle { background-color: #d1e7dd; }
-    .bg-danger-subtle { background-color: #f8d7da; }
-    .text-success { color: #0f5132 !important; }
-    .text-danger { color: #842029 !important; }
-    .border-success-subtle { border-color: #a3cfbb !important; }
-    .border-danger-subtle { border-color: #f1aeb5 !important; }
-    
-    .table th {
-        font-size: 13px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-weight: 600;
-        color: #64748b;
-        padding: 15px 10px;
-    }
-    
-    .table td {
-        padding: 15px 10px;
+    /* Ensure font is applied even with Tailwind CDN */
+    body {
+        font-family: 'Inter', 'Poppins', sans-serif !important;
     }
 </style>
 @endsection
