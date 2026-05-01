@@ -10,20 +10,183 @@
     
     <!-- External CSS file linked here for professional structure -->
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+
+    <style>
+        /* Wishlist Drawer Styles */
+        .wishlist-drawer {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: #fff;
+            z-index: 3000;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .wishlist-drawer.active {
+            right: 0;
+        }
+
+        .wishlist-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 2900;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+
+        .wishlist-drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .drawer-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .close-drawer {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #64748b;
+            cursor: pointer;
+        }
+
+        .drawer-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .drawer-footer {
+            padding: 20px 25px;
+            border-top: 1px solid #f1f5f9;
+            background: #f8fafc;
+        }
+
+        .wishlist-drawer-item {
+            display: flex;
+            gap: 15px;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .wishlist-drawer-item img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .item-info {
+            flex: 1;
+        }
+
+        .item-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+
+        .item-info p {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .remove-wishlist-btn {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.2s;
+            align-self: center;
+        }
+
+        .remove-wishlist-btn:hover {
+            color: #ef4444;
+        }
+
+        @media (max-width: 450px) {
+            .wishlist-drawer {
+                width: 100%;
+                right: -100%;
+            }
+        }
+    </style>
 </head>
 <body class="@yield('body-class')">
 
     <!-- Mobile Sidebar Overlay -->
     <div class="mobile-sidebar-overlay" id="sidebarOverlay"></div>
 
+    <!-- Wishlist Drawer (Quick Access) -->
+    <div class="wishlist-drawer-overlay" id="wishlistOverlay"></div>
+    <div class="wishlist-drawer" id="wishlistDrawer">
+        <div class="drawer-header">
+            <h3><i class="fa-solid fa-heart text-danger me-2"></i> My Wishlist</h3>
+            <button class="close-drawer" id="closeWishlist">&times;</button>
+        </div>
+        <div class="drawer-body">
+            <div id="wishlistItemsContainer">
+                <!-- Items will be loaded here via AJAX -->
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <a href="{{ route('wishlist.index') }}" class="btn btn-primary w-100 py-2">View All Items</a>
+        </div>
+    </div>
+
     <!-- Mobile Sidebar Menu -->
     <div class="mobile-sidebar" id="mobileSidebar">
         <div class="sidebar-header">
             <div class="avatar-bg">
-                <i class="fa-solid fa-user"></i>
+                @auth
+                    @if(auth()->user()->avatar)
+                        <img src="{{ asset(auth()->user()->avatar) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    @else
+                        <i class="fa-solid fa-user"></i>
+                    @endif
+                @else
+                    <i class="fa-solid fa-user"></i>
+                @endauth
             </div>
             <i class="fa-solid fa-xmark close-btn" id="closeSidebar"></i>
-            <p><a href="{{ route('login') }}" style="color: inherit;">Sign in</a> | <a href="{{ route('register') }}" style="color: inherit;">Register</a></p>
+            @auth
+                <p><a href="{{ route('profile.index') }}" style="color: inherit;">Hello, {{ auth()->user()->name }}</a></p>
+            @else
+                <p><a href="{{ route('login') }}" style="color: inherit;">Sign in</a> | <a href="{{ route('register') }}" style="color: inherit;">Register</a></p>
+            @endauth
         </div>
         <div class="sidebar-content">
             <ul class="sidebar-list">
@@ -35,7 +198,7 @@
             <hr>
             <ul class="sidebar-list">
                 <li><a href="#"><i class="fa-solid fa-globe"></i> English | USD</a></li>
-                <li><a href="#"><i class="fa-solid fa-headset"></i> Contact us</a></li>
+                <li><a href="{{ route('support.index') }}"><i class="fa-solid fa-headset"></i> Support Center</a></li>
                 <li><a href="#"><i class="fa-regular fa-building"></i> About</a></li>
             </ul>
             <hr>
@@ -63,7 +226,9 @@
                     <a href="{{ route('cart.index') }}" style="color: inherit;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     </a>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    <a href="javascript:void(0)" class="action-item" id="wishlistTrigger" style="color: inherit; text-decoration: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    </a>
                 </div>
 
                 <!-- Desktop Search (hidden on mobile via CSS) -->
@@ -77,18 +242,18 @@
 
                 <!-- Header Actions -->
                 <div class="header-actions desktop-only">
-                    <a href="{{ route('login') }}" class="action-item" style="color: inherit; text-decoration: none;">
+                    <a href="{{ auth()->check() ? route('profile.index') : route('login') }}" class="action-item" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span>Profile</span>
+                        <span>{{ auth()->check() ? 'Profile' : 'Sign in' }}</span>
                     </a>
-                    <div class="action-item">
+                    <a href="{{ route('support.index') }}" class="action-item" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                        <span>Message</span>
-                    </div>
-                    <div class="action-item">
+                        <span>Support</span>
+                    </a>
+                    <a href="javascript:void(0)" class="action-item" id="wishlistTriggerDesktop" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                        <span>Orders</span>
-                    </div>
+                        <span>Wishlist</span>
+                    </a>
                     <a href="{{ route('cart.index') }}" class="action-item" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         <span>My cart</span>
@@ -191,6 +356,102 @@
             cartUpdate: "{{ route('cart.update') }}",
             cartRemove: "{{ route('cart.remove') }}"
         };
+    </script>
+    <!-- LocalStorage Persistence for Login Data -->
+    <script>
+        @auth
+            const user = {
+                id: "{{ auth()->user()->id }}",
+                name: "{{ auth()->user()->name }}",
+                email: "{{ auth()->user()->email }}",
+                avatar: "{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : '' }}",
+                isLoggedIn: true
+            };
+            localStorage.setItem('user_session', JSON.stringify(user));
+        @else
+            if (localStorage.getItem('user_session')) {
+                localStorage.removeItem('user_session');
+            }
+        @endauth
+    </script>
+    <script>
+        // Wishlist Drawer Logic
+        const wishlistDrawer = document.getElementById('wishlistDrawer');
+        const wishlistOverlay = document.getElementById('wishlistOverlay');
+        const wishlistTriggers = [document.getElementById('wishlistTrigger'), document.getElementById('wishlistTriggerDesktop')];
+        const closeWishlist = document.getElementById('closeWishlist');
+        const wishlistItemsContainer = document.getElementById('wishlistItemsContainer');
+
+        function toggleWishlist(show) {
+            if (show) {
+                wishlistDrawer.classList.add('active');
+                wishlistOverlay.classList.add('active');
+                fetchWishlistItems();
+            } else {
+                wishlistDrawer.classList.remove('active');
+                wishlistOverlay.classList.remove('active');
+            }
+        }
+
+        wishlistTriggers.forEach(trigger => {
+            if (trigger) {
+                trigger.addEventListener('click', () => toggleWishlist(true));
+            }
+        });
+
+        if (closeWishlist) closeWishlist.addEventListener('click', () => toggleWishlist(false));
+        if (wishlistOverlay) wishlistOverlay.addEventListener('click', () => toggleWishlist(false));
+
+        function fetchWishlistItems() {
+            wishlistItemsContainer.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+            
+            fetch("{{ route('wishlist.latest') }}")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        wishlistItemsContainer.innerHTML = '<div class="text-center py-5"><i class="fa-regular fa-heart text-muted mb-2" style="font-size: 32px;"></i><p class="text-muted">Wishlist is empty</p></div>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.forEach(item => {
+                        html += `
+                            <div class="wishlist-drawer-item" id="drawer-item-${item.id}">
+                                <img src="/${item.product.image || 'Images/items/1.png'}" alt="${item.product.name}">
+                                <div class="item-info">
+                                    <h4>${item.product.name}</h4>
+                                    <p>$${parseFloat(item.product.price).toFixed(2)}</p>
+                                </div>
+                                <button class="remove-wishlist-btn" onclick="removeFromWishlistDrawer(${item.product.id}, ${item.id})">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    wishlistItemsContainer.innerHTML = html;
+                });
+        }
+
+        function removeFromWishlistDrawer(productId, itemId) {
+            fetch("{{ route('wishlist.toggle') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ product_id: productId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'removed') {
+                    const el = document.getElementById('drawer-item-' + itemId);
+                    if (el) el.remove();
+                    if (wishlistItemsContainer.children.length === 0) {
+                        wishlistItemsContainer.innerHTML = '<div class="text-center py-5"><i class="fa-regular fa-heart text-muted mb-2" style="font-size: 32px;"></i><p class="text-muted">Wishlist is empty</p></div>';
+                    }
+                }
+            });
+        }
     </script>
     <script src="{{ asset('js/script.js') }}"></script>
 </body>

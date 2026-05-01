@@ -52,12 +52,14 @@ class OrderController extends Controller
         $order = Order::create([
             'user_id' => auth()->id(),
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
+            'subtotal' => $total,
+            'tax' => 0,
+            'shipping_cost' => 0,
             'total_amount' => $total,
-            'phone_number' => $request->phone_number,
-            'address' => $request->address,
-            'city' => $request->city,
+            'shipping_phone' => $request->phone_number,
+            'shipping_address' => $request->address . ', ' . $request->city,
             'status' => 'pending',
-            'payment_method' => 'cod',
+            'payment_status' => 'pending',
         ]);
 
         // Create Order Items
@@ -67,6 +69,7 @@ class OrderController extends Controller
                 'product_id' => $id,
                 'quantity' => $details['quantity'],
                 'price' => $details['price'],
+                'total' => $details['price'] * $details['quantity'],
             ]);
         }
 
@@ -74,5 +77,10 @@ class OrderController extends Controller
         session()->forget('cart');
 
         return view('order-success', compact('order'));
+    }
+    public function show($id)
+    {
+        $order = Order::with('items.product')->where('user_id', auth()->id())->findOrFail($id);
+        return view('orders.show', compact('order'));
     }
 }

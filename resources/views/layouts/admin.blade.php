@@ -242,6 +242,24 @@
         </div>
     </main>
 
+    <!-- LocalStorage Persistence for Login Data -->
+    <script>
+        @auth
+            const user = {
+                id: "{{ auth()->user()->id }}",
+                name: "{{ auth()->user()->name }}",
+                email: "{{ auth()->user()->email }}",
+                avatar: "{{ auth()->user()->avatar ? asset(auth()->user()->avatar) : '' }}",
+                isLoggedIn: true,
+                isAdmin: true
+            };
+            localStorage.setItem('user_session', JSON.stringify(user));
+        @else
+            if (localStorage.getItem('user_session')) {
+                localStorage.removeItem('user_session');
+            }
+        @endauth
+    </script>
     @yield('scripts')
 </body>
 </html>

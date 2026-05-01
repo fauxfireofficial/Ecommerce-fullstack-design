@@ -29,6 +29,27 @@ Route::post('/remove-from-cart', [CartController::class, 'remove'])->name('cart.
 Route::middleware(['auth'])->group(function () {
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/place-order', [OrderController::class, 'store'])->name('order.store');
+    Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    
+    // Profile Routes
+    Route::get('/profile', [\App\Http\Controllers\ProfileController::class, 'index'])->name('profile.index');
+    Route::put('/profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/avatar', [\App\Http\Controllers\ProfileController::class, 'updateAvatar'])->name('profile.avatar');
+    Route::put('/profile/password', [\App\Http\Controllers\ProfileController::class, 'changePassword'])->name('profile.password');
+    
+    // Address Routes
+    Route::post('/profile/addresses', [\App\Http\Controllers\ProfileController::class, 'addAddress'])->name('profile.addresses.store');
+    Route::post('/profile/addresses/{id}/default', [\App\Http\Controllers\ProfileController::class, 'setDefaultAddress'])->name('profile.addresses.default');
+    Route::delete('/profile/addresses/{id}', [\App\Http\Controllers\ProfileController::class, 'deleteAddress'])->name('profile.addresses.destroy');
+    // Wishlist Routes
+    Route::get('/wishlist', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
+    Route::get('/api/wishlist/latest', [\App\Http\Controllers\WishlistController::class, 'getLatest'])->name('wishlist.latest');
+    Route::post('/wishlist/toggle', [\App\Http\Controllers\WishlistController::class, 'toggle'])->name('wishlist.toggle');
+    Route::delete('/wishlist/{id}', [\App\Http\Controllers\WishlistController::class, 'remove'])->name('wishlist.remove');
+    // Support Ticket Routes
+    Route::get('/support', [\App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
+    Route::post('/support', [\App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
+    Route::get('/support/{id}', [\App\Http\Controllers\SupportController::class, 'show'])->name('support.show');
 });
 
 // Authentication Routes
