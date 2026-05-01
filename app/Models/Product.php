@@ -18,9 +18,13 @@ class Product extends Model
         'stock_quantity',
         'category',
         'image',
+        'images',
         'description',
         'features',
         'status',
+        'is_recommended',
+        'is_deal',
+        'discount_percent',
         'views',
     ];
 

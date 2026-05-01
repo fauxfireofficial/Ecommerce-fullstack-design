@@ -174,7 +174,7 @@
                                 <span class="shipping list-only">Free Shipping</span>
                             </div>
                             <p class="product-desc list-only">{{ Str::limit($product->description, 150) }}</p>
-                            <a href="{{ route('products.details', $product->slug) }}" class="view-details list-only">View details</a>
+                            <a href="{{ route('products.show', $product->id) }}" class="view-details list-only">View details</a>
                         </div>
                     </div>
                     @empty

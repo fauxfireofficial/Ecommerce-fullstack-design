@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 
     <style>
-        /* Wishlist Drawer Styles */
-        .wishlist-drawer {
+        /* Shared Drawer Styles */
+        .drawer-base {
             position: fixed;
             top: 0;
             right: -400px;
@@ -27,11 +27,9 @@
             flex-direction: column;
         }
 
-        .wishlist-drawer.active {
-            right: 0;
-        }
+        .drawer-base.active { right: 0; }
 
-        .wishlist-drawer-overlay {
+        .drawer-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -45,10 +43,7 @@
             transition: 0.3s;
         }
 
-        .wishlist-drawer-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
+        .drawer-overlay.active { opacity: 1; visibility: visible; }
 
         .drawer-header {
             padding: 20px 25px;
@@ -58,11 +53,7 @@
             align-items: center;
         }
 
-        .drawer-header h3 {
-            font-size: 18px;
-            font-weight: 700;
-            margin: 0;
-        }
+        .drawer-header h3 { font-size: 18px; font-weight: 700; margin: 0; }
 
         .close-drawer {
             background: none;
@@ -70,13 +61,10 @@
             font-size: 28px;
             color: #64748b;
             cursor: pointer;
+            line-height: 1;
         }
 
-        .drawer-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
+        .drawer-body { flex: 1; overflow-y: auto; padding: 20px; }
 
         .drawer-footer {
             padding: 20px 25px;
@@ -84,7 +72,7 @@
             background: #f8fafc;
         }
 
-        .wishlist-drawer-item {
+        .drawer-item {
             display: flex;
             gap: 15px;
             padding-bottom: 15px;
@@ -92,80 +80,81 @@
             border-bottom: 1px solid #f1f5f9;
         }
 
-        .wishlist-drawer-item img {
-            width: 70px;
-            height: 70px;
+        .drawer-item img {
+            width: 60px;
+            height: 60px;
             object-fit: contain;
             background: #f8fafc;
             border-radius: 8px;
             border: 1px solid #e2e8f0;
         }
 
-        .item-info {
-            flex: 1;
-        }
+        .drawer-item-info { flex: 1; }
+        .drawer-item-info h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; color: #1e293b; }
+        .drawer-item-info p { font-size: 13px; font-weight: 700; color: var(--primary); margin: 0; }
+        .drawer-item-info small { font-size: 12px; color: #64748b; display: block; margin-top: 2px; }
 
-        .item-info h4 {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: #1e293b;
-        }
-
-        .item-info p {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .remove-wishlist-btn {
+        .remove-item-btn {
             background: none;
             border: none;
             color: #94a3b8;
             cursor: pointer;
             transition: 0.2s;
-            align-self: center;
+            align-self: flex-start;
+            padding: 5px;
         }
 
-        .remove-wishlist-btn:hover {
-            color: #ef4444;
-        }
+        .remove-item-btn:hover { color: #ef4444; }
+
+        /* Specific drawer widths */
+        .wishlist-drawer, .cart-drawer { width: 400px; }
 
         @media (max-width: 450px) {
-            .wishlist-drawer {
-                width: 100%;
-                right: -100%;
-            }
+            .drawer-base { width: 100%; right: -100%; }
         }
     </style>
+
 </head>
 <body class="@yield('body-class')">
 
     <!-- Mobile Sidebar Overlay -->
     <div class="mobile-sidebar-overlay" id="sidebarOverlay"></div>
 
-    <!-- Wishlist Drawer (Quick Access) -->
-    <div class="wishlist-drawer-overlay" id="wishlistOverlay"></div>
-    <div class="wishlist-drawer" id="wishlistDrawer">
+    <!-- Shared Drawer Overlay -->
+    <div class="drawer-overlay" id="drawerOverlay"></div>
+
+    <!-- Wishlist Drawer -->
+    <div class="drawer-base wishlist-drawer" id="wishlistDrawer">
         <div class="drawer-header">
             <h3><i class="fa-solid fa-heart text-danger me-2"></i> My Wishlist</h3>
-            <button class="close-drawer" id="closeWishlist">&times;</button>
+            <button class="close-drawer" onclick="toggleWishlist(false)">&times;</button>
         </div>
         <div class="drawer-body">
             <div id="wishlistItemsContainer">
-                <!-- Items will be loaded here via AJAX -->
-                <div class="text-center py-5">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                </div>
+                <!-- Items loaded via AJAX -->
             </div>
         </div>
         <div class="drawer-footer">
-            <a href="{{ route('wishlist.index') }}" class="btn btn-primary w-100 py-2">View All Items</a>
+            <a href="{{ route('wishlist.index') }}" class="btn btn-primary w-100 py-2">View All Wishlist</a>
         </div>
     </div>
+
+    <!-- Cart Drawer -->
+    <div class="drawer-base cart-drawer" id="cartDrawer">
+        <div class="drawer-header">
+            <h3><i class="fa-solid fa-cart-shopping text-primary me-2"></i> My Cart</h3>
+            <button class="close-drawer" onclick="toggleCart(false)">&times;</button>
+        </div>
+        <div class="drawer-body">
+            <div id="cartItemsContainer">
+                <!-- Items loaded via AJAX -->
+            </div>
+        </div>
+        <div class="drawer-footer">
+            <a href="{{ route('cart.index') }}" class="btn btn-primary w-100 py-2">View All Cart</a>
+        </div>
+    </div>
+
 
     <!-- Mobile Sidebar Menu -->
     <div class="mobile-sidebar" id="mobileSidebar">
@@ -223,13 +212,14 @@
                 </a>
                 
                 <div class="mobile-icons mobile-only">
-                    <a href="{{ route('cart.index') }}" style="color: inherit;">
+                    <a href="javascript:void(0)" onclick="toggleCart(true)" style="color: inherit;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                     </a>
-                    <a href="javascript:void(0)" class="action-item" id="wishlistTrigger" style="color: inherit; text-decoration: none;">
+                    <a href="javascript:void(0)" onclick="toggleWishlist(true)" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                     </a>
                 </div>
+
 
                 <!-- Desktop Search (hidden on mobile via CSS) -->
                 <div class="search-box desktop-only">
@@ -250,15 +240,16 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                         <span>Support</span>
                     </a>
-                    <a href="javascript:void(0)" class="action-item" id="wishlistTriggerDesktop" style="color: inherit; text-decoration: none;">
+                    <a href="javascript:void(0)" class="action-item" onclick="toggleWishlist(true)" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                         <span>Wishlist</span>
                     </a>
-                    <a href="{{ route('cart.index') }}" class="action-item" style="color: inherit; text-decoration: none;">
+                    <a href="javascript:void(0)" class="action-item" onclick="toggleCart(true)" style="color: inherit; text-decoration: none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                         <span>My cart</span>
                     </a>
                 </div>
+
             </div>
 
             <!-- Mobile Search Bar (hidden on desktop) -->
@@ -375,60 +366,105 @@
         @endauth
     </script>
     <script>
-        // Wishlist Drawer Logic
+        // Drawer Toggle Logic
+        const drawerOverlay = document.getElementById('drawerOverlay');
         const wishlistDrawer = document.getElementById('wishlistDrawer');
-        const wishlistOverlay = document.getElementById('wishlistOverlay');
-        const wishlistTriggers = [document.getElementById('wishlistTrigger'), document.getElementById('wishlistTriggerDesktop')];
-        const closeWishlist = document.getElementById('closeWishlist');
-        const wishlistItemsContainer = document.getElementById('wishlistItemsContainer');
+        const cartDrawer = document.getElementById('cartDrawer');
 
         function toggleWishlist(show) {
             if (show) {
+                closeAllDrawers();
                 wishlistDrawer.classList.add('active');
-                wishlistOverlay.classList.add('active');
+                drawerOverlay.classList.add('active');
                 fetchWishlistItems();
             } else {
                 wishlistDrawer.classList.remove('active');
-                wishlistOverlay.classList.remove('active');
+                drawerOverlay.classList.remove('active');
             }
         }
 
-        wishlistTriggers.forEach(trigger => {
-            if (trigger) {
-                trigger.addEventListener('click', () => toggleWishlist(true));
+        function toggleCart(show) {
+            if (show) {
+                closeAllDrawers();
+                cartDrawer.classList.add('active');
+                drawerOverlay.classList.add('active');
+                fetchCartItems();
+            } else {
+                cartDrawer.classList.remove('active');
+                drawerOverlay.classList.remove('active');
             }
-        });
+        }
 
-        if (closeWishlist) closeWishlist.addEventListener('click', () => toggleWishlist(false));
-        if (wishlistOverlay) wishlistOverlay.addEventListener('click', () => toggleWishlist(false));
+        function closeAllDrawers() {
+            wishlistDrawer.classList.remove('active');
+            cartDrawer.classList.remove('active');
+            drawerOverlay.classList.remove('active');
+        }
 
+        drawerOverlay.addEventListener('click', closeAllDrawers);
+
+        // Fetch Wishlist Items
         function fetchWishlistItems() {
-            wishlistItemsContainer.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+            const container = document.getElementById('wishlistItemsContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
             
             fetch("{{ route('wishlist.latest') }}")
                 .then(response => response.json())
                 .then(data => {
                     if (data.length === 0) {
-                        wishlistItemsContainer.innerHTML = '<div class="text-center py-5"><i class="fa-regular fa-heart text-muted mb-2" style="font-size: 32px;"></i><p class="text-muted">Wishlist is empty</p></div>';
+                        container.innerHTML = '<div class="text-center py-5"><i class="fa-regular fa-heart text-muted mb-2" style="font-size: 32px;"></i><p class="text-muted">Wishlist is empty</p></div>';
                         return;
                     }
 
                     let html = '';
                     data.forEach(item => {
                         html += `
-                            <div class="wishlist-drawer-item" id="drawer-item-${item.id}">
-                                <img src="/${item.product.image || 'Images/items/1.png'}" alt="${item.product.name}">
-                                <div class="item-info">
+                            <div class="drawer-item" id="wishlist-item-${item.id}">
+                                <img src="/${item.product.image || 'images/placeholder.jpg'}" alt="${item.product.name}">
+                                <div class="drawer-item-info">
                                     <h4>${item.product.name}</h4>
                                     <p>$${parseFloat(item.product.price).toFixed(2)}</p>
                                 </div>
-                                <button class="remove-wishlist-btn" onclick="removeFromWishlistDrawer(${item.product.id}, ${item.id})">
+                                <button class="remove-item-btn" onclick="removeFromWishlistDrawer(${item.product.id}, ${item.id})">
                                     <i class="fa-solid fa-trash-can"></i>
                                 </button>
                             </div>
                         `;
                     });
-                    wishlistItemsContainer.innerHTML = html;
+                    container.innerHTML = html;
+                });
+        }
+
+        // Fetch Cart Items
+        function fetchCartItems() {
+            const container = document.getElementById('cartItemsContainer');
+            container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary" role="status"></div></div>';
+            
+            fetch("{{ route('cart.latest') }}")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        container.innerHTML = '<div class="text-center py-5"><i class="fa-solid fa-cart-shopping text-muted mb-2" style="font-size: 32px;"></i><p class="text-muted">Cart is empty</p></div>';
+                        return;
+                    }
+
+                    let html = '';
+                    data.forEach(item => {
+                        html += `
+                            <div class="drawer-item" id="cart-item-${item.id}">
+                                <img src="/${item.image || 'images/placeholder.jpg'}" alt="${item.name}">
+                                <div class="drawer-item-info">
+                                    <h4>${item.name}</h4>
+                                    <p>$${parseFloat(item.price).toFixed(2)}</p>
+                                    <small>Qty: ${item.quantity}</small>
+                                </div>
+                                <button class="remove-item-btn" onclick="removeFromCartDrawer(${item.id})">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+                    container.innerHTML = html;
                 });
         }
 
@@ -444,15 +480,37 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status === 'removed') {
-                    const el = document.getElementById('drawer-item-' + itemId);
+                    const el = document.getElementById('wishlist-item-' + itemId);
                     if (el) el.remove();
-                    if (wishlistItemsContainer.children.length === 0) {
-                        wishlistItemsContainer.innerHTML = '<div class="text-center py-5"><i class="fa-regular fa-heart text-muted mb-2" style="font-size: 32px;"></i><p class="text-muted">Wishlist is empty</p></div>';
+                    if (document.getElementById('wishlistItemsContainer').children.length === 0) {
+                        document.getElementById('wishlistItemsContainer').innerHTML = '<p class="text-center py-5 text-muted">Wishlist is empty</p>';
+                    }
+                }
+            });
+        }
+
+        function removeFromCartDrawer(itemId) {
+            fetch("{{ route('cart.remove') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ id: itemId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const el = document.getElementById('cart-item-' + itemId);
+                    if (el) el.remove();
+                    if (document.getElementById('cartItemsContainer').children.length === 0) {
+                        document.getElementById('cartItemsContainer').innerHTML = '<p class="text-center py-5 text-muted">Cart is empty</p>';
                     }
                 }
             });
         }
     </script>
+
     <script src="{{ asset('js/script.js') }}"></script>
 </body>
 </html>

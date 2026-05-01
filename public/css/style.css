@@ -4532,3 +4532,42 @@ hr {
     border-radius: 8px;
     margin-top: 10px;
 }
+/* Make category items and product cards clickable */
+.cat-item,
+.deal-item,
+.rec-card,
+.related-card {
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.cat-item:hover,
+.deal-item:hover,
+.rec-card:hover,
+.related-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure images don't break layout */
+.cat-item img,
+.deal-item img,
+.rec-card img {
+    transition: transform 0.3s ease;
+}
+
+.cat-item:hover img,
+.deal-item:hover img,
+.rec-card:hover img {
+    transform: scale(1.05);
+}
+
+/* Remove underline from links */
+a.cat-item,
+a.deal-item,
+a.rec-card {
+    text-decoration: none;
+}

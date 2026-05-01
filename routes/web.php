@@ -6,21 +6,23 @@ use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\ProductController;
 
+use App\Http\Controllers\HomeController;
+
 // Home Page
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
 // Product List Page (Grid/List View)
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
 
-Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.details');
+Route::get('/products/{id}', [ProductController::class, 'show'])->name('products.show');
 
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
 
-Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+    Route::get('/cart/latest', [CartController::class, 'getLatest'])->name('cart.latest');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/add-to-cart', [CartController::class, 'add'])->name('cart.add');
 Route::post('/update-cart', [CartController::class, 'update'])->name('cart.update');
 Route::post('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');

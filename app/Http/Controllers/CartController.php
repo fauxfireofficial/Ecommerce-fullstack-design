@@ -85,4 +85,24 @@ class CartController extends Controller
             ]);
         }
     }
+
+    /**
+     * Get latest 6 items for cart drawer.
+     */
+    public function getLatest()
+    {
+        $cart = session()->get('cart', []);
+        
+        // Reverse to show latest added first, then take 6
+        $latest = array_slice(array_reverse($cart, true), 0, 6, true);
+        
+        // Transform for frontend
+        $items = [];
+        foreach($latest as $id => $details) {
+            $items[] = array_merge(['id' => $id], $details);
+        }
+
+        return response()->json($items);
+    }
 }
+

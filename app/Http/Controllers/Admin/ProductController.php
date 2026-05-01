@@ -60,7 +60,7 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->features = $request->features;
 
-        // Handle image upload
+        // Handle main image upload
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
@@ -68,7 +68,19 @@ class ProductController extends Controller
             $product->image = 'images/products/' . $imageName;
         }
 
+        // Handle gallery images
+        if ($request->hasFile('gallery_images')) {
+            $gallery = [];
+            foreach ($request->file('gallery_images') as $file) {
+                $name = time() . '_gallery_' . $file->getClientOriginalName();
+                $file->move(public_path('images/products'), $name);
+                $gallery[] = 'images/products/' . $name;
+            }
+            $product->images = json_encode($gallery);
+        }
+
         $product->save();
+
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully!');
     }
@@ -94,6 +106,7 @@ class ProductController extends Controller
             'category' => 'required|string',
             'status' => 'in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $product->name = $request->name;
@@ -106,9 +119,16 @@ class ProductController extends Controller
         $product->description = $request->description;
         $product->features = $request->features;
 
-        // Handle image upload
+        // Handle Main Image Removal
+        if ($request->remove_main_image == '1') {
+            if ($product->image && file_exists(public_path($product->image))) {
+                unlink(public_path($product->image));
+            }
+            $product->image = null;
+        }
+
+        // Handle Main Image upload
         if ($request->hasFile('image')) {
-            // Delete old image
             if ($product->image && file_exists(public_path($product->image))) {
                 unlink(public_path($product->image));
             }
@@ -119,10 +139,38 @@ class ProductController extends Controller
             $product->image = 'images/products/' . $imageName;
         }
 
+        // Handle Gallery Images
+        $currentGallery = json_decode($product->images, true) ?? [];
+        
+        // Remove specific gallery images
+        if ($request->has('removed_gallery_images')) {
+            $removedImages = $request->removed_gallery_images;
+            foreach ($removedImages as $path) {
+                if (($key = array_search($path, $currentGallery)) !== false) {
+                    if (file_exists(public_path($path))) {
+                        unlink(public_path($path));
+                    }
+                    unset($currentGallery[$key]);
+                }
+            }
+            $currentGallery = array_values($currentGallery);
+        }
+
+        // Upload new gallery images
+        if ($request->hasFile('gallery_images')) {
+            foreach ($request->file('gallery_images') as $file) {
+                $name = time() . '_gallery_' . $file->getClientOriginalName();
+                $file->move(public_path('images/products'), $name);
+                $currentGallery[] = 'images/products/' . $name;
+            }
+        }
+
+        $product->images = json_encode($currentGallery);
         $product->save();
 
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
     }
+
 
     // Toggle product status (AJAX)
     public function toggleStatus(Request $request, $id)

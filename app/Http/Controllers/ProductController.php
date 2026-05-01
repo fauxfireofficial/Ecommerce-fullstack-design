@@ -7,29 +7,25 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    /**
-     * Display a listing of the products.
-     */
-    public function index(Request $request)
+    // Show product detail page
+    public function show($id)
     {
-        $query = Product::query();
-
-        // Optional filtering by category if needed in future
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
-        }
-
-        $products = $query->paginate(9);
-
-        return view('web-list', compact('products'));
+        $product = Product::findOrFail($id);
+        
+        // Get related products (same category)
+        $relatedProducts = Product::where('category', $product->category)
+            ->where('id', '!=', $product->id)
+            ->limit(5)
+            ->get();
+        
+        return view('products.show', compact('product', 'relatedProducts'));
     }
-
-    /**
-     * Display the specified product.
-     */
-    public function show($slug)
+    
+    // Products listing page
+    public function index()
     {
-        $product = Product::where('slug', $slug)->firstOrFail();
-        return view('product-details', compact('product'));
+        $products = Product::paginate(20);
+        return view('products.index', compact('products'));
     }
 }
+

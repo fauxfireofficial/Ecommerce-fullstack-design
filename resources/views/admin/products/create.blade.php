@@ -86,13 +86,14 @@
 
                 <!-- Right Column -->
                 <div class="form-column">
+                    <!-- Main Image Section -->
                     <div class="form-group">
-                        <label for="image">Product Image</label>
+                        <label for="image">Main Product Image</label>
                         <div class="image-upload-area" id="imageUploadArea">
                             <input type="file" id="image" name="image" accept="image/*" onchange="previewImage(this)" style="position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; left: 0; top: 0;">
-                            <div class="upload-placeholder">
+                            <div class="upload-placeholder" id="uploadPlaceholder">
                                 <i class="fa-solid fa-cloud-upload-alt"></i>
-                                <p>Click or drag image to upload</p>
+                                <p>Click to upload main image</p>
                                 <small>JPG, PNG or GIF (Max 2MB)</small>
                             </div>
                             <div class="image-preview" id="imagePreview" style="display: none; position: relative; z-index: 10;">
@@ -104,6 +105,22 @@
                         </div>
                         @error('image') <span class="error">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Gallery Images Section -->
+                    <div class="form-group">
+                        <label>Product Gallery (Multiple Images)</label>
+                        <div class="gallery-management">
+                            <div class="add-gallery-btn">
+                                <label for="gallery_images" class="btn btn-secondary btn-sm">
+                                    <i class="fa-solid fa-plus"></i> Add Gallery Images
+                                </label>
+                                <input type="file" id="gallery_images" name="gallery_images[]" multiple accept="image/*" onchange="previewGallery(this)" style="display: none;">
+                            </div>
+                            <div id="newGalleryPreview" class="new-gallery-preview"></div>
+                        </div>
+                        @error('gallery_images') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
 
                     <div class="form-group">
                         <label for="description">Description</label>
@@ -214,6 +231,12 @@
     padding-left: 28px;
 }
 
+.gallery-management { background: var(--gray-50); padding: 15px; border-radius: var(--radius-md); border: 1px solid var(--gray-300); }
+.new-gallery-preview { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; margin-top: 10px; }
+.new-gallery-item { position: relative; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--primary); }
+.new-gallery-item img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+
 /* Image Upload Area */
 .image-upload-area {
     border: 2px dashed var(--gray-300);
@@ -308,7 +331,7 @@ small {
 <script>
 function previewImage(input) {
     const preview = document.getElementById('imagePreview');
-    const placeholder = document.querySelector('.upload-placeholder');
+    const placeholder = document.getElementById('uploadPlaceholder');
     
     if (input.files && input.files[0]) {
         const reader = new FileReader();
@@ -324,7 +347,25 @@ function previewImage(input) {
 function removeImage() {
     document.getElementById('image').value = '';
     document.getElementById('imagePreview').style.display = 'none';
-    document.querySelector('.upload-placeholder').style.display = 'block';
+    document.getElementById('uploadPlaceholder').style.display = 'block';
+}
+
+function previewGallery(input) {
+    const previewContainer = document.getElementById('newGalleryPreview');
+    previewContainer.innerHTML = '';
+    
+    if (input.files) {
+        Array.from(input.files).forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const div = document.createElement('div');
+                div.className = 'new-gallery-item';
+                div.innerHTML = `<img src="${e.target.result}">`;
+                previewContainer.appendChild(div);
+            }
+            reader.readAsDataURL(file);
+        });
+    }
 }
 </script>
 @endpush
