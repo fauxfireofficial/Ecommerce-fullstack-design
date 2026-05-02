@@ -64,7 +64,7 @@
             </div>
             <div class="deals-items">
                 @foreach($deals as $deal)
-                <a href="{{ route('products.show', $deal->id) }}" class="deal-item" style="text-decoration: none;">
+                <a href="{{ route('products.show', $deal->slug ?? $deal->id) }}" class="deal-item" style="text-decoration: none;">
                     <img src="{{ asset($deal->image) }}" alt="{{ $deal->name }}">
                     <h4>{{ $deal->name }}</h4>
                     @if($deal->discount_percent)
@@ -84,7 +84,7 @@
             </div>
             <div class="cat-grid">
                 @foreach($homeOutdoor as $item)
-                <a href="{{ route('products.show', $item->id) }}" class="cat-item">
+                <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="cat-item">
                     <div class="cat-item-text">
                         <h4>{{ $item->name }}</h4>
                         <p>From USD {{ number_format($item->price, 0) }}</p>
@@ -107,7 +107,7 @@
             </div>
             <div class="cat-grid">
                 @foreach($electronics as $item)
-                <a href="{{ route('products.show', $item->id) }}" class="cat-item">
+                <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="cat-item">
                     <div class="cat-item-text">
                         <h4>{{ $item->name }}</h4>
                         <p>From USD {{ number_format($item->price, 0) }}</p>
@@ -147,7 +147,7 @@
         <h3 class="section-title">Recommended items</h3>
         <section class="recommended-grid">
             @foreach($recommended as $item)
-            <a href="{{ route('products.show', $item->id) }}" class="card rec-card" style="text-decoration: none;">
+            <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="card rec-card" style="text-decoration: none;">
                 <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
                 <p class="price">${{ number_format($item->price, 2) }}</p>
                 <p class="title">{{ $item->name }}</p>

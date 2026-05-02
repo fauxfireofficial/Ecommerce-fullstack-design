@@ -225,6 +225,54 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Wishlist Functionality
+    const wishlistButtons = document.querySelectorAll('.btn-heart');
+    wishlistButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const productId = this.getAttribute('data-id');
+            if (!productId) return;
+
+            const icon = this.querySelector('i');
+            const originalClass = icon.className;
+            icon.className = 'fa-solid fa-spinner fa-spin';
+            this.disabled = true;
+
+            fetch(window.routes.wishlistToggle, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ product_id: productId })
+            })
+            .then(response => {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    throw new Error('Unauthorized');
+                }
+                return response.json();
+            })
+            .then(data => {
+                this.disabled = false;
+                if (data.status === 'added') {
+                    icon.className = 'fa-solid fa-heart text-danger';
+                } else if (data.status === 'removed') {
+                    icon.className = 'fa-regular fa-heart';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                if(error.message !== 'Unauthorized') {
+                    icon.className = originalClass;
+                    this.disabled = false;
+                }
+            });
+        });
+    });
+
     // Countdown Timer
     if (document.getElementById('days')) {
         let countDownDate = new Date();

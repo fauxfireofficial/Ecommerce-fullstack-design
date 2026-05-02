@@ -131,11 +131,10 @@
                 <span class="unit">Pieces</span>
             </div>
 
-            <!-- Action Buttons -->
             <div class="action-buttons">
                 <button class="btn btn-primary btn-buy">Buy now</button>
-                <button class="btn btn-cart">Add to cart</button>
-                <button class="btn btn-wishlist"><i class="fa-regular fa-heart"></i></button>
+                <button class="btn btn-add-cart btn-cart" data-id="{{ $product->id }}">Add to cart</button>
+                <button class="btn btn-heart btn-wishlist" data-id="{{ $product->id }}"><i class="fa-regular fa-heart"></i></button>
             </div>
         </div>
 
@@ -216,7 +215,7 @@
         </div>
         <div class="related-products-grid">
             @foreach($relatedProducts ?? [] as $related)
-            <a href="{{ route('products.show', $related->id) }}" class="related-card" style="text-decoration: none;">
+            <a href="{{ route('products.show', $related->slug ?? $related->id) }}" class="related-card" style="text-decoration: none;">
                 <div class="related-img">
                     <img src="{{ asset($related->image ?? 'images/placeholder.jpg') }}" alt="{{ $related->name }}">
                 </div>

@@ -157,7 +157,7 @@
                                     <span class="price-current">${{ number_format($product->price, 2) }}</span>
                                 </div>
                                 <div class="card-actions">
-                                    <button class="btn-heart"><i class="fa-regular fa-heart"></i></button>
+                                    <button class="btn-heart" data-id="{{ $product->id }}"><i class="fa-regular fa-heart"></i></button>
                                     <button class="btn-add-cart btn-primary" data-id="{{ $product->id }}">
                                         <i class="fa-solid fa-cart-shopping"></i> Add to cart
                                     </button>
@@ -174,7 +174,7 @@
                                 <span class="shipping list-only">Free Shipping</span>
                             </div>
                             <p class="product-desc list-only">{{ Str::limit($product->description, 150) }}</p>
-                            <a href="{{ route('products.show', $product->id) }}" class="view-details list-only">View details</a>
+                            <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="view-details list-only">View details</a>
                         </div>
                     </div>
                     @empty

@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 class ProductController extends Controller
 {
     // Show product detail page
-    public function show($id)
+    public function show($slug)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::where('slug', $slug)->orWhere('name', $slug)->firstOrFail();
         
         // Get related products (same category)
         $relatedProducts = Product::where('category', $product->category)

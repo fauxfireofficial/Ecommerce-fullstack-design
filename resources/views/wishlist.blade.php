@@ -56,7 +56,7 @@
                 </form>
 
                 <!-- Product Image -->
-                <a href="{{ route('products.show', $item->product->id) }}" class="block p-4 aspect-square overflow-hidden bg-slate-50 rounded-t-xl">
+                <a href="{{ route('products.show', $item->product->slug ?? $item->product->id) }}" class="block p-4 aspect-square overflow-hidden bg-slate-50 rounded-t-xl">
                     <img src="{{ asset($item->product->image ?? 'Images/items/1.png') }}" 
                          alt="{{ $item->product->name }}" 
                          class="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500">
@@ -79,7 +79,7 @@
                     </div>
 
                     <h3 class="font-bold text-slate-800 text-base mb-1 line-clamp-2 hover:text-royalBlue transition-colors h-12">
-                        <a href="{{ route('products.show', $item->product->id) }}">{{ $item->product->name }}</a>
+                        <a href="{{ route('products.show', $item->product->slug ?? $item->product->id) }}">{{ $item->product->name }}</a>
                     </h3>
 
                     <div class="mt-auto pt-4 flex items-baseline gap-2">

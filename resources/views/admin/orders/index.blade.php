@@ -102,8 +102,8 @@
                 @forelse($orders as $order)
                 <tr class="order-row" data-status="{{ $order->status }}" data-date="{{ $order->created_at->format('Y-m-d') }}">
                     <td><input type="checkbox" class="order-checkbox" value="{{ $order->id }}"></td>
-                    <td class="order-id">#{{ $order->id }}</td>
-                    <td>
+                    <td class="order-id" style="cursor: pointer; color: #3b82f6; font-weight: bold; text-decoration: underline;" onclick="viewOrder({{ $order->id }})">#{{ $order->id }}</td>
+                    <td style="cursor: pointer;" onclick="viewOrder({{ $order->id }})">
                         <div class="customer-info">
                             <div class="customer-avatar">
                                 {{ substr($order->user->name ?? 'G', 0, 1) }}
@@ -245,9 +245,17 @@
 
     // View Order Details
     function viewOrder(orderId) {
+        console.log('viewOrder called with ID:', orderId);
+        
         fetch(`/admin/orders/${orderId}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
+                console.log('Order data received:', data);
                 const detailsHtml = `
                     <div class="order-info-grid">
                         <div class="info-box">
@@ -259,7 +267,7 @@
                         <div class="info-box">
                             <h4><i class="fa-solid fa-location-dot"></i> Shipping Address</h4>
                             <p>${data.shipping_address || 'No address provided'}</p>
-                            <p><strong>Order Date:</strong> ${new Date(data.created_at).toLocaleString()}</p>
+                            <p><strong>Order Date:</strong> ${data.created_at ? new Date(data.created_at).toLocaleString() : 'N/A'}</p>
                         </div>
                     </div>
                     
@@ -269,19 +277,19 @@
                             <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th></tr>
                         </thead>
                         <tbody>
-                            ${data.items?.map(item => `
+                            ${(data.items && data.items.length > 0) ? data.items.map(item => `
                                 <tr>
                                     <td>
                                         <div class="product-cell">
-                                            <img src="${item.product?.image || '/images/placeholder.jpg'}" class="product-img">
+                                            <img src="${item.product?.image ? '/' + item.product.image.replace(/^\//, '') : '/images/placeholder.jpg'}" class="product-img">
                                             <span>${item.product?.name || 'Product'}</span>
                                         </div>
                                     </td>
                                     <td>$${item.price}</td>
                                     <td>${item.quantity}</td>
-                                    <td>$${item.price * item.quantity}</td>
+                                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
                                 </tr>
-                            `).join('') || '<tr><td colspan="4">No items found</td></tr>'}
+                            `).join('') : '<tr><td colspan="4">No items found</td></tr>'}
                         </tbody>
                     </table>
                     
@@ -291,10 +299,54 @@
                         <div class="summary-row"><span>Tax:</span><span>$${data.tax || 0}</span></div>
                         <div class="summary-row total"><span>Total:</span><span>$${data.total_amount}</span></div>
                     </div>
+
+                    <div class="modal-actions" style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid #eee;">
+                        <button class="btn btn-primary" onclick="updateStatusFromModal(${data.id}, 'confirmed')" style="background: #3b82f6; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-check"></i> Confirm</button>
+                        <button class="btn btn-success" onclick="updateStatusFromModal(${data.id}, 'delivered')" style="background: #10b981; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-truck"></i> Delivered</button>
+                        <button class="btn btn-danger" onclick="updateStatusFromModal(${data.id}, 'cancelled')" style="background: #ef4444; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-times"></i> Cancel</button>
+                        <button class="btn btn-secondary" onclick="closeModal()" style="background: #64748b; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;">Close</button>
+                    </div>
                 `;
                 document.getElementById('orderDetails').innerHTML = detailsHtml;
                 document.getElementById('viewOrderModal').style.display = 'flex';
+            })
+            .catch(error => {
+                console.error('Error fetching order details:', error);
+                alert('Failed to load order details. Please try again.');
             });
+    }
+
+    // Update Status from Modal
+    function updateStatusFromModal(orderId, newStatus) {
+        if (!confirm('Are you sure you want to mark this order as ' + newStatus + '? An email will be sent to the customer.')) return;
+        
+        fetch(`/admin/orders/${orderId}/status`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ status: newStatus })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Order ' + newStatus + ' successfully! Email sent to user.', 'success');
+                closeModal();
+                // Find the dropdown and update it if exists
+                const selectElement = document.querySelector(`select[data-order-id="${orderId}"]`);
+                if (selectElement) {
+                    selectElement.value = newStatus;
+                    selectElement.closest('tr').setAttribute('data-status', newStatus);
+                } else {
+                    setTimeout(() => window.location.reload(), 1500);
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error updating order status', 'error');
+        });
     }
 
     // Generate Invoice

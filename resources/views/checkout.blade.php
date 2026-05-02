@@ -71,19 +71,19 @@
                     @endforeach
                 </div>
                 
-                <hr>
-                
-                <div class="sum-row">
-                    <span>Subtotal:</span>
-                    <span>${{ number_format($total, 2) }}</span>
-                </div>
-                <div class="sum-row">
-                    <span>Shipping:</span>
-                    <span class="text-success">Free</span>
-                </div>
-                <div class="sum-total-row">
-                    <span class="total-label">Total:</span>
-                    <span class="total-amount">${{ number_format($total, 2) }}</span>
+                <div class="sum-totals">
+                    <div class="sum-row">
+                        <span>Subtotal:</span>
+                        <span>${{ number_format($total, 2) }}</span>
+                    </div>
+                    <div class="sum-row">
+                        <span>Shipping:</span>
+                        <span style="color: #10b981; font-weight: 700;">Free</span>
+                    </div>
+                    <div class="sum-total-row">
+                        <span class="total-label">Total:</span>
+                        <span class="total-amount">${{ number_format($total, 2) }}</span>
+                    </div>
                 </div>
             </div>
             
@@ -95,65 +95,161 @@
 </main>
 
 <style>
+    .page-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 25px;
+        letter-spacing: -0.5px;
+    }
+
     .checkout-layout-grid {
         display: grid;
-        grid-template-columns: 1fr 350px;
-        gap: 20px;
-        margin-top: 20px;
-        margin-bottom: 50px;
+        grid-template-columns: 1fr 400px;
+        gap: 30px;
+        margin-bottom: 60px;
+    }
+
+    .checkout-form-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 35px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+        border: 1px solid #f1f5f9;
+    }
+
+    .checkout-form-card h3, .summary-box h3 {
+        font-size: 18px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #f1f5f9;
     }
 
     .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 15px;
+        gap: 20px;
+        margin-bottom: 20px;
     }
 
-    .form-control {
+    .form-group label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #64748b;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control, .form-control-disabled {
         width: 100%;
-        padding: 12px;
-        border: 1px solid var(--gray-300);
-        border-radius: 6px;
+        padding: 14px 16px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
         font-size: 15px;
+        color: #334155;
+        background: #ffffff;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        outline: none;
     }
 
     .form-control-disabled {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid var(--gray-200);
-        border-radius: 6px;
-        background: #f8f9fa;
-        color: #6c757d;
+        background: #f8fafc;
+        color: #94a3b8;
+        cursor: not-allowed;
     }
 
     .payment-option {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 12px;
-        border: 2px solid var(--primary);
-        border-radius: 6px;
-        background: #f0f7ff;
+        gap: 12px;
+        padding: 16px;
+        border: 2px solid #3b82f6;
+        border-radius: 10px;
+        background: #eff6ff;
         cursor: pointer;
+        font-weight: 600;
+        color: #1e293b;
+        transition: all 0.2s ease;
+    }
+
+    .payment-option:hover {
+        background: #e0f2fe;
+    }
+
+    .btn-checkout-green {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 16px;
+        padding: 16px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        width: 100%;
+    }
+
+    .btn-checkout-green:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .summary-box {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 30px;
+        border: 1px solid #e2e8f0;
+        position: sticky;
+        top: 20px;
     }
 
     .summary-items {
-        max-height: 300px;
+        max-height: calc(100vh - 350px);
         overflow-y: auto;
-        margin-bottom: 15px;
+        margin-bottom: 20px;
+        padding-right: 10px;
+    }
+    
+    .summary-items::-webkit-scrollbar {
+        width: 4px;
+    }
+    .summary-items::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
     }
 
     .sum-item {
         display: flex;
         gap: 15px;
-        margin-bottom: 12px;
+        margin-bottom: 20px;
         align-items: center;
+        padding-bottom: 15px;
+        border-bottom: 1px dashed #e2e8f0;
+    }
+
+    .sum-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
     }
 
     .sum-item-img {
         position: relative;
-        width: 50px;
-        height: 50px;
+        width: 65px;
+        height: 65px;
         flex-shrink: 0;
     }
 
@@ -161,54 +257,102 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
-        border-radius: 4px;
-        border: 1px solid var(--gray-200);
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
     }
 
     .sum-qty {
         position: absolute;
         top: -8px;
         right: -8px;
-        background: var(--dark);
+        background: #3b82f6;
         color: white;
-        font-size: 10px;
-        width: 18px;
-        height: 18px;
+        font-size: 11px;
+        font-weight: 700;
+        width: 22px;
+        height: 22px;
         display: flex;
         align-items: center;
         justify-content: center;
         border-radius: 50%;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     .sum-name {
-        font-size: 13px;
-        margin: 0;
-        color: var(--dark);
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0 0 5px 0;
+        color: #1e293b;
+        line-height: 1.4;
     }
 
     .sum-price {
-        font-size: 13px;
-        font-weight: 600;
+        font-size: 14px;
+        font-weight: 700;
+        color: #3b82f6;
         margin: 0;
     }
 
-    .checkout-back {
+    .sum-totals {
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 12px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .sum-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .sum-total-row {
+        display: flex;
+        justify-content: space-between;
         margin-top: 15px;
+        padding-top: 15px;
+        border-top: 2px dashed #e2e8f0;
+        font-size: 18px;
+        font-weight: 800;
+        color: #0f172a;
+    }
+
+    .checkout-back {
+        margin-top: 20px;
         text-align: center;
     }
 
     .checkout-back a {
-        color: var(--gray-500);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #64748b;
         text-decoration: none;
         font-size: 14px;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .checkout-back a:hover {
+        color: #3b82f6;
     }
 
     @media (max-width: 992px) {
         .checkout-layout-grid {
             grid-template-columns: 1fr;
         }
+    }
+
+    @media (max-width: 576px) {
         .form-grid {
             grid-template-columns: 1fr;
+        }
+        .checkout-form-card, .summary-box {
+            padding: 20px;
         }
     }
 </style>

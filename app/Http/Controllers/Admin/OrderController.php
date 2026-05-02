@@ -35,9 +35,18 @@ class OrderController extends Controller
     // Update order status (AJAX)
     public function updateStatus(Request $request, $id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('user')->findOrFail($id);
+        $oldStatus = $order->status;
         $order->status = $request->status;
         $order->save();
+        
+        if ($oldStatus !== $order->status && $order->user && $order->user->email) {
+            if (in_array($order->status, ['confirmed', 'cancelled', 'processing'])) {
+                \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusMail($order, $order->status));
+            } elseif ($order->status === 'delivered') {
+                \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderFeedbackMail($order));
+            }
+        }
         
         return response()->json(['success' => true]);
     }
@@ -54,7 +63,20 @@ class OrderController extends Controller
     // Bulk update status
     public function bulkUpdate(Request $request)
     {
-        Order::whereIn('id', $request->ids)->update(['status' => $request->status]);
+        $orders = Order::with('user')->whereIn('id', $request->ids)->get();
+        foreach ($orders as $order) {
+            $oldStatus = $order->status;
+            $order->status = $request->status;
+            $order->save();
+
+            if ($oldStatus !== $order->status && $order->user && $order->user->email) {
+                if (in_array($order->status, ['confirmed', 'cancelled', 'processing'])) {
+                    \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusMail($order, $order->status));
+                } elseif ($order->status === 'delivered') {
+                    \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderFeedbackMail($order));
+                }
+            }
+        }
         return response()->json(['success' => true]);
     }
 }

@@ -345,7 +345,8 @@
         window.routes = {
             cartAdd: "{{ route('cart.add') }}",
             cartUpdate: "{{ route('cart.update') }}",
-            cartRemove: "{{ route('cart.remove') }}"
+            cartRemove: "{{ route('cart.remove') }}",
+            wishlistToggle: "{{ route('wishlist.toggle') }}"
         };
     </script>
     <!-- LocalStorage Persistence for Login Data -->
