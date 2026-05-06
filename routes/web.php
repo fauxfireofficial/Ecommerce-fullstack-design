@@ -26,6 +26,8 @@ use App\Http\Controllers\CartController;
 Route::post('/add-to-cart', [CartController::class, 'add'])->name('cart.add');
 Route::post('/update-cart', [CartController::class, 'update'])->name('cart.update');
 Route::post('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/clear-cart', [CartController::class, 'clearAll'])->name('cart.clear');
+Route::post('/save-for-later', [CartController::class, 'saveForLater'])->name('cart.saveForLater');
 
 // Checkout & Orders (Requires Auth)
 Route::middleware(['auth'])->group(function () {
@@ -120,6 +122,7 @@ Route::prefix('admin')->group(function () {
         Route::put('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
         Route::get('/orders/{id}/invoice', [\App\Http\Controllers\Admin\OrderController::class, 'invoice'])->name('admin.orders.invoice');
         Route::post('/orders/bulk-update', [\App\Http\Controllers\Admin\OrderController::class, 'bulkUpdate'])->name('admin.orders.bulkUpdate');
+        Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
 
         // Product Management
         Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->names([

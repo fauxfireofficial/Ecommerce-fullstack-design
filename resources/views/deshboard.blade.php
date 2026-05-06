@@ -117,7 +117,10 @@
                         @forelse($recentOrders ?? [] as $order)
                         <tr>
                             <td>#{{ $order->id }}</td>
-                            <td>{{ $order->customer_name }}</td>
+                            <td>
+                                {{ $order->customer_name }}<br>
+                                <small style="color: #64748b;">{{ $order->email ?? $order->user->email ?? '' }}</small>
+                            </td>
                             <td>${{ number_format($order->amount, 2) }}</td>
                             <td><span class="status-badge status-{{ $order->status }}">{{ $order->status }}</span></td>
                             <td>{{ $order->created_at->format('d M Y') }}</td>

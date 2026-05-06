@@ -124,12 +124,16 @@
             <div class="info-box">
                 <h3>Billed To:</h3>
                 <strong>{{ $order->user->name ?? 'Guest User' }}</strong><br>
-                {{ $order->user->email ?? '' }}<br>
+                {{ $order->email ?? $order->user->email ?? '' }}<br>
                 {{ $order->shipping_phone }}
             </div>
             <div class="info-box">
                 <h3>Shipping Address:</h3>
-                {{ $order->shipping_address }}
+                {{ $order->shipping_address }}<br>
+                @if($order->city || $order->state || $order->postal_code)
+                    {{ $order->city ? $order->city . ', ' : '' }}{{ $order->state }} {{ $order->postal_code }}<br>
+                @endif
+                {{ $order->country }}
             </div>
         </div>
 

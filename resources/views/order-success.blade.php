@@ -37,8 +37,13 @@
             </div>
             <div class="box-content">
                 <strong>{{ auth()->user()->name }}</strong><br>
+                {{ $order->email ?? auth()->user()->email }}<br>
                 {{ $order->shipping_phone ?? $order->phone_number }}<br>
-                {{ $order->shipping_address ?? ($order->address . ', ' . $order->city) }}
+                {{ $order->shipping_address ?? ($order->address . ', ' . $order->city) }}<br>
+                @if($order->city || $order->state || $order->postal_code)
+                    {{ $order->city ? $order->city . ', ' : '' }}{{ $order->state }} {{ $order->postal_code }}<br>
+                @endif
+                {{ $order->country }}
             </div>
         </div>
 

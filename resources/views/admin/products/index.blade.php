@@ -191,11 +191,64 @@
 </div>
 @endsection
 
-@push('styles')
+@section('styles')
 <style>
 /* Products Container */
 .products-container {
     padding: 0;
+}
+
+/* Pagination Fixes */
+.pagination-wrapper {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: center;
+}
+.pagination-wrapper nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: white;
+    padding: 8px 16px;
+    border-radius: 30px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border: 1px solid #e2e8f0;
+}
+.pagination-wrapper svg {
+    width: 18px;
+    height: 18px;
+}
+.pagination-wrapper p {
+    display: none;
+}
+.pagination-wrapper a, .pagination-wrapper span[aria-disabled="true"], .pagination-wrapper span[aria-current="page"] {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    padding: 0 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    color: #475569;
+    transition: all 0.2s;
+}
+.pagination-wrapper a:hover {
+    background: #f1f5f9;
+    color: var(--primary);
+}
+.pagination-wrapper span[aria-current="page"] {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
+}
+.pagination-wrapper span[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
 /* Products Stats */
@@ -445,9 +498,10 @@ input:checked + .slider:before {
     }
 }
 </style>
-@endpush
+</style>
+@endsection
 
-@push('scripts')
+@section('scripts')
 <script>
 // Filter Products
 function filterProducts() {
@@ -610,4 +664,5 @@ function deleteProduct(id, name) {
     }
 }
 </script>
-@endpush
+</script>
+@endsection

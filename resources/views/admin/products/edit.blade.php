@@ -26,6 +26,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="brand">Brand / Supplier</label>
+                        <input type="text" id="brand" name="brand" class="form-control" value="{{ old('brand', $product->brand) }}" placeholder="e.g. Nike, Apple, Local Supplier">
+                        @error('brand') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-group">
                         <label for="sku">SKU (Stock Keeping Unit)</label>
                         <input type="text" id="sku" name="sku" class="form-control" value="{{ old('sku', $product->sku) }}">
                         @error('sku') <span class="error">{{ $message }}</span> @enderror
@@ -70,6 +76,22 @@
                                 <option value="books" {{ $product->category == 'books' ? 'selected' : '' }}>Books</option>
                             </select>
                             @error('category') <span class="error">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    <!-- Shipping Details -->
+                    <h4 class="section-title mt-4 mb-3" style="font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;">Shipping Details</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="weight">Weight (kg)</label>
+                            <input type="number" id="weight" name="weight" class="form-control" step="0.01" value="{{ old('weight', $product->weight) }}" placeholder="0.5">
+                            @error('weight') <span class="error">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div class="form-group">
+                            <label for="dimensions">Dimensions (L x W x H)</label>
+                            <input type="text" id="dimensions" name="dimensions" class="form-control" value="{{ old('dimensions', $product->dimensions) }}" placeholder="10 x 5 x 2 cm">
+                            @error('dimensions') <span class="error">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
@@ -148,6 +170,29 @@
                         <textarea id="features" name="features" rows="3" class="form-control" placeholder="One feature per line">{{ old('features', $product->features) }}</textarea>
                         @error('features') <span class="error">{{ $message }}</span> @enderror
                     </div>
+
+                    <!-- Attributes / Variations -->
+                    <h4 class="section-title mt-4 mb-3" style="font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;">Attributes & Variations</h4>
+                    <div class="form-group">
+                        <label for="colors">Colors</label>
+                        <input type="text" id="colors" name="colors" class="form-control" value="{{ old('colors', is_array($product->colors) ? implode(', ', $product->colors) : '') }}" placeholder="Red, Blue, Green">
+                        <small>Comma separated values</small>
+                        @error('colors') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sizes">Sizes</label>
+                        <input type="text" id="sizes" name="sizes" class="form-control" value="{{ old('sizes', is_array($product->sizes) ? implode(', ', $product->sizes) : '') }}" placeholder="S, M, L, XL or 40, 41, 42">
+                        <small>Comma separated values</small>
+                        @error('sizes') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="materials">Materials</label>
+                        <input type="text" id="materials" name="materials" class="form-control" value="{{ old('materials', is_array($product->materials) ? implode(', ', $product->materials) : '') }}" placeholder="Cotton, Polyester, Leather">
+                        <small>Comma separated values</small>
+                        @error('materials') <span class="error">{{ $message }}</span> @enderror
+                    </div>
                 </div>
             </div>
 
@@ -161,7 +206,7 @@
     </div>
 </div>
 
-@push('styles')
+@section('styles')
 <style>
 /* Product Form Container */
 .product-form-container {
@@ -459,10 +504,9 @@
     .form-actions .btn { width: 100%; justify-content: center; }
 }
 </style>
-@endpush
+@endsection
 
-
-@push('scripts')
+@section('scripts')
 <script>
 function previewImage(input) {
     const preview = document.getElementById('imagePreview');
@@ -514,6 +558,6 @@ function previewGallery(input) {
     }
 }
 </script>
-@endpush
+@endsection
 
 @endsection

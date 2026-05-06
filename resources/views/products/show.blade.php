@@ -132,7 +132,7 @@
             </div>
 
             <div class="action-buttons">
-                <button class="btn btn-primary btn-buy">Buy now</button>
+                <button class="btn btn-primary btn-buy" data-id="{{ $product->id }}">Buy now</button>
                 <button class="btn btn-add-cart btn-cart" data-id="{{ $product->id }}">Add to cart</button>
                 <button class="btn btn-heart btn-wishlist" data-id="{{ $product->id }}"><i class="fa-regular fa-heart"></i></button>
             </div>

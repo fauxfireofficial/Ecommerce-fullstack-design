@@ -19,29 +19,67 @@
                             <input type="text" value="{{ auth()->user()->name }}" disabled class="form-control-disabled">
                         </div>
                         <div class="form-group">
-                            <label>Phone Number</label>
+                            <label>Phone Number <span style="color:#ef4444">*</span></label>
                             <input type="text" name="phone_number" placeholder="+123 456 789" required class="form-control">
                         </div>
                     </div>
 
                     <div class="form-group mt-3">
-                        <label>Shipping Address</label>
-                        <textarea name="address" placeholder="Street address, apartment, suite, etc." required class="form-control" rows="3"></textarea>
+                        <label>Email Address <span style="color:#ef4444">*</span></label>
+                        <input type="email" name="email" placeholder="For order confirmation & receipt" required class="form-control" value="{{ auth()->user()->email }}">
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label>Shipping Address <span style="color:#ef4444">*</span></label>
+                        <textarea name="address" placeholder="Street address, apartment, suite, etc." required class="form-control" rows="2"></textarea>
                     </div>
 
                     <div class="form-grid mt-3">
                         <div class="form-group">
-                            <label>City</label>
+                            <label>Country <span style="color:#ef4444">*</span></label>
+                            <select name="country" required class="form-control">
+                                <option value="">Select Country</option>
+                                <option value="Pakistan">Pakistan</option>
+                                <option value="United Arab Emirates">United Arab Emirates</option>
+                                <option value="United States">United States</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Saudi Arabia">Saudi Arabia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>State / Province <span style="color:#ef4444">*</span></label>
+                            <select name="state" required class="form-control">
+                                <option value="">Select State</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Sindh">Sindh</option>
+                                <option value="KPK">KPK</option>
+                                <option value="Balochistan">Balochistan</option>
+                                <option value="Dubai">Dubai</option>
+                                <option value="California">California</option>
+                                <option value="New York">New York</option>
+                                <option value="London">London</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-grid mt-3">
+                        <div class="form-group">
+                            <label>City <span style="color:#ef4444">*</span></label>
                             <input type="text" name="city" placeholder="City" required class="form-control">
                         </div>
                         <div class="form-group">
-                            <label>Payment Method</label>
-                            <div class="payment-selection">
-                                <label class="payment-option active">
-                                    <input type="radio" name="payment_method" value="cod" checked>
-                                    <span>Cash on Delivery</span>
-                                </label>
-                            </div>
+                            <label>Postal Code / Zip <span style="color:#ef4444">*</span></label>
+                            <input type="text" name="postal_code" placeholder="e.g. 75000" required class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <label>Payment Method</label>
+                        <div class="payment-selection">
+                            <label class="payment-option active">
+                                <input type="radio" name="payment_method" value="cod" checked>
+                                <span>Cash on Delivery</span>
+                            </label>
                         </div>
                     </div>
 

@@ -112,6 +112,24 @@
         @media (max-width: 450px) {
             .drawer-base { width: 100%; right: -100%; }
         }
+
+        .icon-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ef4444;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 
 </head>
@@ -212,11 +230,17 @@
                 </a>
                 
                 <div class="mobile-icons mobile-only">
-                    <a href="javascript:void(0)" onclick="toggleCart(true)" style="color: inherit;">
+                    @php 
+                        $cartCount = session()->has('cart') ? count(session('cart')) : 0; 
+                        $wishlistCount = auth()->check() ? \App\Models\Wishlist::where('user_id', auth()->id())->count() : 0; 
+                    @endphp
+                    <a href="javascript:void(0)" onclick="toggleCart(true)" style="color: inherit; position: relative;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <span class="icon-badge cart-count" style="display: {{ $cartCount > 0 ? 'flex' : 'none' }};">{{ $cartCount }}</span>
                     </a>
-                    <a href="javascript:void(0)" onclick="toggleWishlist(true)" style="color: inherit; text-decoration: none;">
+                    <a href="javascript:void(0)" onclick="toggleWishlist(true)" style="color: inherit; text-decoration: none; position: relative; margin-left: 8px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        <span class="icon-badge wishlist-count" style="display: {{ $wishlistCount > 0 ? 'flex' : 'none' }};">{{ $wishlistCount }}</span>
                     </a>
                 </div>
 
@@ -241,11 +265,17 @@
                         <span>Support</span>
                     </a>
                     <a href="javascript:void(0)" class="action-item" onclick="toggleWishlist(true)" style="color: inherit; text-decoration: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                        <div style="position: relative;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            <span class="icon-badge wishlist-count" style="display: {{ $wishlistCount > 0 ? 'flex' : 'none' }};">{{ $wishlistCount }}</span>
+                        </div>
                         <span>Wishlist</span>
                     </a>
                     <a href="javascript:void(0)" class="action-item" onclick="toggleCart(true)" style="color: inherit; text-decoration: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                        <div style="position: relative;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <span class="icon-badge cart-count" style="display: {{ $cartCount > 0 ? 'flex' : 'none' }};">{{ $cartCount }}</span>
+                        </div>
                         <span>My cart</span>
                     </a>
                 </div>
@@ -346,7 +376,10 @@
             cartAdd: "{{ route('cart.add') }}",
             cartUpdate: "{{ route('cart.update') }}",
             cartRemove: "{{ route('cart.remove') }}",
-            wishlistToggle: "{{ route('wishlist.toggle') }}"
+            cartClear: "{{ route('cart.clear') }}",
+            cartSaveForLater: "{{ route('cart.saveForLater') }}",
+            wishlistToggle: "{{ route('wishlist.toggle') }}",
+            checkout: "{{ route('checkout') }}"
         };
     </script>
     <!-- LocalStorage Persistence for Login Data -->
@@ -486,6 +519,12 @@
                     if (document.getElementById('wishlistItemsContainer').children.length === 0) {
                         document.getElementById('wishlistItemsContainer').innerHTML = '<p class="text-center py-5 text-muted">Wishlist is empty</p>';
                     }
+                    
+                    // Update Wishlist Badges
+                    document.querySelectorAll('.wishlist-count').forEach(b => {
+                        b.textContent = data.wishlistCount;
+                        b.style.display = data.wishlistCount > 0 ? 'flex' : 'none';
+                    });
                 }
             });
         }
@@ -507,6 +546,12 @@
                     if (document.getElementById('cartItemsContainer').children.length === 0) {
                         document.getElementById('cartItemsContainer').innerHTML = '<p class="text-center py-5 text-muted">Cart is empty</p>';
                     }
+
+                    // Update Cart Badges
+                    document.querySelectorAll('.cart-count').forEach(b => {
+                        b.textContent = data.cartCount;
+                        b.style.display = data.cartCount > 0 ? 'flex' : 'none';
+                    });
                 }
             });
         }

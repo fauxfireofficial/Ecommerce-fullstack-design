@@ -46,6 +46,12 @@ class ProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string',
             'features' => 'nullable|string',
+            'brand' => 'nullable|string|max:255',
+            'weight' => 'nullable|numeric|min:0',
+            'dimensions' => 'nullable|string|max:255',
+            'colors' => 'nullable|string',
+            'sizes' => 'nullable|string',
+            'materials' => 'nullable|string',
         ]);
 
         $product = new Product();
@@ -59,6 +65,13 @@ class ProductController extends Controller
         $product->status = $request->status ?? 'active';
         $product->description = $request->description;
         $product->features = $request->features;
+        $product->brand = $request->brand;
+        $product->weight = $request->weight;
+        $product->dimensions = $request->dimensions;
+        
+        $product->colors = $request->colors ? array_map('trim', explode(',', $request->colors)) : null;
+        $product->sizes = $request->sizes ? array_map('trim', explode(',', $request->sizes)) : null;
+        $product->materials = $request->materials ? array_map('trim', explode(',', $request->materials)) : null;
 
         // Handle main image upload
         if ($request->hasFile('image')) {
@@ -107,6 +120,12 @@ class ProductController extends Controller
             'status' => 'in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'brand' => 'nullable|string|max:255',
+            'weight' => 'nullable|numeric|min:0',
+            'dimensions' => 'nullable|string|max:255',
+            'colors' => 'nullable|string',
+            'sizes' => 'nullable|string',
+            'materials' => 'nullable|string',
         ]);
 
         $product->name = $request->name;
@@ -118,6 +137,13 @@ class ProductController extends Controller
         $product->status = $request->status;
         $product->description = $request->description;
         $product->features = $request->features;
+        $product->brand = $request->brand;
+        $product->weight = $request->weight;
+        $product->dimensions = $request->dimensions;
+        
+        $product->colors = $request->colors ? array_map('trim', explode(',', $request->colors)) : null;
+        $product->sizes = $request->sizes ? array_map('trim', explode(',', $request->sizes)) : null;
+        $product->materials = $request->materials ? array_map('trim', explode(',', $request->materials)) : null;
 
         // Handle Main Image Removal
         if ($request->remove_main_image == '1') {

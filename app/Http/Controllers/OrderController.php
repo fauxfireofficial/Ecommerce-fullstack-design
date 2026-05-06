@@ -33,9 +33,13 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'email' => 'required|email|max:255',
             'phone_number' => 'required|string|max:20',
             'address' => 'required|string|max:500',
             'city' => 'required|string|max:100',
+            'state' => 'required|string|max:100',
+            'country' => 'required|string|max:100',
+            'postal_code' => 'required|string|max:20',
         ]);
 
         $cart = session()->get('cart', []);
@@ -58,6 +62,10 @@ class OrderController extends Controller
             'total_amount' => $total,
             'shipping_phone' => $request->phone_number,
             'shipping_address' => $request->address . ', ' . $request->city,
+            'email' => $request->email,
+            'country' => $request->country,
+            'state' => $request->state,
+            'postal_code' => $request->postal_code,
             'status' => 'pending',
             'payment_status' => 'pending',
         ]);

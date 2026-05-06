@@ -214,7 +214,10 @@
                     @forelse($recentOrders as $order)
                     <tr>
                         <td>#{{ $order->order_number }}</td>
-                        <td>{{ $order->user->name }}</td>
+                        <td>
+                            {{ $order->user->name }}<br>
+                            <small style="color: #64748b;">{{ $order->email ?? $order->user->email ?? '' }}</small>
+                        </td>
                         <td>₹{{ number_format($order->total_amount, 2) }}</td>
                         <td>
                             <span class="status-badge status-{{ strtolower($order->status) }}">

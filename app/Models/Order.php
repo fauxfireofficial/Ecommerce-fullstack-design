@@ -20,7 +20,11 @@ class Order extends Model
         'subtotal',
         'shipping_cost',
         'tax',
-        'notes'
+        'notes',
+        'email',
+        'postal_code',
+        'country',
+        'state'
     ];
 
     protected $casts = [

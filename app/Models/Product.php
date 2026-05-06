@@ -26,6 +26,12 @@ class Product extends Model
         'is_deal',
         'discount_percent',
         'views',
+        'brand',
+        'weight',
+        'dimensions',
+        'colors',
+        'sizes',
+        'materials',
     ];
 
     protected $casts = [
@@ -33,6 +39,10 @@ class Product extends Model
         'compare_price' => 'decimal:2',
         'stock_quantity' => 'integer',
         'views' => 'integer',
+        'weight' => 'decimal:2',
+        'colors' => 'array',
+        'sizes' => 'array',
+        'materials' => 'array',
     ];
 
     // Check if product is in stock

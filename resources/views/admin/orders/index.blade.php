@@ -137,6 +137,9 @@
                         <button class="action-btn invoice-btn" onclick="generateInvoice({{ $order->id }})" title="Download Invoice">
                             <i class="fa-solid fa-download"></i>
                         </button>
+                        <button class="action-btn delete-btn" onclick="deleteOrder({{ $order->id }})" title="Delete Order">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
                     </td>
                 </tr>
                 @empty
@@ -171,7 +174,7 @@
 
 
 
-@push('scripts')
+@section('scripts')
 <script>
     // Filter Orders
     function filterOrders() {
@@ -247,6 +250,15 @@
     function viewOrder(orderId) {
         console.log('viewOrder called with ID:', orderId);
         
+        // Show loading state
+        document.getElementById('orderDetails').innerHTML = `
+            <div style="text-align: center; padding: 50px;">
+                <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--admin-primary);"></i>
+                <p style="margin-top: 15px;">Loading order details...</p>
+            </div>
+        `;
+        document.getElementById('viewOrderModal').style.display = 'flex';
+        
         fetch(`/admin/orders/${orderId}`)
             .then(response => {
                 if (!response.ok) {
@@ -261,17 +273,33 @@
                         <div class="info-box">
                             <h4><i class="fa-regular fa-user"></i> Customer Information</h4>
                             <p><strong>Name:</strong> ${data.user?.name || 'Guest'}</p>
-                            <p><strong>Email:</strong> ${data.user?.email || 'N/A'}</p>
+                            <p><strong>Email:</strong> ${data.email || data.user?.email || 'N/A'}</p>
                             <p><strong>Phone:</strong> ${data.shipping_phone || 'N/A'}</p>
+                            <p><strong>Order Date:</strong> ${data.created_at ? new Date(data.created_at).toLocaleString() : 'N/A'}</p>
                         </div>
                         <div class="info-box">
                             <h4><i class="fa-solid fa-location-dot"></i> Shipping Address</h4>
                             <p>${data.shipping_address || 'No address provided'}</p>
-                            <p><strong>Order Date:</strong> ${data.created_at ? new Date(data.created_at).toLocaleString() : 'N/A'}</p>
+                            <p>${data.city ? data.city + ', ' : ''}${data.state || ''} ${data.postal_code || ''}</p>
+                            <p>${data.country || ''}</p>
+                            <p><strong>Payment Status:</strong> <span class="payment-badge payment-${(data.payment_status || 'pending').toLowerCase()}">${data.payment_status || 'Pending'}</span></p>
                         </div>
                     </div>
                     
-                    <h4 style="margin-bottom: 15px;"><i class="fa-solid fa-box"></i> Order Items</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h4 style="margin: 0;"><i class="fa-solid fa-box"></i> Order Items</h4>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 13px; font-weight: 600;">Status:</span>
+                            <select class="status-select" onchange="updateStatusFromModal(${data.id}, this.value)" style="width: auto;">
+                                <option value="pending" ${data.status === 'pending' ? 'selected' : ''}>📋 Pending</option>
+                                <option value="processing" ${data.status === 'processing' ? 'selected' : ''}>⚙️ Processing</option>
+                                <option value="shipped" ${data.status === 'shipped' ? 'selected' : ''}>🚚 Shipped</option>
+                                <option value="delivered" ${data.status === 'delivered' ? 'selected' : ''}>✅ Delivered</option>
+                                <option value="cancelled" ${data.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <table class="order-items-table">
                         <thead>
                             <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th></tr>
@@ -285,40 +313,45 @@
                                             <span>${item.product?.name || 'Product'}</span>
                                         </div>
                                     </td>
-                                    <td>$${item.price}</td>
+                                    <td>$${parseFloat(item.price).toFixed(2)}</td>
                                     <td>${item.quantity}</td>
-                                    <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                                    <td>$${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
                                 </tr>
                             `).join('') : '<tr><td colspan="4">No items found</td></tr>'}
                         </tbody>
                     </table>
                     
                     <div class="order-summary">
-                        <div class="summary-row"><span>Subtotal:</span><span>$${data.subtotal || 0}</span></div>
-                        <div class="summary-row"><span>Shipping:</span><span>$${data.shipping_cost || 0}</span></div>
-                        <div class="summary-row"><span>Tax:</span><span>$${data.tax || 0}</span></div>
-                        <div class="summary-row total"><span>Total:</span><span>$${data.total_amount}</span></div>
+                        <div class="summary-row"><span>Subtotal:</span><span>$${parseFloat(data.subtotal || 0).toFixed(2)}</span></div>
+                        <div class="summary-row"><span>Shipping:</span><span>$${parseFloat(data.shipping_cost || 0).toFixed(2)}</span></div>
+                        <div class="summary-row"><span>Tax:</span><span>$${parseFloat(data.tax || 0).toFixed(2)}</span></div>
+                        <div class="summary-row total"><span>Total:</span><span>$${parseFloat(data.total_amount).toFixed(2)}</span></div>
                     </div>
 
                     <div class="modal-actions" style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid #eee;">
-                        <button class="btn btn-primary" onclick="updateStatusFromModal(${data.id}, 'confirmed')" style="background: #3b82f6; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-check"></i> Confirm</button>
-                        <button class="btn btn-success" onclick="updateStatusFromModal(${data.id}, 'delivered')" style="background: #10b981; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-truck"></i> Delivered</button>
-                        <button class="btn btn-danger" onclick="updateStatusFromModal(${data.id}, 'cancelled')" style="background: #ef4444; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;"><i class="fa-solid fa-times"></i> Cancel</button>
-                        <button class="btn btn-secondary" onclick="closeModal()" style="background: #64748b; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer;">Close</button>
+                        <button class="btn btn-secondary" onclick="generateInvoice(${data.id})" style="background: #e2e8f0; color: #475569; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-download"></i> Invoice</button>
+                        <button class="btn btn-danger" onclick="deleteOrder(${data.id}, true)" style="background: #ef4444; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-trash"></i> Delete Order</button>
+                        <button class="btn btn-secondary" onclick="closeModal()" style="background: #64748b; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer; font-weight: 600;">Close</button>
                     </div>
                 `;
                 document.getElementById('orderDetails').innerHTML = detailsHtml;
-                document.getElementById('viewOrderModal').style.display = 'flex';
             })
             .catch(error => {
                 console.error('Error fetching order details:', error);
-                alert('Failed to load order details. Please try again.');
+                document.getElementById('orderDetails').innerHTML = `
+                    <div style="text-align: center; padding: 50px; color: #ef4444;">
+                        <i class="fa-solid fa-circle-exclamation" style="font-size: 30px;"></i>
+                        <p style="margin-top: 15px;">Failed to load order details. Please try again.</p>
+                        <button class="btn btn-secondary" onclick="closeModal()" style="margin-top: 10px;">Close</button>
+                    </div>
+                `;
             });
     }
 
     // Update Status from Modal
-    function updateStatusFromModal(orderId, newStatus) {
-        if (!confirm('Are you sure you want to mark this order as ' + newStatus + '? An email will be sent to the customer.')) return;
+    async function updateStatusFromModal(orderId, newStatus) {
+        const confirmed = await customConfirm('Update Status', `Are you sure you want to mark this order as ${newStatus}? An email will be sent to the customer.`);
+        if (!confirmed) return;
         
         fetch(`/admin/orders/${orderId}/status`, {
             method: 'PUT',
@@ -362,14 +395,42 @@
         });
     });
 
-    // Show Notification
-    function showNotification(message, type = 'success') {
-        // You can implement a toast notification here
-        alert(message);
-    }
-
     function closeModal() {
         document.getElementById('viewOrderModal').style.display = 'none';
+    }
+
+    // Delete Order
+    async function deleteOrder(orderId, fromModal = false) {
+        const confirmed = await customConfirm('Delete Order', 'Are you sure you want to permanently delete this order? This action cannot be undone.', true);
+        if (!confirmed) return;
+        
+        fetch(`/admin/orders/${orderId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification('Order deleted successfully!', 'success');
+                if (fromModal) closeModal();
+                
+                // Remove the row from table
+                const row = document.querySelector(`.order-checkbox[value="${orderId}"]`)?.closest('tr');
+                if (row) {
+                    row.style.opacity = '0';
+                    setTimeout(() => row.remove(), 300);
+                } else {
+                    window.location.reload();
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error deleting order', 'error');
+        });
     }
 
     // Close modal when clicking outside
@@ -379,4 +440,4 @@
         }
     }
 </script>
-@endpush
+@endsection

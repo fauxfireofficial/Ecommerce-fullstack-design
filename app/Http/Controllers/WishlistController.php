@@ -35,27 +35,30 @@ class WishlistController extends Controller
         return response()->json($wishlist);
     }
 
-    /**
-     * Add or remove an item from the wishlist.
-     */
     public function toggle(Request $request)
     {
         if (!auth()->check()) {
             return response()->json(['status' => 'error', 'message' => 'Please login first'], 401);
         }
 
-        $productId = $request->product_id;
-        $wishlistItem = Wishlist::where('user_id', auth()->id())->where('product_id', $productId)->first();
+        try {
+            $productId = $request->product_id;
+            $wishlistItem = Wishlist::where('user_id', auth()->id())->where('product_id', $productId)->first();
 
-        if ($wishlistItem) {
-            $wishlistItem->delete();
-            return response()->json(['status' => 'removed', 'message' => 'Removed from wishlist']);
-        } else {
-            Wishlist::create([
-                'user_id' => auth()->id(),
-                'product_id' => $productId
-            ]);
-            return response()->json(['status' => 'added', 'message' => 'Added to wishlist']);
+            if ($wishlistItem) {
+                $wishlistItem->delete();
+                $count = Wishlist::where('user_id', auth()->id())->count();
+                return response()->json(['status' => 'removed', 'message' => 'Removed from wishlist', 'wishlistCount' => $count]);
+            } else {
+                Wishlist::create([
+                    'user_id' => auth()->id(),
+                    'product_id' => $productId
+                ]);
+                $count = Wishlist::where('user_id', auth()->id())->count();
+                return response()->json(['status' => 'added', 'message' => 'Added to wishlist', 'wishlistCount' => $count]);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong. Please try again.'], 500);
         }
     }
 
