@@ -22,10 +22,29 @@ class ProductController extends Controller
     }
     
     // Products listing page
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::paginate(20);
+        $query = Product::query();
+
+        if ($request->has('category')) {
+            $query->where('category', $request->category);
+        }
+
+        $products = $query->paginate(20);
         return view('products.index', compact('products'));
+    }
+
+    // Hot Offers page
+    public function hotOffers()
+    {
+        $products = Product::where('status', 'active')
+            ->where('is_deal', true)
+            ->orderBy('discount_percent', 'desc')
+            ->paginate(16);
+
+        $settings = \App\Models\Setting::all()->pluck('value', 'key');
+            
+        return view('products.offers', compact('products', 'settings'));
     }
 }
 

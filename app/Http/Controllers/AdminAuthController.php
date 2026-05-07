@@ -27,7 +27,7 @@ class AdminAuthController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'min:6', 'confirmed', 'regex:/[0-9\W]/'],
             'admin_key' => 'required|string',
             'terms' => 'required',
         ]);

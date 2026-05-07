@@ -8,6 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class Product extends Model
 {
     use HasFactory;
+    
+    public static function getCategories()
+    {
+        return [
+            'Mobile and Tablets',
+            'Computer and tech',
+            'Clothes and wear',
+            'Home interiors',
+            'Tools, equipments',
+            'Health and Beauty',
+            'Sports and outdoor',
+            'Accessories'
+        ];
+    }
 
     protected $fillable = [
         'name',

@@ -10,9 +10,29 @@ use Illuminate\Support\Str;
 class ProductController extends Controller
 {
     // Display products list
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::orderBy('created_at', 'desc')->paginate(15);
+        $query = Product::orderBy('created_at', 'desc');
+
+        // Server-side filtering
+        if ($request->has('offer_filter') && $request->offer_filter == 'hot') {
+            $query->where('is_deal', true);
+        }
+
+        if ($request->has('category_filter') && $request->category_filter != 'all') {
+            $query->where('category', $request->category_filter);
+        }
+
+        if ($request->has('search') && !empty($request->search)) {
+            $s = $request->search;
+            $query->where(function($q) use ($s) {
+                $q->where('name', 'like', "%$s%")
+                  ->orWhere('sku', 'like', "%$s%")
+                  ->orWhere('category', 'like', "%$s%");
+            });
+        }
+
+        $products = $query->paginate(15)->withQueryString();
         
         $data = [
             'products' => $products,
@@ -20,7 +40,7 @@ class ProductController extends Controller
             'activeProducts' => Product::where('status', 'active')->count(),
             'totalViews' => Product::sum('views'),
             'lowStock' => Product::where('stock_quantity', '<=', 10)->where('stock_quantity', '>', 0)->count(),
-            'categories' => Product::distinct()->pluck('category'),
+            'categories' => Product::getCategories(),
         ];
         
         return view('admin.products.index', $data);
@@ -29,7 +49,8 @@ class ProductController extends Controller
     // Show create form
     public function create()
     {
-        return view('admin.products.create');
+        $categories = Product::getCategories();
+        return view('admin.products.create', compact('categories'));
     }
 
     // Store new product
@@ -68,6 +89,8 @@ class ProductController extends Controller
         $product->brand = $request->brand;
         $product->weight = $request->weight;
         $product->dimensions = $request->dimensions;
+        $product->is_deal = $request->has('is_deal');
+        $product->discount_percent = $request->discount_percent;
         
         $product->colors = $request->colors ? array_map('trim', explode(',', $request->colors)) : null;
         $product->sizes = $request->sizes ? array_map('trim', explode(',', $request->sizes)) : null;
@@ -102,7 +125,8 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::findOrFail($id);
-        return view('admin.products.edit', compact('product'));
+        $categories = Product::getCategories();
+        return view('admin.products.edit', compact('product', 'categories'));
     }
 
     // Update product
@@ -140,6 +164,8 @@ class ProductController extends Controller
         $product->brand = $request->brand;
         $product->weight = $request->weight;
         $product->dimensions = $request->dimensions;
+        $product->is_deal = $request->has('is_deal');
+        $product->discount_percent = $request->discount_percent;
         
         $product->colors = $request->colors ? array_map('trim', explode(',', $request->colors)) : null;
         $product->sizes = $request->sizes ? array_map('trim', explode(',', $request->sizes)) : null;

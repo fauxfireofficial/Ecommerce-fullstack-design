@@ -56,6 +56,9 @@
                                placeholder="Enter your password" required>
                         <i class="fa-regular fa-eye toggle-password" data-target="login_password"></i>
                     </div>
+                    <div style="text-align: right; margin-top: 8px;">
+                        <a href="{{ route('password.request') }}" class="forgot-link">Forgot password?</a>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn btn-admin btn-block">Sign In to Portal</button>
@@ -96,13 +99,31 @@
 
                 <!-- Password -->
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="reg_password">Password</label>
                     <div class="input-with-icon">
                         <i class="fa-solid fa-lock"></i>
-                        <input type="password" id="password" name="password" 
+                        <input type="password" id="reg_password" name="password" 
                                placeholder="Create a strong password" required>
-                        <i class="fa-regular fa-eye toggle-password" data-target="password"></i>
+                        <i class="fa-regular fa-eye toggle-password" data-target="reg_password"></i>
                     </div>
+                    
+                    <!-- Password Strength Meter -->
+                    <div class="password-strength-wrapper">
+                        <div class="strength-meter">
+                            <div class="strength-bar" id="strengthBar"></div>
+                        </div>
+                        <span class="strength-text" id="strengthText">Enter a password</span>
+                    </div>
+
+                    <!-- Password Requirements Checklist -->
+                    <div class="password-requirements" id="passwordRequirements">
+                        <p class="req-title">Password must contain:</p>
+                        <ul>
+                            <li id="req-length"><i class="fa-solid fa-circle-dot"></i> At least 6 characters</li>
+                            <li id="req-number-symbol"><i class="fa-solid fa-circle-dot"></i> At least one number or symbol (@#$%!)</li>
+                        </ul>
+                    </div>
+
                     @error('password') <span class="error-message">{{ $message }}</span> @enderror
                 </div>
 
@@ -115,6 +136,7 @@
                                placeholder="Confirm password" required>
                         <i class="fa-regular fa-eye toggle-password" data-target="password_confirmation"></i>
                     </div>
+                    <span class="match-text" id="matchText"></span>
                 </div>
 
                 <!-- Security Key -->

@@ -131,10 +131,8 @@
                     <div class="password-requirements" id="passwordRequirements">
                         <p class="req-title">Password must contain:</p>
                         <ul>
-                            <li id="req-length"><i class="fa-solid fa-circle-dot"></i> At least 8 characters</li>
-                            <li id="req-case"><i class="fa-solid fa-circle-dot"></i> Upper & lowercase letters</li>
-                            <li id="req-number"><i class="fa-solid fa-circle-dot"></i> At least one number</li>
-                            <li id="req-symbol"><i class="fa-solid fa-circle-dot"></i> At least one symbol (@#$%!)</li>
+                            <li id="req-length"><i class="fa-solid fa-circle-dot"></i> At least 6 characters</li>
+                            <li id="req-number-symbol"><i class="fa-solid fa-circle-dot"></i> At least one number or symbol (@#$%!)</li>
                         </ul>
                     </div>
 

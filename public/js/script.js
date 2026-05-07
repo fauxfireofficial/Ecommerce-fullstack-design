@@ -135,19 +135,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const matchText = document.getElementById('matchText');
         const reqList = document.getElementById('passwordRequirements');
         const reqLength = document.getElementById('req-length');
-        const reqCase = document.getElementById('req-case');
-        const reqNumber = document.getElementById('req-number');
-        const reqSymbol = document.getElementById('req-symbol');
+        const reqNumberSymbol = document.getElementById('req-number-symbol');
 
         regPassword.addEventListener('focus', () => reqList?.classList.add('active'));
 
         regPassword.addEventListener('input', function() {
             const val = this.value;
             let strength = 0;
-            if (val.length >= 8) { strength++; reqLength?.classList.add('met'); } else { reqLength?.classList.remove('met'); }
-            if (val.match(/[A-Z]/) && val.match(/[a-z]/)) { strength++; reqCase?.classList.add('met'); } else { reqCase?.classList.remove('met'); }
-            if (val.match(/[0-9]/)) { strength++; reqNumber?.classList.add('met'); } else { reqNumber?.classList.remove('met'); }
-            if (val.match(/[^A-Za-z0-9]/)) { strength++; reqSymbol?.classList.add('met'); } else { reqSymbol?.classList.remove('met'); }
+            if (val.length >= 6) { strength++; reqLength?.classList.add('met'); } else { reqLength?.classList.remove('met'); }
+            if (val.match(/[0-9]/) || val.match(/[^A-Za-z0-9]/)) { strength++; reqNumberSymbol?.classList.add('met'); } else { reqNumberSymbol?.classList.remove('met'); }
 
             strengthBar.className = "strength-bar";
             strengthText.className = "strength-text";
@@ -155,18 +151,16 @@ document.addEventListener('DOMContentLoaded', function() {
             if (val === "") {
                 strengthText.innerText = "Enter a password";
                 strengthBar.style.width = "0";
-            } else if (strength <= 2) {
+            } else if (strength === 1) {
                 strengthBar.classList.add('strength-weak');
                 strengthText.classList.add('text-weak');
                 strengthText.innerText = "Weak Password";
-            } else if (strength === 3) {
-                strengthBar.classList.add('strength-medium');
-                strengthText.classList.add('text-medium');
-                strengthText.innerText = "Medium Password";
-            } else {
+                strengthBar.style.width = "50%";
+            } else if (strength >= 2) {
                 strengthBar.classList.add('strength-strong');
                 strengthText.classList.add('text-strong');
                 strengthText.innerText = "Strong Password";
+                strengthBar.style.width = "100%";
             }
             checkMatch(val, confirmPassword?.value, matchText);
         });

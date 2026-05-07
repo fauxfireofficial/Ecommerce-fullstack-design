@@ -13,6 +13,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 // Product List Page (Grid/List View)
+Route::get('/hot-offers', [ProductController::class, 'hotOffers'])->name('products.offers');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 
 
@@ -138,6 +139,10 @@ Route::prefix('admin')->group(function () {
         Route::post('products/bulk-delete', [\App\Http\Controllers\Admin\ProductController::class, 'bulkDelete'])->name('admin.products.bulkDelete');
         Route::post('products/bulk-activate', [\App\Http\Controllers\Admin\ProductController::class, 'bulkActivate'])->name('admin.products.bulkActivate');
         Route::post('products/bulk-deactivate', [\App\Http\Controllers\Admin\ProductController::class, 'bulkDeactivate'])->name('admin.products.bulkDeactivate');
+
+        // Global Settings
+        Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('admin.settings.index');
+        Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('admin.settings.update');
 
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');

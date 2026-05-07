@@ -132,6 +132,7 @@
         }
     </style>
 
+    @yield('styles')
 </head>
 <body class="@yield('body-class')">
 
@@ -297,7 +298,7 @@
         <div class="container nav-wrap">
             <div class="nav-links">
                 <a href="{{ route('products.index') }}"><i class="fa-solid fa-bars"></i> All category</a>
-                <a href="#">Hot offers</a>
+                <a href="{{ route('products.offers') }}">Hot offers</a>
                 <a href="#">Gift boxes</a>
                 <a href="#">Projects</a>
                 <a href="#">Menu item</a>
@@ -558,5 +559,6 @@
     </script>
 
     <script src="{{ asset('js/script.js') }}"></script>
+    @yield('scripts')
 </body>
 </html>

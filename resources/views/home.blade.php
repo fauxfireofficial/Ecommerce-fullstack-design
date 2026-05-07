@@ -9,15 +9,15 @@
             <div class="hero-grid">
                 <aside class="hero-sidebar desktop-only">
                     <ul>
-                        <li><a href="#" class="active">Automobiles</a></li>
-                        <li><a href="#">Clothes and wear</a></li>
-                        <li><a href="#">Home interiors</a></li>
-                        <li><a href="#">Computer and tech</a></li>
-                        <li><a href="#">Tools, equipments</a></li>
-                        <li><a href="#">Sports and outdoor</a></li>
-                        <li><a href="#">Animal and pets</a></li>
-                        <li><a href="#">Machinery tools</a></li>
-                        <li><a href="#">More category</a></li>
+                        <li><a href="{{ route('products.index') }}" class="{{ !request('category') ? 'active' : '' }}">All Categories</a></li>
+                        @foreach($categories as $category)
+                            <li>
+                                <a href="{{ route('products.index', ['category' => $category]) }}" 
+                                   class="{{ request('category') == $category ? 'active' : '' }}">
+                                    {{ $category }}
+                                </a>
+                            </li>
+                        @endforeach
                     </ul>
                 </aside>
 
@@ -31,12 +31,30 @@
 
                 <aside class="hero-right desktop-only">
                     <div class="user-card">
-                        <div class="user-card-header">
-                            <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
-                            <p>Hi, user<br>let's get stated</p>
-                        </div>
-                        <button class="btn btn-primary">Join now</button>
-                        <button class="btn btn-white">Log in</button>
+                        @guest
+                            <div class="user-card-header">
+                                <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+                                <p>Hi, user<br>let's get started</p>
+                            </div>
+                            <a href="{{ route('register') }}" class="btn btn-primary" style="text-decoration: none; display: block; text-align: center; margin-bottom: 8px;">Join now</a>
+                            <a href="{{ route('login') }}" class="btn btn-white" style="text-decoration: none; display: block; text-align: center;">Log in</a>
+                        @else
+                            <div class="user-card-header">
+                                <div class="user-avatar">
+                                    @if(Auth::user()->avatar)
+                                        <img src="{{ asset(Auth::user()->avatar) }}" alt="Avatar" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                    @else
+                                        <i class="fa-solid fa-user"></i>
+                                    @endif
+                                </div>
+                                <p>Hi, {{ Auth::user()->name }}<br>Welcome back!</p>
+                            </div>
+                            <a href="{{ route('profile.index') }}" class="btn btn-primary" style="text-decoration: none; display: block; text-align: center; margin-bottom: 8px;">My Profile</a>
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-white" style="width: 100%; cursor: pointer;">Log out</button>
+                            </form>
+                        @endguest
                     </div>
                     <div class="promo-card promo-orange">
                         Get US $10 off<br>with a new<br>supplier
@@ -51,9 +69,18 @@
         <!-- Deals and Offers Section -->
         <section class="deals-section">
             <div class="deals-info">
-                <div>
-                    <h3>Deals and offers</h3>
-                    <p>Electronic equipments</p>
+                <div style="display: flex; flex-direction: column; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div>
+                            <h3>Deals and offers</h3>
+                            <p>Limited time discounts</p>
+                        </div>
+                        <div class="deals-header-right">
+                            <a href="{{ route('products.offers') }}" class="view-all-btn">
+                                View All <i class="fa-solid fa-arrow-right-long"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <div class="timer">
                     <div class="timer-box desktop-only"><span id="days">04</span><span>Days</span></div>
@@ -73,53 +100,53 @@
                 </a>
                 @endforeach
             </div>
+            
+          
         </section>
 
-        <!-- Category Block: Home and outdoor -->
-        <section class="category-block card">
-            <div class="cat-main home-outdoor">
-                <img src="{{ asset('images/cardbg/outdoor.jpg') }}" alt="image" class="cat-main-bg">
-                <h3>Home and outdoor</h3>
-                <a href="{{ route('products.index', ['category' => 'Home and outdoor']) }}" class="btn btn-white desktop-only" style="display: inline-block; text-decoration: none;">Source now</a>
-            </div>
-            <div class="cat-grid">
-                @foreach($homeOutdoor as $item)
-                <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="cat-item">
-                    <div class="cat-item-text">
-                        <h4>{{ $item->name }}</h4>
-                        <p>From USD {{ number_format($item->price, 0) }}</p>
-                    </div>
-                    <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
-                </a>
-                @endforeach
-            </div>
-            <div class="source-now-mobile">
-                Source now <i class="fa-solid fa-arrow-right"></i>
-            </div>
-        </section>
+        @php
+            $categoryStyles = [
+                'Home interiors' => ['class' => 'home-outdoor', 'img' => 'images/cardbg/outdoor.jpg'],
+                'Computer and tech' => ['class' => 'electronics', 'img' => 'images/cardbg/gadgets.png'],
+                'Mobile and Tablets' => ['class' => 'electronics', 'img' => 'images/cardbg/gadgets.png'],
+                'Clothes and wear' => ['class' => 'clothing', 'img' => 'images/cardbg/Banner-img.jpg'],
+                'Tools, equipments' => ['class' => 'default-cat', 'img' => 'images/cardbg/outdoor.jpg'],
+                'Health and Beauty' => ['class' => 'default-cat', 'img' => 'images/cardbg/Banner-img.jpg'],
+                'Sports and outdoor' => ['class' => 'default-cat', 'img' => 'images/cardbg/outdoor.jpg'],
+                'Accessories' => ['class' => 'default-cat', 'img' => 'images/cardbg/Banner-img.jpg'],
+            ];
+        @endphp
 
-        <!-- Category Block: Consumer electronics -->
-        <section class="category-block card">
-            <div class="cat-main electronics">
-                <img src="{{ asset('images/cardbg/gadgets.png') }}" alt="image" class="cat-main-bg">
-                <h3>Consumer electronics</h3>
-                <a href="{{ route('products.index', ['category' => 'Consumer electronics']) }}" class="btn btn-white desktop-only" style="display: inline-block; text-decoration: none;">Source now</a>
-            </div>
-            <div class="cat-grid">
-                @foreach($electronics as $item)
-                <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="cat-item">
-                    <div class="cat-item-text">
-                        <h4>{{ $item->name }}</h4>
-                        <p>From USD {{ number_format($item->price, 0) }}</p>
+        @foreach($categoryProducts as $categoryName => $products)
+            @if($products->count() > 0)
+                @php 
+                    $style = $categoryStyles[$categoryName] ?? ['class' => 'default-cat', 'img' => 'images/cardbg/Banner-img.jpg'];
+                @endphp
+                <section class="category-block card">
+                    <div class="cat-main {{ $style['class'] }}">
+                        <img src="{{ asset($style['img']) }}" alt="image" class="cat-main-bg">
+                        <h3>{{ $categoryName }}</h3>
+                        <a href="{{ route('products.index', ['category' => $categoryName]) }}" class="btn btn-white desktop-only" style="display: inline-block; text-decoration: none;">Source now</a>
                     </div>
-                    <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
-                </a>
-                @endforeach
-            </div>
-            <div class="source-now-mobile">
-                Source now <i class="fa-solid fa-arrow-right"></i>
-            </div>
-        </section>
+                    <div class="cat-grid">
+                        @foreach($products as $item)
+                        <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="cat-item">
+                            <div class="cat-item-text">
+                                <h4>{{ $item->name }}</h4>
+                                <p>From USD {{ number_format($item->price, 0) }}</p>
+                            </div>
+                            <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
+                        </a>
+                        @endforeach
+                    </div>
+                    <div class="source-now-mobile">
+                        <a href="{{ route('products.index', ['category' => $categoryName]) }}" style="text-decoration: none; color: inherit;">
+                            Source now <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </section>
+            @endif
+        @endforeach
 
         <!-- Inquiry Section -->
         <section class="inquiry-section">
@@ -304,6 +331,58 @@
     .cat-item:hover img,
     .rec-card:hover img {
         transform: scale(1.05);
+    }
+
+    /* Deals Section View All Button */
+    .view-all-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #3b82f6;
+        color: white !important;
+        padding: 8px 18px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
+    }
+
+    .view-all-btn:hover {
+        background: #2563eb;
+        transform: translateX(3px);
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
+    }
+
+    .mobile-only-view-all {
+        display: none;
+        width: 100%;
+        text-align: center;
+        padding: 15px 0;
+        margin-top: 15px;
+        border-top: 1px solid #eee;
+        background: #f8fafc;
+    }
+
+    .mobile-only-view-all a {
+        color: #3b82f6;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+        .view-all-btn {
+            display: none !important;
+        }
+        .mobile-only-view-all {
+            display: block;
+        }
     }
 </style>
 @endpush

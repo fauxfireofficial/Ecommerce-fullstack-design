@@ -36,10 +36,8 @@ class AuthController extends Controller
                 'required',
                 'string',
                 'confirmed',
-                Password::min(8)
-                    ->mixedCase()
-                    ->numbers()
-                    ->symbols(),
+                Password::min(6),
+                'regex:/[0-9\W]/', // At least one number or special character
             ],
         ]);
 
@@ -85,7 +83,7 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect()->intended(route('products.index'));
+            return redirect()->intended(route('home'));
         }
 
         return back()->withErrors([
@@ -103,6 +101,6 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('products.index');
+        return redirect()->route('home');
     }
 }

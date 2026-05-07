@@ -60,27 +60,18 @@
     <div class="filter-bar">
         <div class="search-box-admin">
             <i class="fa-solid fa-search"></i>
-            <input type="text" id="searchProduct" placeholder="Search by name, SKU or category..." onkeyup="filterProducts()">
+            <input type="text" id="searchProduct" placeholder="Search by name, SKU or category..." value="{{ request('search') }}" onkeypress="if(event.key === 'Enter') applyFilters()">
         </div>
         <div class="filter-group">
-            <select id="categoryFilter" onchange="filterProducts()" class="filter-select">
+            <select id="categoryFilter" onchange="applyFilters()" class="filter-select">
                 <option value="all">All Categories</option>
                 @foreach($categories as $category)
-                    @if($category)
-                        <option value="{{ $category }}">{{ ucfirst($category) }}</option>
-                    @endif
+                    <option value="{{ $category }}" {{ request('category_filter') == $category ? 'selected' : '' }}>{{ ucfirst($category) }}</option>
                 @endforeach
             </select>
-            <select id="statusFilter" onchange="filterProducts()" class="filter-select">
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
-            <select id="stockFilter" onchange="filterProducts()" class="filter-select">
-                <option value="all">All Stock</option>
-                <option value="instock">In Stock</option>
-                <option value="lowstock">Low Stock</option>
-                <option value="outofstock">Out of Stock</option>
+            <select id="offerFilter" onchange="applyFilters()" class="filter-select" style="border-color: #f43f5e; color: #f43f5e; font-weight: 600;">
+                <option value="all" {{ request('offer_filter') == 'all' ? 'selected' : '' }}>All Products</option>
+                <option value="hot" {{ request('offer_filter') == 'hot' ? 'selected' : '' }}>🔥 Hot Offers</option>
             </select>
         </div>
     </div>
@@ -102,7 +93,7 @@
             </thead>
             <tbody id="productsTableBody">
                 @forelse($products as $product)
-                <tr class="product-row" data-category="{{ $product->category }}" data-status="{{ $product->status }}" data-stock="{{ $product->stock_quantity }}">
+                <tr class="product-row" data-category="{{ $product->category }}" data-status="{{ $product->status }}" data-stock="{{ $product->stock_quantity }}" data-is-deal="{{ $product->is_deal ? '1' : '0' }}">
                     <td><input type="checkbox" class="product-checkbox" value="{{ $product->id }}"></td>
                     <td class="product-cell">
                         <div class="product-img-sm">
@@ -198,57 +189,68 @@
     padding: 0;
 }
 
-/* Pagination Fixes */
+/* TOTAL PAGINATION RESET - FORCE HORIZONTAL */
+.pagination-wrapper, 
+.pagination-wrapper nav, 
+.pagination-wrapper nav > div,
+.pagination-wrapper .flex,
+.pagination-wrapper .inline-flex {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Hide the text part completely to avoid layout breaking */
+.pagination-wrapper p,
+.pagination-wrapper nav > div:first-child,
+.pagination-wrapper .hidden.sm\:flex-1 > div:first-child {
+    display: none !important;
+}
+
 .pagination-wrapper {
-    margin-top: 30px;
-    margin-bottom: 20px;
-    display: flex;
-    justify-content: center;
+    margin: 40px 0 !important;
 }
-.pagination-wrapper nav {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background: white;
-    padding: 8px 16px;
-    border-radius: 30px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
+
+/* Style the buttons specifically */
+.pagination-wrapper a, 
+.pagination-wrapper span[aria-current="page"] span,
+.pagination-wrapper span[disabled],
+.pagination-wrapper .relative.inline-flex.items-center > * {
+    display: flex !important;
+    width: 42px !important;
+    height: 42px !important;
+    margin: 0 4px !important;
+    border-radius: 12px !important;
+    background: white !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #475569 !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    text-decoration: none !important;
+    justify-content: center !important;
+    align-items: center !important;
+    transition: all 0.2s ease !important;
 }
-.pagination-wrapper svg {
-    width: 18px;
-    height: 18px;
+
+.pagination-wrapper span[aria-current="page"] span {
+    background: #3b82f6 !important;
+    color: white !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4) !important;
 }
-.pagination-wrapper p {
-    display: none;
-}
-.pagination-wrapper a, .pagination-wrapper span[aria-disabled="true"], .pagination-wrapper span[aria-current="page"] {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 36px;
-    height: 36px;
-    padding: 0 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    text-decoration: none;
-    color: #475569;
-    transition: all 0.2s;
-}
+
 .pagination-wrapper a:hover {
-    background: #f1f5f9;
-    color: var(--primary);
+    background: #eff6ff !important;
+    color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    transform: translateY(-2px) !important;
 }
-.pagination-wrapper span[aria-current="page"] {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 2px 6px rgba(13, 110, 253, 0.3);
-}
-.pagination-wrapper span[aria-disabled="true"] {
-    opacity: 0.5;
-    cursor: not-allowed;
+
+.pagination-wrapper svg {
+    width: 20px !important;
+    height: 20px !important;
 }
 
 /* Products Stats */
@@ -466,7 +468,7 @@ input:checked + .slider:before {
     background: var(--gray-50);
 }
 
-/* Responsive */
+/* Responsive Enhancements */
 @media (max-width: 992px) {
     .products-stats {
         grid-template-columns: repeat(2, 1fr);
@@ -475,11 +477,14 @@ input:checked + .slider:before {
 
 @media (max-width: 768px) {
     .products-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
     }
     
     .filter-bar {
         flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
     }
     
     .search-box-admin {
@@ -487,13 +492,41 @@ input:checked + .slider:before {
     }
     
     .filter-group {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .filter-group select {
+        width: 100%;
     }
     
     .bulk-actions-bar {
-        width: 90%;
-        border-radius: var(--radius-md);
-        flex-wrap: wrap;
+        width: 95%;
+        bottom: 10px;
+        padding: 10px;
+        flex-direction: column;
+        border-radius: 15px;
+    }
+}
+
+@media (max-width: 576px) {
+    .products-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .filter-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    .page-header .btn {
+        width: 100%;
         justify-content: center;
     }
 }
@@ -503,37 +536,19 @@ input:checked + .slider:before {
 
 @section('scripts')
 <script>
-// Filter Products
-function filterProducts() {
-    const searchTerm = document.getElementById('searchProduct').value.toLowerCase();
-    const categoryFilter = document.getElementById('categoryFilter').value;
-    const statusFilter = document.getElementById('statusFilter').value;
-    const stockFilter = document.getElementById('stockFilter').value;
+// Apply Filters (Server-side)
+function applyFilters() {
+    const search = document.getElementById('searchProduct').value;
+    const category = document.getElementById('categoryFilter').value;
+    const offer = document.getElementById('offerFilter').value;
     
-    const rows = document.querySelectorAll('.product-row');
+    let url = new URL(window.location.href);
+    url.searchParams.set('search', search);
+    url.searchParams.set('category_filter', category);
+    url.searchParams.set('offer_filter', offer);
+    url.searchParams.set('page', 1); // Reset to page 1 on filter change
     
-    rows.forEach(row => {
-        const name = row.querySelector('.product-info-sm strong')?.innerText.toLowerCase() || '';
-        const sku = row.querySelector('.product-sku')?.innerText.toLowerCase() || '';
-        const category = row.getAttribute('data-category');
-        const status = row.getAttribute('data-status');
-        const stock = parseInt(row.getAttribute('data-stock'));
-        
-        const matchesSearch = name.includes(searchTerm) || sku.includes(searchTerm);
-        const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
-        const matchesStatus = statusFilter === 'all' || status === statusFilter;
-        
-        let matchesStock = true;
-        if (stockFilter === 'instock') matchesStock = stock > 0;
-        else if (stockFilter === 'lowstock') matchesStock = stock > 0 && stock <= 10;
-        else if (stockFilter === 'outofstock') matchesStock = stock === 0;
-        
-        if (matchesSearch && matchesCategory && matchesStatus && matchesStock) {
-            row.style.display = '';
-        } else {
-            row.style.display = 'none';
-        }
-    });
+    window.location.href = url.toString();
 }
 
 // Toggle Status

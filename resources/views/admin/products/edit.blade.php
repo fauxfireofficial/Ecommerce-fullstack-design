@@ -68,12 +68,11 @@
                             <label for="category">Category <span class="required">*</span></label>
                             <select id="category" name="category" class="form-control" required>
                                 <option value="">Select Category</option>
-                                <option value="electronics" {{ $product->category == 'electronics' ? 'selected' : '' }}>Electronics</option>
-                                <option value="clothing" {{ $product->category == 'clothing' ? 'selected' : '' }}>Clothing</option>
-                                <option value="home" {{ $product->category == 'home' ? 'selected' : '' }}>Home & Living</option>
-                                <option value="accessories" {{ $product->category == 'accessories' ? 'selected' : '' }}>Accessories</option>
-                                <option value="sports" {{ $product->category == 'sports' ? 'selected' : '' }}>Sports</option>
-                                <option value="books" {{ $product->category == 'books' ? 'selected' : '' }}>Books</option>
+                                @foreach($categories as $cat)
+                                    <option value="{{ $cat }}" {{ (old('category', $product->category) == $cat) ? 'selected' : '' }}>
+                                        {{ $cat }}
+                                    </option>
+                                @endforeach
                             </select>
                             @error('category') <span class="error">{{ $message }}</span> @enderror
                         </div>
@@ -102,6 +101,25 @@
                             <option value="inactive" {{ $product->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                         @error('status') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- Hot Offer Settings -->
+                    <h4 class="section-title mt-4 mb-3" style="font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 8px; color: #f43f5e;">Hot Offer Settings</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Show in Hot Offers?</label>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                                <label class="switch">
+                                    <input type="checkbox" name="is_deal" value="1" {{ $product->is_deal ? 'checked' : '' }}>
+                                    <span class="slider round"></span>
+                                </label>
+                                <span>Yes, show as deal</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="discount_percent">Discount Percent (%)</label>
+                            <input type="number" id="discount_percent" name="discount_percent" class="form-control" value="{{ old('discount_percent', $product->discount_percent) }}" placeholder="e.g. 25">
+                        </div>
                     </div>
                 </div>
 

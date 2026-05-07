@@ -56,7 +56,7 @@ class OTPController extends Controller
 
         auth()->login($user);
 
-        return redirect()->route('products.index')->with('success', 'Account verified and created successfully!');
+        return redirect()->route('home')->with('success', 'Account verified and created successfully!');
     }
 
     /**
@@ -138,7 +138,13 @@ class OTPController extends Controller
     public function resetPassword(Request $request)
     {
         $request->validate([
-            'password' => 'required|min:8|confirmed',
+            'password' => [
+                'required',
+                'string',
+                'min:6',
+                'confirmed',
+                'regex:/[0-9\W]/',
+            ],
         ]);
 
         $email = Session::get('reset_email');
