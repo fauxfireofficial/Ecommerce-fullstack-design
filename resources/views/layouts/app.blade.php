@@ -198,9 +198,11 @@
         </div>
         <div class="sidebar-content">
             <ul class="sidebar-list">
-                <li><a href="#"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Home</a></li>
                 <li><a href="#"><i class="fa-solid fa-list-ul"></i> Categories</a></li>
                 <li><a href="#"><i class="fa-regular fa-heart"></i> Favorites</a></li>
+                <li><a href="{{ route('brands') }}"><i class="fa-solid fa-tag"></i> Brands</a></li>
+                <li><a href="{{ route('services') }}"><i class="fa-solid fa-gears"></i> Services</a></li>
                 <li><a href="#"><i class="fa-solid fa-box-archive"></i> My orders</a></li>
             </ul>
             <hr>
@@ -247,13 +249,10 @@
 
 
                 <!-- Desktop Search (hidden on mobile via CSS) -->
-                <div class="search-box desktop-only">
-                    <input type="text" placeholder="Search">
-                    <select>
-                        <option>All category</option>
-                    </select>
-                    <button>Search</button>
-                </div>
+                <form action="{{ route('products.index') }}" method="GET" class="search-box desktop-only">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search">
+                    <button type="submit">Search</button>
+                </form>
 
                 <!-- Header Actions -->
                 <div class="header-actions desktop-only">
@@ -284,10 +283,10 @@
             </div>
 
             <!-- Mobile Search Bar (hidden on desktop) -->
-            <div class="search-box mobile-only">
+            <form action="{{ route('products.index') }}" method="GET" class="search-box mobile-only">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                <input type="text" placeholder="Search">
-            </div>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search">
+            </form>
         </div>
     </header>
     @endif
@@ -299,9 +298,9 @@
             <div class="nav-links">
                 <a href="{{ route('products.index') }}"><i class="fa-solid fa-bars"></i> All category</a>
                 <a href="{{ route('products.offers') }}">Hot offers</a>
-                <a href="#">Gift boxes</a>
-                <a href="#">Projects</a>
-                <a href="#">Menu item</a>
+                <a href="{{ route('products.gift-boxes') }}">Gift boxes</a>
+                <a href="{{ route('brands') }}">Brands</a>
+                <a href="{{ route('services') }}">Services</a>
                 <a href="#">Help <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></a>
             </div>
             <div class="nav-right">
@@ -352,7 +351,7 @@
                     <a href="#"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
-            <div class="footer-col"><h4>About</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
+            <div class="footer-col"><h4>About</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="{{ route('products.gift-boxes') }}">Gift Boxes</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
             <div class="footer-col"><h4>Partnership</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
             <div class="footer-col"><h4>Information</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Money Refund</a></li><li><a href="#">Shipping</a></li><li><a href="#">Contact us</a></li></ul></div>
             <div class="footer-col"><h4>For users</h4><ul><li><a href="{{ route('login') }}">Login</a></li><li><a href="{{ route('register') }}">Register</a></li><li><a href="#">Settings</a></li><li><a href="#">My Orders</a></li></ul></div>

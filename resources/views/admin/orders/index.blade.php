@@ -250,7 +250,7 @@
     function viewOrder(orderId) {
         console.log('viewOrder called with ID:', orderId);
         
-        // Show loading state
+        /* Premium Admin Order Details Modal */
         document.getElementById('orderDetails').innerHTML = `
             <div style="text-align: center; padding: 50px;">
                 <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--admin-primary);"></i>
@@ -269,69 +269,124 @@
             .then(data => {
                 console.log('Order data received:', data);
                 const detailsHtml = `
-                    <div class="order-info-grid">
-                        <div class="info-box">
-                            <h4><i class="fa-regular fa-user"></i> Customer Information</h4>
-                            <p><strong>Name:</strong> ${data.user?.name || 'Guest'}</p>
-                            <p><strong>Email:</strong> ${data.email || data.user?.email || 'N/A'}</p>
-                            <p><strong>Phone:</strong> ${data.shipping_phone || 'N/A'}</p>
-                            <p><strong>Order Date:</strong> ${data.created_at ? new Date(data.created_at).toLocaleString() : 'N/A'}</p>
+                    <div class="order-details-wrapper">
+                        <!-- Top Header Info -->
+                        <div class="order-id-banner">
+                            <div class="banner-left">
+                                <h3>Order # ${data.id}</h3>
+                                <p>Placed on ${data.created_at ? new Date(data.created_at).toLocaleDateString('en-US', {month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : 'N/A'}</p>
+                            </div>
+                            <div class="banner-right">
+                                <span class="status-badge-premium status-${(data.status || 'pending').toLowerCase()}">
+                                    ${data.status === 'delivered' ? '✅' : (data.status === 'cancelled' ? '❌' : '📋')} ${data.status.toUpperCase()}
+                                </span>
+                            </div>
                         </div>
-                        <div class="info-box">
-                            <h4><i class="fa-solid fa-location-dot"></i> Shipping Address</h4>
-                            <p>${data.shipping_address || 'No address provided'}</p>
-                            <p>${data.city ? data.city + ', ' : ''}${data.state || ''} ${data.postal_code || ''}</p>
-                            <p>${data.country || ''}</p>
-                            <p><strong>Payment Status:</strong> <span class="payment-badge payment-${(data.payment_status || 'pending').toLowerCase()}">${data.payment_status || 'Pending'}</span></p>
-                        </div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h4 style="margin: 0;"><i class="fa-solid fa-box"></i> Order Items</h4>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 13px; font-weight: 600;">Status:</span>
-                            <select class="status-select" onchange="updateStatusFromModal(${data.id}, this.value)" style="width: auto;">
-                                <option value="pending" ${data.status === 'pending' ? 'selected' : ''}>📋 Pending</option>
-                                <option value="processing" ${data.status === 'processing' ? 'selected' : ''}>⚙️ Processing</option>
-                                <option value="shipped" ${data.status === 'shipped' ? 'selected' : ''}>🚚 Shipped</option>
-                                <option value="delivered" ${data.status === 'delivered' ? 'selected' : ''}>✅ Delivered</option>
-                                <option value="cancelled" ${data.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
-                            </select>
-                        </div>
-                    </div>
 
-                    <table class="order-items-table">
-                        <thead>
-                            <tr><th>Product</th><th>Price</th><th>Quantity</th><th>Total</th></tr>
-                        </thead>
-                        <tbody>
-                            ${(data.items && data.items.length > 0) ? data.items.map(item => `
-                                <tr>
-                                    <td>
-                                        <div class="product-cell">
-                                            <img src="${item.product?.image ? '/' + item.product.image.replace(/^\//, '') : '/images/placeholder.jpg'}" class="product-img">
-                                            <span>${item.product?.name || 'Product'}</span>
-                                        </div>
-                                    </td>
-                                    <td>$${parseFloat(item.price).toFixed(2)}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>$${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
-                                </tr>
-                            `).join('') : '<tr><td colspan="4">No items found</td></tr>'}
-                        </tbody>
-                    </table>
-                    
-                    <div class="order-summary">
-                        <div class="summary-row"><span>Subtotal:</span><span>$${parseFloat(data.subtotal || 0).toFixed(2)}</span></div>
-                        <div class="summary-row"><span>Shipping:</span><span>$${parseFloat(data.shipping_cost || 0).toFixed(2)}</span></div>
-                        <div class="summary-row"><span>Tax:</span><span>$${parseFloat(data.tax || 0).toFixed(2)}</span></div>
-                        <div class="summary-row total"><span>Total:</span><span>$${parseFloat(data.total_amount).toFixed(2)}</span></div>
-                    </div>
+                        <!-- Info Cards Grid -->
+                        <div class="order-info-grid-premium">
+                            <div class="info-card-admin">
+                                <div class="card-header-admin">
+                                    <i class="fa-regular fa-user"></i> <span>Customer Details</span>
+                                </div>
+                                <div class="card-body-admin">
+                                    <p class="customer-name-admin">${data.user?.name || 'Guest User'}</p>
+                                    <p class="customer-meta-admin"><i class="fa-regular fa-envelope"></i> ${data.email || data.user?.email || 'N/A'}</p>
+                                    <p class="customer-meta-admin"><i class="fa-solid fa-phone"></i> ${data.shipping_phone || 'N/A'}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="info-card-admin">
+                                <div class="card-header-admin">
+                                    <i class="fa-solid fa-location-dot"></i> <span>Shipping Address</span>
+                                </div>
+                                <div class="card-body-admin">
+                                    <p class="address-text-admin">${data.shipping_address || 'No address provided'}</p>
+                                    <p class="address-sub-admin">${data.city ? data.city + ', ' : ''}${data.state || ''} ${data.postal_code || ''}</p>
+                                    <p class="address-country-admin">${data.country || ''}</p>
+                                </div>
+                            </div>
 
-                    <div class="modal-actions" style="margin-top: 25px; display: flex; gap: 10px; justify-content: flex-end; padding-top: 20px; border-top: 1px solid #eee;">
-                        <button class="btn btn-secondary" onclick="generateInvoice(${data.id})" style="background: #e2e8f0; color: #475569; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-download"></i> Invoice</button>
-                        <button class="btn btn-danger" onclick="deleteOrder(${data.id}, true)" style="background: #ef4444; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer; font-weight: 600;"><i class="fa-solid fa-trash"></i> Delete Order</button>
-                        <button class="btn btn-secondary" onclick="closeModal()" style="background: #64748b; border: none; padding: 10px 20px; color: white; border-radius: 6px; cursor: pointer; font-weight: 600;">Close</button>
+                            <div class="info-card-admin">
+                                <div class="card-header-admin">
+                                    <i class="fa-solid fa-credit-card"></i> <span>Payment Info</span>
+                                </div>
+                                <div class="card-body-admin">
+                                    <p><strong>Method:</strong> Cash on Delivery</p>
+                                    <p><strong>Status:</strong> <span class="payment-badge-admin payment-${(data.payment_status || 'pending').toLowerCase()}">${data.payment_status || 'Pending'}</span></p>
+                                    <p><strong>Currency:</strong> USD ($)</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Order Items Section -->
+                        <div class="order-items-section-admin">
+                            <div class="section-header-admin">
+                                <h4>Order Items (${data.items ? data.items.length : 0})</h4>
+                                <div class="status-updater-admin">
+                                    <span>Update Status:</span>
+                                    <select class="status-select-premium" onchange="updateStatusFromModal(${data.id}, this.value)">
+                                        <option value="pending" ${data.status === 'pending' ? 'selected' : ''}>📋 Pending</option>
+                                        <option value="processing" ${data.status === 'processing' ? 'selected' : ''}>⚙️ Processing</option>
+                                        <option value="shipped" ${data.status === 'shipped' ? 'selected' : ''}>🚚 Shipped</option>
+                                        <option value="delivered" ${data.status === 'delivered' ? 'selected' : ''}>✅ Delivered</option>
+                                        <option value="cancelled" ${data.status === 'cancelled' ? 'selected' : ''}>❌ Cancelled</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="items-table-wrapper-admin">
+                                <table class="items-table-admin">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Details</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${(data.items && data.items.length > 0) ? data.items.map(item => `
+                                            <tr>
+                                                <td>
+                                                    <div class="product-info-admin">
+                                                        <img src="${item.product?.image ? '/' + item.product.image.replace(/^\//, '') : '/images/placeholder.jpg'}" alt="Product">
+                                                        <div>
+                                                            <p class="p-name-admin">${item.product?.name || 'Product'}</p>
+                                                            <p class="p-sku-admin">SKU: ${item.product?.sku || 'N/A'}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>$${parseFloat(item.price).toFixed(2)}</td>
+                                                <td>x ${item.quantity}</td>
+                                                <td class="item-total-admin">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+                                            </tr>
+                                        `).join('') : '<tr><td colspan="4" class="text-center">No items found</td></tr>'}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Summary and Actions -->
+                        <div class="order-footer-admin">
+                            <div class="summary-card-admin">
+                                <div class="s-row-admin"><span>Subtotal</span><span>$${parseFloat(data.subtotal || 0).toFixed(2)}</span></div>
+                                <div class="s-row-admin"><span>Shipping Cost</span><span>$${parseFloat(data.shipping_cost || 0).toFixed(2)}</span></div>
+                                <div class="s-row-admin total-admin"><span>Total Amount</span><span>$${parseFloat(data.total_amount).toFixed(2)}</span></div>
+                            </div>
+                            
+                            <div class="footer-actions-admin">
+                                <button class="btn-admin btn-admin-invoice" onclick="generateInvoice(${data.id})">
+                                    <i class="fa-solid fa-file-invoice"></i> Download Invoice
+                                </button>
+                                <button class="btn-admin btn-admin-delete" onclick="deleteOrder(${data.id}, true)">
+                                    <i class="fa-solid fa-trash"></i> Delete Order
+                                </button>
+                                <button class="btn-admin btn-admin-close" onclick="closeModal()">
+                                    Close Details
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 `;
                 document.getElementById('orderDetails').innerHTML = detailsHtml;

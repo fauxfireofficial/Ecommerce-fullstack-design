@@ -57,10 +57,6 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Addresses</span>
                         </a>
-                        <a href="#security" class="nav-link" data-tab="security">
-                            <i class="fa-solid fa-shield-halved"></i>
-                            <span>Security</span>
-                        </a>
                         <form method="POST" action="{{ route('logout') }}" id="logout-form-profile" style="display: none;">
                             @csrf
                         </form>
@@ -229,19 +225,60 @@
                                 @error('email') <span class="error text-danger">{{ $message }}</span> @enderror
                             </div>
                             
-                            <div class="form-group">
-                                <label for="phone">Phone Number</label>
-                                <input type="tel" id="phone" name="phone" class="form-control" value="{{ old('phone', auth()->user()->phone ?? '') }}">
-                                @error('phone') <span class="error text-danger">{{ $message }}</span> @enderror
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="phone">Phone Number</label>
+                                    <input type="tel" id="phone" name="phone" class="form-control" value="{{ old('phone', auth()->user()->phone ?? '') }}">
+                                    @error('phone') <span class="error text-danger">{{ $message }}</span> @enderror
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="dob">Date of Birth</label>
+                                    <input type="date" id="dob" name="dob" class="form-control" value="{{ old('dob', auth()->user()->dob ?? '') }}">
+                                    @error('dob') <span class="error text-danger">{{ $message }}</span> @enderror
+                                </div>
                             </div>
                             
+                            <button type="submit" class="btn btn-primary">Save Profile Info</button>
+                        </form>
+                    </div>
+
+                    <!-- Change Password Section Integrated -->
+                    <div class="info-card mt-4">
+                        <h3 class="section-subtitle">Change Password</h3>
+                        <form action="{{ route('profile.password') }}" method="POST" id="passwordForm">
+                            @csrf
+                            @method('PUT')
+                            
                             <div class="form-group">
-                                <label for="dob">Date of Birth</label>
-                                <input type="date" id="dob" name="dob" class="form-control" value="{{ old('dob', auth()->user()->dob ?? '') }}">
-                                @error('dob') <span class="error text-danger">{{ $message }}</span> @enderror
+                                <label for="current_password">Current Password</label>
+                                <div class="password-input-wrapper">
+                                    <input type="password" id="current_password" name="current_password" class="form-control" placeholder="••••••••" required>
+                                    <i class="fa-regular fa-eye toggle-password" data-target="current_password"></i>
+                                </div>
+                                @error('current_password') <span class="error text-danger">{{ $message }}</span> @enderror
                             </div>
                             
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="password">New Password</label>
+                                    <div class="password-input-wrapper">
+                                        <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                                        <i class="fa-regular fa-eye toggle-password" data-target="password"></i>
+                                    </div>
+                                    @error('password') <span class="error text-danger">{{ $message }}</span> @enderror
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="password_confirmation">Confirm Password</label>
+                                    <div class="password-input-wrapper">
+                                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="••••••••" required>
+                                        <i class="fa-regular fa-eye toggle-password" data-target="password_confirmation"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">Update Password</button>
                         </form>
                     </div>
                 </div>
@@ -292,45 +329,6 @@
                     </div>
                 </div>
 
-                <!-- Security Tab -->
-                <div id="security" class="tab-content">
-                    <h2 class="tab-title">Security Settings</h2>
-                    <div class="info-card">
-                        <h3 class="section-subtitle">Change Password</h3>
-                        <form action="{{ route('profile.password') }}" method="POST" id="passwordForm">
-                            @csrf
-                            @method('PUT')
-                            
-                            <div class="form-group">
-                                <label for="current_password">Current Password</label>
-                                <div class="password-input-wrapper">
-                                    <input type="password" id="current_password" name="current_password" class="form-control" required>
-                                    <i class="fa-regular fa-eye toggle-password" data-target="current_password"></i>
-                                </div>
-                                @error('current_password') <span class="error text-danger">{{ $message }}</span> @enderror
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="password">New Password</label>
-                                <div class="password-input-wrapper">
-                                    <input type="password" id="password" name="password" class="form-control" required>
-                                    <i class="fa-regular fa-eye toggle-password" data-target="password"></i>
-                                </div>
-                                @error('password') <span class="error text-danger">{{ $message }}</span> @enderror
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="password_confirmation">Confirm New Password</label>
-                                <div class="password-input-wrapper">
-                                    <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" required>
-                                    <i class="fa-regular fa-eye toggle-password" data-target="password_confirmation"></i>
-                                </div>
-                            </div>
-                            
-                            <button type="submit" class="btn btn-primary">Update Password</button>
-                        </form>
-                    </div>
-                </div>
             </main>
         </div>
     </div>
@@ -514,49 +512,72 @@
     font-weight: 500;
 }
 
-/* Profile Navigation */
+/* Profile Navigation - Premium Redesign */
 .profile-nav {
-    padding: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
     gap: 15px;
-    padding: 14px 18px;
-    border-radius: 8px;
+    padding: 14px 20px;
+    border-radius: 12px;
     color: var(--gray-600);
     text-decoration: none;
-    transition: all 0.2s;
-    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    font-size: 15px;
+    border: 1px solid transparent;
 }
 
 .nav-link i {
-    width: 20px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 18px;
-    text-align: center;
+    transition: transform 0.3s ease;
 }
 
 .nav-link:hover {
-    background: #f1f5f9;
+    background: #f8fafc;
     color: var(--primary);
+    transform: translateX(5px);
 }
 
 .nav-link.active {
-    background: #eef2ff;
-    color: var(--primary);
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white !important;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    border-color: rgba(255,255,255,0.1);
+}
+
+.nav-link.active i {
+    transform: scale(1.1);
 }
 
 .logout-link {
-    margin-top: 10px;
-    border-top: 1px solid var(--gray-300);
-    padding-top: 15px;
-    color: var(--danger-text);
+    margin-top: 20px;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 20px;
+    color: #ef4444;
 }
 
 .logout-link:hover {
-    background: #fff5f5;
-    color: var(--danger-text);
+    background: #fef2f2;
+    color: #dc2626;
+}
+
+/* Tab Content Visibility Fix */
+.info-card.mt-4 {
+    margin-top: 30px;
+    padding-top: 30px;
+    border-top: 1px solid #f1f5f9;
 }
 
 /* Main Content */
@@ -706,41 +727,55 @@
     outline: none;
 }
 
+/* My Orders Refined Styling */
 .order-card {
-    border: 1px solid var(--gray-300);
-    border-radius: 12px;
-    margin-bottom: 20px;
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 16px;
+    margin-bottom: 25px;
     overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.order-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+    border-color: #3b82f633;
 }
 
 .order-header {
-    background: #f8f9fa;
-    padding: 15px 20px;
+    background: #f8fafc;
+    padding: 18px 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid var(--gray-300);
+    border-bottom: 1px solid #f1f5f9;
 }
 
 .order-number {
-    font-weight: 600;
-    font-size: 16px;
+    font-weight: 700;
+    font-size: 17px;
+    color: #1e293b;
     margin-right: 15px;
 }
 
 .order-date {
-    color: var(--gray-500);
+    color: #64748b;
     font-size: 14px;
+    font-weight: 500;
 }
 
 .order-body {
-    padding: 20px;
+    padding: 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 30px;
 }
 
 .order-items {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -748,116 +783,153 @@
 
 .order-item {
     display: flex;
-    gap: 15px;
+    gap: 18px;
     align-items: center;
 }
 
 .order-item img {
-    width: 60px;
-    height: 60px;
-    object-fit: contain;
-    border-radius: 6px;
-    border: 1px solid var(--gray-300);
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #f1f5f9;
+    padding: 5px;
+    background: white;
 }
 
 .item-details h4 {
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 6px;
 }
 
 .item-details p {
-    font-size: 13px;
-    color: var(--gray-500);
+    font-size: 14px;
+    color: #64748b;
 }
 
 .order-summary {
     text-align: right;
+    min-width: 180px;
 }
 
 .order-total {
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
+    color: #1e293b;
     margin-bottom: 15px;
 }
 
-/* Addresses Grid */
+/* Addresses Grid Refined */
 .address-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 35px;
 }
 
 .addresses-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
     gap: 25px;
 }
 
 .address-card {
-    border: 1px solid var(--gray-300);
-    border-radius: 12px;
-    padding: 24px;
-    transition: 0.3s;
+    background: white;
+    border: 1px solid #f1f5f9;
+    border-radius: 20px;
+    padding: 28px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
 }
 
 .address-card:hover {
-    border-color: var(--primary);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-color: #3b82f6;
+    box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.08);
+    transform: translateY(-5px);
 }
 
 .address-type {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    font-weight: 600;
-    color: var(--gray-600);
+    gap: 12px;
+    margin-bottom: 20px;
+    font-weight: 700;
+    color: #334155;
+    font-size: 16px;
 }
 
-.default-badge {
-    margin-left: auto;
-    background: #10b981;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
+.address-type i {
+    width: 40px;
+    height: 40px;
+    background: #eff6ff;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3b82f6;
+    font-size: 18px;
 }
 
 .address-details p {
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-size: 15px;
-    color: var(--gray-600);
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.address-details p strong {
+    color: #1e293b;
+    font-size: 17px;
 }
 
 .address-actions {
-    margin-top: 20px;
-    padding-top: 15px;
+    margin-top: 25px;
+    padding-top: 20px;
     border-top: 1px solid #f1f5f9;
     display: flex;
-    gap: 15px;
+    gap: 20px;
 }
 
 .action-btn {
-    background: none;
+    background: transparent;
     border: none;
     font-size: 14px;
-    font-weight: 500;
-    color: var(--primary);
+    font-weight: 600;
+    color: #64748b;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    transition: 0.2s;
 }
 
-.delete-btn {
+.action-btn:hover {
+    color: #3b82f6;
+}
+
+.action-btn.delete-btn:hover {
     color: #ef4444;
 }
 
 /* Forms */
 .form-group {
     margin-bottom: 24px;
+    flex: 1;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+@media (max-width: 576px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
 }
 
 .form-group label {
@@ -913,7 +985,7 @@
     color: var(--primary);
 }
 
-/* Modal */
+/* Premium Modal Overhaul */
 .modal {
     display: none;
     position: fixed;
@@ -921,12 +993,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(4px);
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(10px);
     z-index: 2000;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    transition: all 0.3s ease;
 }
 
 .modal.show {
@@ -934,20 +1007,23 @@
 }
 
 .modal-content {
-    background: var(--white);
-    border-radius: 20px;
-    max-width: 550px;
+    background: white;
+    border-radius: 24px;
+    max-width: 600px;
     width: 100%;
-    animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@keyframes modalIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(40px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .modal-header {
-    padding: 25px 30px;
+    padding: 25px 35px;
+    background: #f8fafc;
     border-bottom: 1px solid #f1f5f9;
     display: flex;
     justify-content: space-between;
@@ -956,25 +1032,59 @@
 
 .modal-header h3 {
     font-size: 22px;
-    font-weight: 700;
+    font-weight: 800;
+    color: #0f172a;
 }
 
 .modal-close {
-    font-size: 28px;
-    color: var(--gray-500);
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #64748b;
     cursor: pointer;
+    transition: 0.2s;
 }
 
-.modal-body {
-    padding: 30px;
+.modal-close:hover {
+    background: #fee2e2;
+    color: #ef4444;
+    border-color: #fecaca;
+}
+
+.modal-content form {
+    padding: 30px 35px;
 }
 
 .modal-footer {
-    padding: 20px 30px;
+    padding: 20px 35px;
+    background: #f8fafc;
     border-top: 1px solid #f1f5f9;
     display: flex;
     justify-content: flex-end;
     gap: 15px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #475569;
+    margin-top: 10px;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    cursor: pointer;
 }
 
 /* Responsive */

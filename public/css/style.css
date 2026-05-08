@@ -148,16 +148,9 @@ button {
 .search-box input {
     flex-grow: 1;
     padding: 0 15px;
-    border-right: 1px solid var(--primary);
 }
 
-.search-box select {
-    padding: 0 15px;
-    background: var(--white);
-    cursor: pointer;
-    color: var(--dark);
-    width: 140px;
-}
+
 
 .search-box button {
     background-color: var(--primary);
@@ -453,6 +446,50 @@ button {
     color: var(--gray-500);
     margin-bottom: 15px;
     font-size: 14px;
+}
+.view-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    color: #3b82f6;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.view-all-btn i {
+    font-size: 14px;
+    transition: transform 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+}
+
+.view-all-btn:hover i {
+    transform: translateX(4px);
+}
+
+.view-all-btn:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 600px) {
+    .view-all-btn {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
 }
 
 .timer {
@@ -2971,6 +3008,22 @@ hr {
 .feature-list i {
     color: #00b517;
     font-size: 16px;
+}
+
+.view-all-btn {
+    padding: 8px 16px;
+    background: var(--white);
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.view-all-btn:hover {
+    background: var(--primary);
+    color: var(--white);
 }
 
 /* Related Products Section */

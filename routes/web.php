@@ -14,7 +14,12 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Product List Page (Grid/List View)
 Route::get('/hot-offers', [ProductController::class, 'hotOffers'])->name('products.offers');
+Route::get('/gift-boxes', [ProductController::class, 'giftBoxes'])->name('products.gift-boxes');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/brands', [ProductController::class, 'brands'])->name('brands');
+Route::get('/services', function () {
+    return view('services');
+})->name('services');
 
 
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
@@ -143,6 +148,11 @@ Route::prefix('admin')->group(function () {
         // Global Settings
         Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('admin.settings.index');
         Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('admin.settings.update');
+
+        // Support Tickets Management
+        Route::get('/tickets', [\App\Http\Controllers\Admin\TicketController::class, 'index'])->name('admin.tickets.index');
+        Route::put('/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'update'])->name('admin.tickets.update');
+        Route::delete('/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'destroy'])->name('admin.tickets.destroy');
 
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');

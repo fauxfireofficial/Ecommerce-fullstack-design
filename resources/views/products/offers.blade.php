@@ -7,9 +7,9 @@
         <div class="container">
             <div class="hero-flex">
                 <div class="hero-text-content">
-                    <div class="offer-tag" style="background: {{ $settings['hot_offers_tag_bg'] ?? 'rgba(244, 63, 94, 0.1)' }}; color: {{ $settings['hot_offers_tag_color'] ?? '#fb7185' }};">{{ $settings['hot_offers_tag'] ?? '⚡ FLASH SALE IS ON' }}</div>
-                    <h1 class="hero-title" style="color: {{ $settings['hot_offers_title_color'] ?? '#ffffff' }};">{{ $settings['hot_offers_title'] ?? 'Unbeatable Hot Offers' }}</h1>
-                    <p class="hero-subtitle" style="color: {{ $settings['hot_offers_subtitle_color'] ?? '#94a3b8' }};">{{ $settings['hot_offers_subtitle'] ?? "Discover premium gadgets and fashion at up to 70% off. Shop the trends before they're gone!" }}</p>
+                    <div class="offer-tag" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">{{ $settings['hot_offers_tag'] ?? '⚡ FLASH SALE IS ON' }}</div>
+                    <h1 class="hero-title" style="color: #1e293b;">{{ $settings['hot_offers_title'] ?? 'Unbeatable Hot Offers' }}</h1>
+                    <p class="hero-subtitle" style="color: #64748b;">{{ $settings['hot_offers_subtitle'] ?? "Discover premium gadgets and fashion at up to 70% off. Shop the trends before they're gone!" }}</p>
                     
                     <div class="timer-container">
                         <p class="timer-label">Hurry! Offers end in:</p>
@@ -137,8 +137,8 @@
 <style>
 /* Global Offers Page Styles */
 :root {
-    --primary-gradient: linear-gradient(135deg, {{ $settings['hot_offers_accent_color'] ?? '#6366f1' }} 0%, #a855f7 100%);
-    --accent-color: #f43f5e;
+    --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #3b82f6 100%);
+    --accent-color: #0d6efd;
     --card-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
     --hover-shadow: 0 20px 40px -15px rgba(0,0,0,0.15);
 }
@@ -150,10 +150,10 @@
 
 /* Hero Section */
 .offers-hero {
-    background: {{ $settings['hot_offers_bg_color'] ?? '#0f172a' }};
+    background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
     position: relative;
     padding: 80px 0 120px;
-    color: white;
+    color: #1e293b;
     overflow: hidden;
 }
 
@@ -164,7 +164,7 @@
     right: -10%;
     width: 400px;
     height: 400px;
-    background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(13, 110, 253, 0.1) 0%, transparent 70%);
     border-radius: 50%;
 }
 

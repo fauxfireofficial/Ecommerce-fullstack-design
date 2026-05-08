@@ -320,6 +320,83 @@
         .btn-proceed:hover { background: #2563eb; }
         .btn-proceed.danger { background: #ef4444; }
         .btn-proceed.danger:hover { background: #dc2626; }
+
+        /* GLOBAL PAGINATION RESET - FORCED HORIZONTAL */
+        nav[role="navigation"] {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        nav[role="navigation"] .flex.justify-between.flex-1, 
+        nav[role="navigation"] .hidden.sm\:flex-1 {
+            display: block !important;
+        }
+
+        nav[role="navigation"] ul.pagination,
+        .pagination,
+        .pagination-wrapper ul {
+            display: flex !important;
+            flex-direction: row !important;
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 20px 0 !important;
+            flex-wrap: wrap !important;
+            gap: 8px !important;
+            justify-content: center !important;
+        }
+
+        nav[role="navigation"] ul.pagination li,
+        .pagination li {
+            display: inline-block !important;
+            margin: 0 !important;
+        }
+
+        nav[role="navigation"] ul.pagination li a,
+        nav[role="navigation"] ul.pagination li span,
+        .pagination li a,
+        .pagination li span,
+        nav[role="navigation"] .relative.inline-flex.items-center {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 42px !important;
+            height: 42px !important;
+            padding: 0 12px !important;
+            background: white !important;
+            border: 1px solid #e2e8f0 !important;
+            border-radius: 10px !important;
+            color: #475569 !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            margin-right: 0 !important;
+        }
+
+        nav[role="navigation"] ul.pagination li.active span,
+        nav[role="navigation"] ul.pagination li[aria-current="page"] span,
+        .pagination li.active span,
+        nav[role="navigation"] .bg-blue-600,
+        nav[role="navigation"] [aria-current="page"] span {
+            background: #3b82f6 !important;
+            color: white !important;
+            border-color: #3b82f6 !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25) !important;
+        }
+
+        nav[role="navigation"] ul.pagination li a:hover,
+        .pagination li a:hover,
+        nav[role="navigation"] .relative.inline-flex.items-center:hover {
+            background: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #3b82f6 !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* Hide the default mobile text-based pagination links if needed */
+        nav[role="navigation"] .flex.justify-between.flex-1.sm\:hidden {
+            display: none !important;
+        }
     </style>
     @yield('styles')
 </head>
@@ -351,6 +428,9 @@
             </a>
             <a href="{{ route('admin.settings.index') }}" class="menu-item {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-gear"></i> Settings
+            </a>
+            <a href="{{ route('admin.tickets.index') }}" class="menu-item {{ request()->routeIs('admin.tickets.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-headset"></i> Support Tickets
             </a>
         </nav>
 

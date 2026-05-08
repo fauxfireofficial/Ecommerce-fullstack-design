@@ -1,195 +1,698 @@
 @extends('layouts.app')
 
-@section('content')
-<main class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="support-header mb-5">
-                <h1 class="h2 fw-bold text-dark mb-2">Customer Support</h1>
-                <p class="text-muted">How can we help you today? Submit a ticket or check your history.</p>
-            </div>
+@section('styles')
+<style>
+    /* Support Page Custom Professional Theme */
+    .support-page {
+        padding: 40px 0 80px;
+        background-color: var(--bg-body);
+    }
 
-            <!-- Support Tabs -->
-            <div class="card border-0 shadow-sm overflow-hidden">
-                <div class="card-header bg-white p-0 border-bottom">
-                    <ul class="nav nav-tabs border-0" id="supportTabs" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active py-3 px-4 fw-600 border-0 rounded-0" id="new-ticket-tab" data-bs-toggle="tab" data-bs-target="#new-ticket" type="button" role="tab">
-                                <i class="fa-solid fa-plus-circle me-2"></i> Create a Ticket
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link py-3 px-4 fw-600 border-0 rounded-0" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">
-                                <i class="fa-solid fa-history me-2"></i> Ticket History
-                            </button>
-                        </li>
-                    </ul>
+    .support-header {
+        margin-bottom: 40px;
+    }
+
+    .support-header h1 {
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--dark);
+        margin-bottom: 8px;
+    }
+
+    .support-header p {
+        color: var(--gray-500);
+        font-size: 16px;
+    }
+
+    /* Main Layout Grid */
+    .support-container {
+        display: grid;
+        grid-template-columns: 1fr 380px;
+        gap: 30px;
+        align-items: start;
+    }
+
+    /* Card Styling */
+    .support-card {
+        background: var(--white);
+        border: 1px solid var(--gray-300);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+
+    /* Tabs Styling */
+    .support-tabs {
+        display: flex;
+        border-bottom: 1px solid var(--gray-300);
+        background: #fcfcfc;
+    }
+
+    .tab-btn {
+        padding: 18px 30px;
+        font-weight: 600;
+        color: var(--gray-500);
+        border: none;
+        background: none;
+        cursor: pointer;
+        transition: 0.2s;
+        border-bottom: 3px solid transparent;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+    }
+
+    .tab-btn:hover {
+        color: var(--primary);
+        background: #f8f9fa;
+    }
+
+    .tab-btn.active {
+        color: var(--primary);
+        border-bottom-color: var(--primary);
+        background: var(--white);
+    }
+
+    .tab-content-wrapper {
+        padding: 40px;
+    }
+
+    .tab-pane {
+        display: none;
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    /* Form Styling */
+    .form-group {
+        margin-bottom: 24px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--dark);
+        font-size: 14px;
+    }
+
+    .form-control, .form-select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid var(--gray-300);
+        border-radius: 8px;
+        font-size: 14px;
+        transition: 0.2s;
+        background-color: var(--white);
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.08);
+        outline: none;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .btn-submit {
+        background: var(--primary);
+        color: var(--white);
+        padding: 14px 40px;
+        border: none;
+        border-radius: 30px;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(13, 110, 253, 0.3);
+        background: #0b5ed7;
+    }
+
+    /* Alert Styling */
+    .success-alert {
+        background: #eefbf4;
+        border: 1px solid #c7e8d5;
+        color: #155724;
+        padding: 24px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+        align-items: center;
+    }
+
+    .success-alert i {
+        font-size: 28px;
+        color: #28a745;
+    }
+
+    /* Sidebar Styling */
+    .contact-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+
+    .contact-info-box {
+        background: var(--primary);
+        color: var(--white);
+        padding: 30px;
+        border-radius: 12px;
+        margin-bottom: 25px;
+    }
+
+    .contact-info-box h3 {
+        font-size: 20px;
+        margin-bottom: 25px;
+        font-weight: 700;
+    }
+
+    .contact-item {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .contact-icon {
+        width: 42px;
+        height: 42px;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 18px;
+    }
+
+    .contact-text p:first-child {
+        font-size: 12px;
+        opacity: 0.8;
+        margin-bottom: 2px;
+    }
+
+    .contact-text p:last-child {
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .btn-chat {
+        background: var(--white);
+        color: var(--primary);
+        width: 100%;
+        padding: 14px;
+        border-radius: 30px;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-chat:hover {
+        background: #f8f9fa;
+    }
+
+    .map-box {
+        border-radius: 12px;
+        overflow: hidden;
+        height: 250px;
+        border: 1px solid var(--gray-300);
+    }
+
+    /* FAQ Styling */
+    .faq-section {
+        margin-top: 50px;
+        padding-top: 40px;
+        border-top: 1px solid var(--gray-300);
+    }
+
+    .faq-item {
+        border: 1px solid var(--gray-300);
+        border-radius: 8px;
+        margin-bottom: 12px;
+        overflow: hidden;
+    }
+
+    .faq-header {
+        padding: 16px 20px;
+        background: #fcfcfc;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-weight: 600;
+        user-select: none;
+    }
+
+    .faq-body {
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: 0.3s ease-out;
+        color: var(--gray-600);
+        font-size: 14px;
+    }
+
+    .faq-item.active .faq-body {
+        padding: 15px 20px;
+        max-height: 200px;
+        border-top: 1px solid var(--gray-300);
+    }
+
+    /* History Table Styling */
+    .history-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .history-table th {
+        text-align: left;
+        padding: 15px;
+        background: #f8f9fa;
+        font-weight: 600;
+        color: var(--gray-600);
+        font-size: 13px;
+        border-bottom: 1px solid var(--gray-300);
+    }
+
+    .history-table td {
+        padding: 15px;
+        border-bottom: 1px solid var(--gray-300);
+        font-size: 14px;
+    }
+
+    .badge {
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-resolved { background: #d1e7dd; color: #0f5132; }
+    .badge-closed { background: #e2e3e5; color: #383d41; }
+
+    .btn-view {
+        color: var(--primary);
+        font-weight: 600;
+        background: none;
+        border: 1px solid var(--primary);
+        padding: 6px 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-view:hover {
+        background: var(--primary);
+        color: var(--white);
+    }
+
+    /* Modal Styling */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 4000;
+        backdrop-filter: blur(4px);
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .support-modal {
+        background: var(--white);
+        width: 600px;
+        max-width: 90%;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+
+    .modal-header {
+        padding: 20px 25px;
+        border-bottom: 1px solid var(--gray-300);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-body {
+        padding: 25px;
+    }
+
+    .modal-footer {
+        padding: 15px 25px;
+        border-top: 1px solid var(--gray-300);
+        text-align: right;
+    }
+
+    .detail-box {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid var(--gray-300);
+        margin-bottom: 20px;
+    }
+
+    .reply-box {
+        background: #f0f7ff;
+        padding: 15px;
+        border-radius: 8px;
+        border: 1px solid #d0e3ff;
+    }
+
+    @media (max-width: 992px) {
+        .support-container {
+            grid-template-columns: 1fr;
+        }
+        .contact-sidebar {
+            position: static;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        .tab-content-wrapper {
+            padding: 20px;
+        }
+        .tab-btn {
+            padding: 15px;
+            font-size: 13px;
+        }
+    }
+</style>
+@endsection
+
+@section('content')
+<main class="support-page">
+    <div class="container">
+        
+        <header class="support-header">
+            <h1>Customer Support</h1>
+            <p>How can we help you today? Submit a ticket or check your history.</p>
+        </header>
+
+        <div class="support-container">
+            
+            <!-- Left Side: Tabs & Forms -->
+            <div class="support-card">
+                <div class="support-tabs">
+                    <button class="tab-btn active" onclick="switchTab('new-ticket')">
+                        <i class="fa-solid fa-plus-circle"></i> Create a Ticket
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('history')">
+                        <i class="fa-solid fa-history"></i> Ticket History
+                    </button>
                 </div>
-                <div class="card-body p-4 p-md-5">
-                    <div class="tab-content" id="supportTabsContent">
-                        <!-- Tab 1: New Ticket -->
-                        <div class="tab-pane fade show active" id="new-ticket" role="tabpanel">
-                            <div class="row">
-                                <div class="col-md-7">
-                                    <h3 class="h5 mb-4">Submit New Support Request</h3>
-                                    <form action="{{ route('support.store') }}" method="POST">
-                                        @csrf
-                                        <div class="form-group mb-4">
-                                            <label for="subject" class="form-label fw-600">Subject</label>
-                                            <input type="text" id="subject" name="subject" class="form-control" placeholder="Briefly describe the issue" required>
-                                        </div>
-                                        <div class="form-group mb-4">
-                                            <label for="message" class="form-label fw-600">Message</label>
-                                            <textarea id="message" name="message" class="form-control" rows="6" placeholder="Provide detailed information about your concern..." required></textarea>
-                                        </div>
-                                        <button type="submit" class="btn btn-primary px-4 py-2">
-                                            <i class="fa-solid fa-paper-plane me-2"></i> Submit Ticket
-                                        </button>
-                                    </form>
-                                </div>
-                                <div class="col-md-5 mt-4 mt-md-0">
-                                    <div class="p-4 bg-light rounded-4">
-                                        <h4 class="h6 fw-bold mb-3">Support FAQ</h4>
-                                        <ul class="list-unstyled mb-0 small">
-                                            <li class="mb-3 d-flex gap-2">
-                                                <i class="fa-solid fa-circle-info text-primary mt-1"></i>
-                                                <span>Tickets are usually resolved within 24-48 business hours.</span>
-                                            </li>
-                                            <li class="mb-3 d-flex gap-2">
-                                                <i class="fa-solid fa-circle-info text-primary mt-1"></i>
-                                                <span>Include order numbers if your query is about an order.</span>
-                                            </li>
-                                            <li class="d-flex gap-2">
-                                                <i class="fa-solid fa-circle-info text-primary mt-1"></i>
-                                                <span>You will receive an email once an admin replies to your ticket.</span>
-                                            </li>
-                                        </ul>
-                                    </div>
+
+                <div class="tab-content-wrapper">
+                    
+                    <!-- Tab 1: New Ticket -->
+                    <div class="tab-pane active" id="new-ticket">
+                        <h3 style="font-size: 18px; margin-bottom: 25px; color: var(--primary);">Submit New Support Request</h3>
+                        
+                        @if(session('success'))
+                            <div class="success-alert">
+                                <i class="fa-solid fa-circle-check"></i>
+                                <div>
+                                    <p style="font-weight: 700; margin-bottom: 4px;">Submission Successful!</p>
+                                    <p style="margin: 0; font-size: 14px;">{{ session('success') }}</p>
                                 </div>
                             </div>
-                        </div>
+                        @endif
 
-                        <!-- Tab 2: History -->
-                        <div class="tab-pane fade" id="history" role="tabpanel">
-                            <h3 class="h5 mb-4">Your Support History</h3>
-                            <div class="table-responsive">
-                                <table class="table table-hover align-middle">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Ticket ID</th>
-                                            <th>Subject</th>
-                                            <th>Date</th>
-                                            <th>Status</th>
-                                            <th class="text-end">Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @forelse($tickets as $ticket)
-                                        <tr>
-                                            <td><span class="fw-bold">#{{ $ticket->id }}</span></td>
-                                            <td>{{ Str::limit($ticket->subject, 40) }}</td>
-                                            <td class="text-muted">{{ $ticket->created_at->format('d M Y') }}</td>
-                                            <td>
-                                                @if($ticket->status == 'pending')
-                                                    <span class="badge bg-warning-subtle text-warning border border-warning-subtle px-3 rounded-pill">Pending</span>
-                                                @elseif($ticket->status == 'resolved')
-                                                    <span class="badge bg-success-subtle text-success border border-success-subtle px-3 rounded-pill">Resolved</span>
-                                                @else
-                                                    <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle px-3 rounded-pill">Closed</span>
-                                                @endif
-                                            </td>
-                                            <td class="text-end">
-                                                <button class="btn btn-outline-primary btn-sm px-3" onclick="viewTicket({{ $ticket->id }}, '{{ addslashes($ticket->subject) }}', '{{ addslashes($ticket->message) }}', '{{ addslashes($ticket->admin_reply ?? 'No reply yet.') }}', '{{ $ticket->status }}')">
-                                                    View Details
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center py-4 text-muted">You haven't created any tickets yet.</td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                        @if($errors->any())
+                            <div class="success-alert" style="background: #fff5f5; border-color: #feb2b2; color: #c53030; margin-bottom: 30px;">
+                                <i class="fa-solid fa-circle-exclamation" style="color: #f56565;"></i>
+                                <div>
+                                    <p style="font-weight: 700; margin-bottom: 4px;">Please fix the following:</p>
+                                    <ul style="margin: 0; font-size: 13px; padding-left: 15px;">
+                                        @foreach($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('support.store') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Issue Category</label>
+                                    <select name="category" class="form-select" required>
+                                        <option value="" selected disabled>Select a category</option>
+                                        <option value="Delivery Issue">Delivery Issue</option>
+                                        <option value="Refund">Refund Request</option>
+                                        <option value="Product Quality">Product Quality</option>
+                                        <option value="Payment Failed">Payment Failed</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Order ID (Optional)</label>
+                                    <input type="text" name="order_id" class="form-control" placeholder="e.g. #12345">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Subject</label>
+                                <input type="text" name="subject" class="form-control" placeholder="Briefly describe the issue" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Detailed Message</label>
+                                <textarea name="message" class="form-control" rows="6" placeholder="Please provide as much detail as possible..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Attachment (Screenshot)</label>
+                                <input type="file" name="attachment" class="form-control" accept="image/*">
+                            </div>
+
+                            <button type="submit" class="btn-submit">
+                                <i class="fa-solid fa-paper-plane"></i> Submit Ticket
+                            </button>
+                        </form>
+
+                        <!-- FAQ Section -->
+                        <div class="faq-section">
+                            <h3 style="font-size: 18px; margin-bottom: 20px; font-weight: 700;">
+                                <i class="fa-solid fa-circle-question" style="color: var(--primary);"></i> Frequently Asked Questions
+                            </h3>
+                            
+                            <div class="faq-item">
+                                <div class="faq-header" onclick="toggleFaq(this)">
+                                    Mera order kab tak milega?
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-body">
+                                    Zaroori items 24-48 hours mein deliver ho jate hain. City ke hisab se 3-5 working days lag saktay hain.
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-header" onclick="toggleFaq(this)">
+                                    Kya main product return kar sakta hoon?
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-body">
+                                    Ji han, agar product seal-packed aur original condition mein hai toh aap 7 din ke andar return kar saktay hain.
+                                </div>
+                            </div>
+
+                            <div class="faq-item">
+                                <div class="faq-header" onclick="toggleFaq(this)">
+                                    Refund kitne din mein aata hai?
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="faq-body">
+                                    Refund process hone mein 5-7 working days lagtay hain, jo aap ke original payment method mein credit ho jata hai.
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Tab 2: History -->
+                    <div class="tab-pane" id="history">
+                        <h3 style="font-size: 18px; margin-bottom: 25px;">Your Support History</h3>
+                        <div style="overflow-x: auto;">
+                            <table class="history-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Subject</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($tickets as $ticket)
+                                    <tr>
+                                        <td style="font-weight: 700;">#{{ $ticket->id }}</td>
+                                        <td>{{ Str::limit($ticket->subject, 30) }}</td>
+                                        <td style="color: var(--gray-500);">{{ $ticket->created_at->format('d M Y') }}</td>
+                                        <td>
+                                            <span class="badge badge-{{ $ticket->status }}">
+                                                {{ ucfirst($ticket->status) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn-view" onclick="openTicketModal({{ $ticket->id }}, '{{ addslashes($ticket->subject) }}', '{{ addslashes($ticket->message) }}', '{{ addslashes($ticket->admin_reply ?? 'No reply yet.') }}')">
+                                                View
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; padding: 40px; color: var(--gray-500);">You haven't created any tickets yet.</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
                 </div>
             </div>
+
+            <!-- Right Side: Contact Info -->
+            <div class="contact-sidebar">
+                <div class="contact-info-box">
+                    <h3>Quick Contact Info</h3>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fa-brands fa-whatsapp"></i></div>
+                        <div class="contact-text">
+                            <p>WhatsApp / Phone</p>
+                            <p>+92 300 1234567</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-envelope"></i></div>
+                        <div class="contact-text">
+                            <p>Official Email</p>
+                            <p>support@brandname.com</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="contact-text">
+                            <p>Physical Address</p>
+                            <p>123 Tech Avenue, Islamabad</p>
+                        </div>
+                    </div>
+
+                    <a href="https://wa.me/923001234567?text=Hi, I need help with my order." target="_blank" class="btn-chat" style="display: block; text-align: center; text-decoration: none;">
+                        <i class="fa-solid fa-comments"></i> Start Live Chat
+                    </a>
+                </div>
+
+                <div class="map-box">
+                    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3318.575646197178!2d73.06263887556096!3d33.71261547328639!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x38dfbf9df1936c93%3A0x63428e20257c918e!2sIslamabad%2C%20Pakistan!5e0!3m2!1sen!2s!4v1715090000000!5m2!1sen!2s" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+                </div>
+            </div>
+
         </div>
     </div>
 </main>
 
-<!-- Ticket Details Modal -->
-<div class="modal fade" id="ticketModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg rounded-4">
-            <div class="modal-header border-0 pb-0">
-                <h5 class="modal-title fw-bold" id="modalSubject">Ticket Details</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- Custom Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="support-modal">
+        <div class="modal-header">
+            <h3 id="modalTitle" style="font-size: 18px; font-weight: 700;">Ticket Details</h3>
+            <span style="cursor: pointer; font-size: 24px;" onclick="closeTicketModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; margin-bottom: 5px;">Your Message</label>
+                <div class="detail-box" id="modalMessage"></div>
             </div>
-            <div class="modal-body p-4">
-                <div class="mb-4">
-                    <label class="text-muted small text-uppercase fw-bold mb-1 d-block">Your Message</label>
-                    <div class="p-3 bg-light rounded-3 border" id="modalMessage"></div>
-                </div>
-                <div>
-                    <label class="text-muted small text-uppercase fw-bold mb-1 d-block">Admin Reply</label>
-                    <div class="p-3 rounded-3 border" id="modalReply" style="background-color: #f0f7ff; border-color: #d0e3ff !important;"></div>
-                </div>
+            <div>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: var(--gray-500); text-transform: uppercase; margin-bottom: 5px;">Admin Reply</label>
+                <div class="reply-box" id="modalReply"></div>
             </div>
-            <div class="modal-footer border-0">
-                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">Close</button>
-            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-view" onclick="closeTicketModal()">Close</button>
         </div>
     </div>
 </div>
 
-<style>
-    .fw-600 { font-weight: 600; }
-    .nav-tabs .nav-link {
-        color: #64748b;
-        background: none;
-        transition: 0.2s;
-    }
-    .nav-tabs .nav-link:hover {
-        color: var(--primary);
-        background: #f8f9fa;
-    }
-    .nav-tabs .nav-link.active {
-        color: var(--primary);
-        border-bottom: 3px solid var(--primary) !important;
-        background: #fff;
-    }
-    .bg-warning-subtle { background-color: #fff3cd; }
-    .bg-success-subtle { background-color: #d1e7dd; }
-    .bg-secondary-subtle { background-color: #e2e3e5; }
-    .text-warning { color: #856404 !important; }
-    .text-success { color: #0f5132 !important; }
-    .text-secondary { color: #383d41 !important; }
-    .border-warning-subtle { border-color: #ffeeba !important; }
-    .border-success-subtle { border-color: #badbcc !important; }
-    .border-secondary-subtle { border-color: #d6d8db !important; }
-    
-    .form-control:focus {
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1);
-    }
-</style>
-
 <script>
-function viewTicket(id, subject, message, reply, status) {
-    document.getElementById('modalSubject').innerText = 'Ticket #' + id + ': ' + subject;
-    document.getElementById('modalMessage').innerText = message;
-    document.getElementById('modalReply').innerText = reply;
-    
-    const ticketModal = new bootstrap.Modal(document.getElementById('ticketModal'));
-    ticketModal.show();
-}
+    // Tab Switching Logic
+    function switchTab(tabId) {
+        // Remove active class from all buttons and panes
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+        
+        // Add active class to selected tab
+        event.currentTarget.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+    }
 
-// Handle success messages if using Laravel flash
-@if(session('success'))
-    // You could trigger a toast or alert here
-@endif
+    // FAQ Accordion Logic
+    function toggleFaq(header) {
+        const item = header.parentElement;
+        const isActive = item.classList.contains('active');
+        
+        // Close all other items
+        document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('active'));
+        
+        // Toggle current item
+        if (!isActive) {
+            item.classList.add('active');
+        }
+    }
+
+    // Modal Logic
+    const overlay = document.getElementById('modalOverlay');
+    const mTitle = document.getElementById('modalTitle');
+    const mMsg = document.getElementById('modalMessage');
+    const mReply = document.getElementById('modalReply');
+
+    function openTicketModal(id, subject, message, reply) {
+        mTitle.innerText = 'Ticket #' + id + ': ' + subject;
+        mMsg.innerText = message;
+        mReply.innerText = reply;
+        overlay.classList.add('active');
+    }
+
+    function closeTicketModal() {
+        overlay.classList.remove('active');
+    }
+
+    // Close modal on overlay click
+    overlay.addEventListener('click', (e) => {
+        if(e.target === overlay) closeTicketModal();
+    });
 </script>
 @endsection

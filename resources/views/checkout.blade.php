@@ -173,55 +173,75 @@
     }
 
     .form-group label {
-        display: block;
+        display: flex;
+        align-items: center;
+        gap: 8px;
         font-size: 13px;
-        font-weight: 600;
-        color: #64748b;
-        margin-bottom: 8px;
+        font-weight: 700;
+        color: #475569;
+        margin-bottom: 10px;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
+    .form-group label i {
+        color: #3b82f6;
+        font-size: 14px;
+    }
+
     .form-control, .form-control-disabled {
         width: 100%;
-        padding: 14px 16px;
+        padding: 15px 18px;
         border: 1.5px solid #e2e8f0;
-        border-radius: 10px;
+        border-radius: 12px;
         font-size: 15px;
-        color: #334155;
+        color: #1e293b;
         background: #ffffff;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-sizing: border-box;
     }
 
     .form-control:focus {
         border-color: #3b82f6;
         box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        background: #fff;
         outline: none;
     }
 
     .form-control-disabled {
         background: #f8fafc;
         color: #94a3b8;
+        border-color: #f1f5f9;
         cursor: not-allowed;
+    }
+
+    .payment-selection {
+        margin-top: 15px;
     }
 
     .payment-option {
         display: flex;
         align-items: center;
-        gap: 12px;
-        padding: 16px;
+        gap: 15px;
+        padding: 20px;
         border: 2px solid #3b82f6;
-        border-radius: 10px;
-        background: #eff6ff;
+        border-radius: 16px;
+        background: #f0f7ff;
         cursor: pointer;
-        font-weight: 600;
+        font-weight: 700;
         color: #1e293b;
-        transition: all 0.2s ease;
+        transition: 0.3s;
+        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+    }
+
+    .payment-option i {
+        font-size: 20px;
+        color: #3b82f6;
     }
 
     .payment-option:hover {
         background: #e0f2fe;
+        transform: translateY(-2px);
     }
 
     .btn-checkout-green {

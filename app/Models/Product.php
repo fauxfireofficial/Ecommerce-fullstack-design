@@ -19,7 +19,8 @@ class Product extends Model
             'Tools, equipments',
             'Health and Beauty',
             'Sports and outdoor',
-            'Accessories'
+            'Accessories',
+            'Gift Boxes'
         ];
     }
 
