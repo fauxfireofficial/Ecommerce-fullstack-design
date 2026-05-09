@@ -507,31 +507,31 @@
                             
                             <div class="faq-item">
                                 <div class="faq-header" onclick="toggleFaq(this)">
-                                    Mera order kab tak milega?
+                                    When will I receive my order?
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-body">
-                                    Zaroori items 24-48 hours mein deliver ho jate hain. City ke hisab se 3-5 working days lag saktay hain.
+                                    Standard orders are usually delivered within 24-48 hours. Depending on your location, it may take 3-5 working days.
                                 </div>
                             </div>
 
                             <div class="faq-item">
                                 <div class="faq-header" onclick="toggleFaq(this)">
-                                    Kya main product return kar sakta hoon?
+                                    Can I return a product?
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-body">
-                                    Ji han, agar product seal-packed aur original condition mein hai toh aap 7 din ke andar return kar saktay hain.
+                                    Yes, products can be returned within 7 days if they are in their original seal-packed condition.
                                 </div>
                             </div>
 
                             <div class="faq-item">
                                 <div class="faq-header" onclick="toggleFaq(this)">
-                                    Refund kitne din mein aata hai?
+                                    How long does the refund process take?
                                     <i class="fa-solid fa-chevron-down"></i>
                                 </div>
                                 <div class="faq-body">
-                                    Refund process hone mein 5-7 working days lagtay hain, jo aap ke original payment method mein credit ho jata hai.
+                                    Refunds are typically processed within 5-7 working days and credited back to your original payment method.
                                 </div>
                             </div>
                         </div>

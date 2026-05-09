@@ -160,6 +160,8 @@
 <style>
 .settings-container {
     animation: fadeIn 0.4s ease-out;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 @keyframes fadeIn {
@@ -169,135 +171,154 @@
 
 .settings-grid {
     display: grid;
-    grid-template-columns: 250px 1fr;
-    gap: 30px;
+    grid-template-columns: 280px 1fr;
+    gap: 35px;
 }
 
 .settings-nav {
     background: white;
-    border-radius: 16px;
-    padding: 15px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05);
+    border: 1px solid #eef2f6;
+    position: sticky;
+    top: 20px;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    border-radius: 12px;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 14px;
     color: #64748b;
     text-decoration: none;
     font-weight: 600;
-    transition: all 0.2s;
-    margin-bottom: 5px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 8px;
 }
 
 .nav-item:hover {
-    background: #f1f5f9;
-    color: #1e293b;
+    background: #f8fafc;
+    color: #0f172a;
+    transform: translateX(5px);
 }
 
 .nav-item.active {
-    background: #eff6ff;
-    color: #3b82f6;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    box-shadow: 0 8px 20px -6px rgba(37, 99, 235, 0.4);
 }
 
 .section-header {
-    margin-bottom: 25px;
+    margin-bottom: 30px;
 }
 
 .section-header h3 {
-    font-size: 20px;
-    font-weight: 700;
-    color: #1e293b;
-    margin: 0 0 5px;
+    font-size: 24px;
+    font-weight: 800;
+    color: #1e3a8a;
+    margin: 0 0 8px;
+    letter-spacing: -0.5px;
 }
 
 .section-header p {
     color: #64748b;
     margin: 0;
+    font-size: 15px;
 }
 
 .form-card {
     background: white;
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05);
+    border: 1px solid #f1f5f9;
 }
 
 .form-group label {
     display: block;
-    font-weight: 600;
-    margin-bottom: 8px;
+    font-weight: 700;
+    margin-bottom: 10px;
     color: #334155;
     font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-control {
     width: 100%;
-    padding: 12px 16px;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 14px;
+    padding: 14px 18px;
+    border: 2px solid #f1f5f9;
+    border-radius: 14px;
+    font-size: 15px;
     transition: all 0.2s;
+    background: #f8fafc;
 }
 
 .form-control:focus {
     outline: none;
     border-color: #3b82f6;
+    background: white;
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 25px;
 }
 
 .color-picker-wrap {
     display: flex;
     align-items: center;
     gap: 15px;
+    background: #f1f5f9;
+    padding: 8px 15px;
+    border-radius: 12px;
 }
 
 .form-control-color {
-    width: 60px;
-    height: 45px;
-    padding: 4px;
+    width: 50px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
     cursor: pointer;
+    background: none;
 }
 
 .color-picker-wrap span {
-    font-family: monospace;
+    font-family: 'JetBrains Mono', monospace;
     font-weight: 700;
-    color: #64748b;
+    color: #475569;
+    font-size: 13px;
 }
 
 .btn-primary {
-    background: #3b82f6;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     border: none;
-    padding: 14px 28px;
-    border-radius: 14px;
-    font-weight: 700;
+    padding: 16px 35px;
+    border-radius: 16px;
+    font-weight: 800;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    transition: all 0.2s;
+    gap: 12px;
+    transition: all 0.3s;
+    box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.3);
 }
 
 .btn-primary:hover {
-    background: #2563eb;
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.4);
 }
 
 @media (max-width: 992px) {
     .settings-grid { grid-template-columns: 1fr; }
     .settings-sidebar { display: none; }
+    .form-row { grid-template-columns: 1fr; }
 }
 </style>
 @endsection

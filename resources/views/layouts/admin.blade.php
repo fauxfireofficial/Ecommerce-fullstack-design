@@ -432,6 +432,9 @@
             <a href="{{ route('admin.tickets.index') }}" class="menu-item {{ request()->routeIs('admin.tickets.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-headset"></i> Support Tickets
             </a>
+            <a href="{{ route('admin.subscribers.index') }}" class="menu-item {{ request()->routeIs('admin.subscribers.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-envelope-open-text"></i> Newsletter Subscribers
+            </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -465,6 +468,12 @@
             @if(session('success'))
                 <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745;">
                     <i class="fa-solid fa-check-circle"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #dc3545;">
+                    <i class="fa-solid fa-circle-exclamation"></i> {{ session('error') }}
                 </div>
             @endif
 

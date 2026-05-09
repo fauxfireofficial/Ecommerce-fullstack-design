@@ -24,6 +24,9 @@ Route::get('/services', function () {
 
 Route::get('/products/{slug}', [ProductController::class, 'show'])->name('products.show');
 
+// Newsletter Subscription
+Route::post('/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('subscribe');
+
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\CartController;
 
@@ -88,9 +91,11 @@ Route::post('/verify-reset-otp', [OTPController::class, 'verifyResetOTP'])->name
 Route::get('/reset-password', [OTPController::class, 'showResetPage'])->name('password.reset.page');
 Route::post('/reset-password', [OTPController::class, 'resetPassword'])->name('password.update');
 
-Route::get('/terms', function () {
-    return "Terms and Conditions Page (Design Placeholder)";
-})->name('terms');
+// Help & Information Pages
+Route::get('/faqs', [\App\Http\Controllers\HelpController::class, 'faq'])->name('help.faq');
+Route::get('/return-policy', [\App\Http\Controllers\HelpController::class, 'returnPolicy'])->name('help.policy');
+Route::get('/privacy-policy', [\App\Http\Controllers\HelpController::class, 'privacyPolicy'])->name('help.privacy');
+Route::get('/terms-conditions', [\App\Http\Controllers\HelpController::class, 'termsConditions'])->name('help.terms');
 
 // --- Admin Portal Routes ---
 use App\Http\Controllers\AdminAuthController;
@@ -153,6 +158,15 @@ Route::prefix('admin')->group(function () {
         Route::get('/tickets', [\App\Http\Controllers\Admin\TicketController::class, 'index'])->name('admin.tickets.index');
         Route::put('/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'update'])->name('admin.tickets.update');
         Route::delete('/tickets/{id}', [\App\Http\Controllers\Admin\TicketController::class, 'destroy'])->name('admin.tickets.destroy');
+
+
+        // Subscriber Management
+        Route::get('/subscribers', [\App\Http\Controllers\Admin\SubscriberController::class, 'index'])->name('admin.subscribers.index');
+        Route::get('/subscribers/export', [\App\Http\Controllers\Admin\SubscriberController::class, 'exportCSV'])->name('admin.subscribers.export');
+        Route::post('/subscribers/send-email', [\App\Http\Controllers\Admin\SubscriberController::class, 'sendBulkEmail'])->name('admin.subscribers.bulkEmail');
+        Route::delete('/subscribers/templates/{id}', [\App\Http\Controllers\Admin\SubscriberController::class, 'deleteTemplate'])->name('admin.subscribers.deleteTemplate');
+        Route::put('/subscribers/{id}/toggle', [\App\Http\Controllers\Admin\SubscriberController::class, 'toggleStatus'])->name('admin.subscribers.toggle');
+        Route::delete('/subscribers/{id}', [\App\Http\Controllers\Admin\SubscriberController::class, 'destroy'])->name('admin.subscribers.destroy');
 
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');

@@ -103,7 +103,7 @@
                         </div>
                         <div>
                             <h4 class="text-base font-medium text-[#1C1C1C]">Secure payment</h4>
-                            <p class="text-sm text-[#8B96A5]">Have you ever finally just</p>
+                            <p class="text-sm text-[#8B96A5]">Your transactions are safe with us.</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
@@ -112,7 +112,7 @@
                         </div>
                         <div>
                             <h4 class="text-base font-medium text-[#1C1C1C]">Customer support</h4>
-                            <p class="text-sm text-[#8B96A5]">Have you ever finally just</p>
+                            <p class="text-sm text-[#8B96A5]">Helpful assistance around the clock.</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3">
@@ -121,7 +121,7 @@
                         </div>
                         <div>
                             <h4 class="text-base font-medium text-[#1C1C1C]">Free delivery</h4>
-                            <p class="text-sm text-[#8B96A5]">Have you ever finally just</p>
+                            <p class="text-sm text-[#8B96A5]">No extra charges for your shipping.</p>
                         </div>
                     </div>
                 </div>

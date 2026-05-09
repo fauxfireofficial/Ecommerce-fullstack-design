@@ -7,9 +7,9 @@
         <div class="container">
             <div class="hero-flex">
                 <div class="hero-text-content">
-                    <div class="offer-tag" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">{{ $settings['hot_offers_tag'] ?? '⚡ FLASH SALE IS ON' }}</div>
-                    <h1 class="hero-title" style="color: #1e293b;">{{ $settings['hot_offers_title'] ?? 'Unbeatable Hot Offers' }}</h1>
-                    <p class="hero-subtitle" style="color: #64748b;">{{ $settings['hot_offers_subtitle'] ?? "Discover premium gadgets and fashion at up to 70% off. Shop the trends before they're gone!" }}</p>
+                    <div class="offer-tag" style="background: {{ $settings['hot_offers_tag_bg'] ?? 'rgba(13, 110, 253, 0.1)' }}; color: {{ $settings['hot_offers_tag_color'] ?? '#0d6efd' }}; border-color: {{ $settings['hot_offers_tag_color'] ?? '#0d6efd' }}33;">{{ $settings['hot_offers_tag'] ?? '⚡ FLASH SALE IS ON' }}</div>
+                    <h1 class="hero-title" style="color: {{ $settings['hot_offers_title_color'] ?? '#1e293b' }};">{{ $settings['hot_offers_title'] ?? 'Unbeatable Hot Offers' }}</h1>
+                    <p class="hero-subtitle" style="color: {{ $settings['hot_offers_subtitle_color'] ?? '#64748b' }};">{{ $settings['hot_offers_subtitle'] ?? "Discover premium gadgets and fashion at up to 70% off. Shop the trends before they're gone!" }}</p>
                     
                     <div class="timer-container">
                         <p class="timer-label">Hurry! Offers end in:</p>
@@ -82,36 +82,37 @@
                             <i class="fa-regular fa-heart"></i>
                         </button>
                     </div>
+                    
                     <div class="card-img-wrapper">
                         <a href="{{ route('products.show', $product->slug) }}">
                             <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="product-img">
                         </a>
                     </div>
+                    
                     <div class="card-body">
-                        <div class="category-row">
-                            <span class="cat-name">{{ $product->category }}</span>
-                            <div class="rating">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.8</span>
-                            </div>
-                        </div>
-                        <h3 class="product-name">
+                        <span class="category-tag">{{ $product->category }}</span>
+                        
+                        <h3 class="product-title">
                             <a href="{{ route('products.show', $product->slug) }}">{{ $product->name }}</a>
                         </h3>
-                        <div class="price-section">
-                            <div class="prices">
-                                <span class="price-now">${{ number_format($product->price, 2) }}</span>
-                                <span class="price-was">${{ number_format($product->compare_price ?: ($product->price * 1.2), 2) }}</span>
-                            </div>
-                            <div class="stock-status {{ $product->stock_quantity < 20 ? 'low-stock' : '' }}">
-                                {{ $product->stock_quantity < 20 ? 'Only ' . $product->stock_quantity . ' left' : 'In Stock' }}
-                            </div>
+                        
+                        <div class="rating-row">
+                            <i class="fa-solid fa-star"></i>
+                            <span>4.8 (124 reviews)</span>
                         </div>
-                        <div class="card-footer">
-                            <button class="add-to-cart-btn" data-id="{{ $product->id }}">
-                                <i class="fa-solid fa-cart-plus"></i> Add to Cart
-                            </button>
+                        
+                        <div class="price-row">
+                            <span class="price-now">${{ number_format($product->price, 2) }}</span>
+                            <span class="price-was">${{ number_format($product->compare_price ?: ($product->price * 1.2), 2) }}</span>
                         </div>
+                        
+                        <div class="stock-status {{ $product->stock_quantity < 20 ? 'stock-low' : 'stock-in' }}">
+                            {{ $product->stock_quantity < 20 ? 'Only ' . $product->stock_quantity . ' left' : 'In Stock' }}
+                        </div>
+                        
+                        <button class="add-to-cart-btn" data-id="{{ $product->id }}">
+                            <i class="fa-solid fa-cart-plus"></i> Add to Cart
+                        </button>
                     </div>
                 </div>
             @empty
@@ -135,129 +136,114 @@
 
 @section('styles')
 <style>
-/* Global Offers Page Styles */
+/* Gift Box Inspired Theme for Hot Offers */
 :root {
-    --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #3b82f6 100%);
-    --accent-color: #0d6efd;
-    --card-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
-    --hover-shadow: 0 20px 40px -15px rgba(0,0,0,0.15);
+    --primary-color: #0d6efd;
+    --hero-bg: linear-gradient(135deg, #f0f7ff 0%, #eef2ff 100%);
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --text-dark: #1e293b;
+    --text-gray: #64748b;
 }
 
 .offers-page {
-    background-color: #f8fafc;
+    background-color: #ffffff;
     min-height: 100vh;
 }
 
-/* Hero Section */
+/* Hero Section (Gift Box Style) */
 .offers-hero {
-    background: linear-gradient(135deg, #f0f7ff 0%, #e0f2fe 100%);
+    background: var(--hero-bg);
+    padding: 80px 0 100px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
     position: relative;
-    padding: 80px 0 120px;
-    color: #1e293b;
     overflow: hidden;
-}
-
-.offers-hero::before {
-    content: '';
-    position: absolute;
-    top: -10%;
-    right: -10%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(13, 110, 253, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
 }
 
 .hero-flex {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 50px;
-    position: relative;
-    z-index: 5;
+    gap: 60px;
 }
 
 .offer-tag {
-    background: rgba(244, 63, 94, 0.1);
-    color: #fb7185;
-    padding: 6px 16px;
-    border-radius: 50px;
+    background: rgba(13, 110, 253, 0.08);
+    color: var(--primary-color);
+    padding: 8px 20px;
+    border-radius: 30px;
     font-weight: 700;
     font-size: 14px;
     display: inline-block;
-    margin-bottom: 24px;
-    border: 1px solid rgba(244, 63, 94, 0.2);
+    margin-bottom: 20px;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .hero-title {
-    font-size: 56px;
+    font-size: 48px;
     font-weight: 800;
-    line-height: 1.1;
+    line-height: 1.2;
     margin-bottom: 20px;
-}
-
-.text-gradient {
-    background: var(--primary-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-dark);
 }
 
 .hero-subtitle {
-    font-size: 20px;
-    color: #94a3b8;
-    margin-bottom: 40px;
-    max-width: 500px;
+    font-size: 18px;
+    color: var(--text-gray);
+    max-width: 600px;
+    line-height: 1.6;
+    margin-bottom: 35px;
 }
 
-/* Timer Styling */
+/* Timer Styling (Gift Box Style) */
 .timer-container {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    padding: 24px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: white;
+    padding: 20px 30px;
+    border-radius: 16px;
+    border: 1px solid var(--border-color);
     display: inline-block;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
 }
 
 .timer-label {
     font-size: 14px;
-    color: #64748b;
-    margin-bottom: 12px;
-    font-weight: 600;
+    color: var(--text-gray);
+    margin-bottom: 10px;
+    font-weight: 700;
 }
 
 .timer-display {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 15px;
 }
 
 .time-unit {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 60px;
+    min-width: 45px;
 }
 
 .time-val {
     font-size: 32px;
-    font-weight: 700;
-    font-family: 'Courier New', Courier, monospace;
+    font-weight: 800;
+    color: var(--text-dark);
 }
 
 .time-label {
     font-size: 11px;
     text-transform: uppercase;
-    color: #94a3b8;
-    letter-spacing: 1px;
+    color: var(--text-gray);
+    font-weight: 600;
 }
 
 .time-separator {
     font-size: 24px;
     font-weight: 700;
-    color: #475569;
+    color: var(--border-color);
     margin-bottom: 15px;
 }
 
@@ -267,10 +253,16 @@
     width: 450px;
 }
 
+.main-visual-bg {
+    position: relative;
+    z-index: 1;
+}
+
 .main-visual-bg img {
     width: 100%;
-    filter: drop-shadow(0 20px 40px rgba(0,0,0,0.4));
-    animation: float 6s ease-in-out infinite;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.1));
+    animation: floatGift 5s ease-in-out infinite;
+    border-radius: 12px;
 }
 
 .floating-card {
@@ -278,32 +270,34 @@
     background: white;
     padding: 10px;
     border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-    width: 100px;
-    height: 100px;
-    z-index: 10;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    width: 110px;
+    height: 110px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border: 1px solid var(--border-color);
+    z-index: 20;
 }
 
 .floating-card img {
-    width: 80%;
-    height: 80%;
+    width: 85%;
+    height: 85%;
     object-fit: contain;
+    border-radius: 6px;
 }
 
-.c1 { top: -20px; right: 0; animation: float 4s ease-in-out infinite 1s; }
-.c2 { bottom: 20px; left: -20px; animation: float 5s ease-in-out infinite 0.5s; }
+.c1 { top: -15px; right: 0; animation: floatGift 4s ease-in-out infinite 1s; }
+.c2 { bottom: 20px; left: -20px; animation: floatGift 5s ease-in-out infinite 0.5s; }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-20px) rotate(5deg); }
+@keyframes floatGift {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
 }
 
 .wave-divider {
     position: absolute;
-    bottom: 0;
+    bottom: -1px;
     left: 0;
     width: 100%;
     overflow: hidden;
@@ -314,215 +308,298 @@
     position: relative;
     display: block;
     width: calc(100% + 1.3px);
-    height: 60px;
+    height: 50px;
 }
 
-.wave-divider .shape-fill { fill: #f8fafc; }
+.wave-divider .shape-fill { fill: #ffffff; }
 
-/* Filter Bar */
+/* Product Grid (Gift Box Style) */
+.offers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.offer-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 24px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+}
+
+.offer-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.06);
+    border-color: var(--primary-color);
+}
+
+/* Filter Bar Styling */
 .filter-bar {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    border-bottom: 2px solid #e2e8f0;
-    padding-bottom: 20px;
+    margin-bottom: 50px;
+    padding-bottom: 25px;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .filter-info h2 {
-    font-size: 28px;
+    font-size: 36px;
     font-weight: 800;
-    color: #0f172a;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+    letter-spacing: -1px;
+}
+
+.filter-info p {
+    font-size: 16px;
+    color: var(--text-gray);
+    margin: 0;
 }
 
 .count-badge {
-    background: #e2e8f0;
-    color: #475569;
+    background: rgba(13, 110, 253, 0.08);
+    color: var(--primary-color);
     font-size: 14px;
     padding: 4px 12px;
-    border-radius: 20px;
+    border-radius: 50px;
+    vertical-align: middle;
+    margin-left: 10px;
 }
 
-.filter-info p { color: #64748b; margin: 5px 0 0; }
+/* Custom Dropdown Styling */
+.filter-actions {
+    min-width: 240px;
+}
 
 .custom-select-wrapper {
     position: relative;
+    display: block;
 }
 
 .custom-select {
+    width: 100%;
     appearance: none;
-    background: white;
-    border: 1px solid #e2e8f0;
-    padding: 12px 45px 12px 20px;
-    border-radius: 12px;
-    font-weight: 600;
-    color: #334155;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    padding: 14px 45px 14px 20px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
     cursor: pointer;
-    transition: all 0.2s;
-    min-width: 220px;
+    transition: all 0.3s ease;
+    outline: none;
 }
 
-.custom-select:hover { border-color: #6366f1; }
+.custom-select:hover {
+    border-color: var(--primary-color);
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
 .custom-select-wrapper i {
     position: absolute;
     right: 18px;
     top: 50%;
     transform: translateY(-50%);
     pointer-events: none;
-    color: #94a3b8;
+    color: var(--text-gray);
+    font-size: 14px;
+    transition: 0.3s;
 }
 
-/* Product Grid */
-.offers-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 30px;
+.custom-select:focus + i {
+    color: var(--primary-color);
+    transform: translateY(-50%) rotate(180deg);
 }
 
-.offer-card {
-    background: white;
-    border-radius: 24px;
-    padding: 12px;
-    box-shadow: var(--card-shadow);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    border: 1px solid transparent;
-}
-
-.offer-card:hover {
-    transform: translateY(-10px);
-    box-shadow: var(--hover-shadow);
-    border-color: rgba(99, 102, 241, 0.2);
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 25px;
+    }
+    .filter-actions {
+        width: 100%;
+    }
 }
 
 .card-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .discount-pill {
-    background: var(--accent-color);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 10px;
-    font-weight: 800;
-    font-size: 14px;
+    background: #fee2e2;
+    color: #ef4444;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    border: 1px solid rgba(239, 68, 68, 0.1);
 }
 
 .wishlist-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
+    background: #f8fafc;
     border: none;
-    background: #f1f5f9;
-    color: #64748b;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #94a3b8;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: 0.2s;
 }
 
-.wishlist-btn:hover { background: #fecdd3; color: #f43f5e; }
+.wishlist-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
 
 .card-img-wrapper {
-    height: 220px;
+    height: 200px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 15px;
-    overflow: hidden;
-    border-radius: 18px;
     background: #f8fafc;
+    border-radius: 16px;
+    margin-bottom: 25px;
+    padding: 20px;
 }
 
 .product-img {
-    max-width: 80%;
-    max-height: 80%;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     transition: transform 0.5s ease;
 }
 
-.offer-card:hover .product-img { transform: scale(1.1); }
-
-.card-body { padding: 8px 10px 10px; }
-
-.category-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 10px;
+.offer-card:hover .product-img {
+    transform: scale(1.08);
 }
 
-.cat-name {
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.category-tag {
     font-size: 12px;
-    font-weight: 700;
-    color: #94a3b8;
+    font-weight: 800;
+    color: #3b82f6;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    margin-bottom: 12px;
+    display: block;
 }
 
-.rating {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    font-weight: 700;
-    color: #f59e0b;
-}
-
-.product-name {
-    font-size: 17px;
-    font-weight: 700;
+.product-title {
+    font-size: 22px;
+    font-weight: 800;
     color: #1e293b;
-    margin-bottom: 15px;
-    line-height: 1.3;
-    height: 44px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    margin-bottom: 20px;
+    line-height: 1.2;
+    height: auto;
 }
 
-.product-name a { color: inherit; text-decoration: none; transition: color 0.2s; }
-.product-name a:hover { color: #6366f1; }
-
-.price-section {
+.rating-row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 8px;
     margin-bottom: 20px;
 }
 
-.price-now { font-size: 24px; font-weight: 800; color: #0f172a; }
-.price-was { font-size: 14px; color: #94a3b8; text-decoration: line-through; margin-left: 6px; }
+.rating-row i {
+    color: #f59e0b;
+    font-size: 16px;
+}
 
-.stock-status { font-size: 11px; font-weight: 700; color: #10b981; text-transform: uppercase; }
-.stock-status.low-stock { color: #f43f5e; }
+.rating-row span {
+    font-size: 15px;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.price-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.price-now {
+    font-size: 32px;
+    font-weight: 900;
+    color: #1e293b;
+}
+
+.price-was {
+    font-size: 18px;
+    color: #94a3b8;
+    text-decoration: line-through;
+}
+
+.stock-status {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.stock-in { color: #10b981; }
+.stock-in::before { 
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #10b981;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.stock-low { color: #f43f5e; }
+.stock-low::before { 
+    content: '';
+    width: 8px;
+    height: 8px;
+    background: #f43f5e;
+    border-radius: 50%;
+    display: inline-block;
+}
 
 .add-to-cart-btn {
     width: 100%;
-    background: #3b82f6;
+    background: #0d6efd;
     color: white;
     border: none;
-    padding: 14px;
-    border-radius: 14px;
-    font-weight: 700;
-    font-size: 15px;
+    padding: 16px;
+    border-radius: 16px;
+    font-weight: 800;
+    font-size: 16px;
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
 }
 
-.add-to-cart-btn:hover { background: #2563eb; transform: scale(1.02); }
+.add-to-cart-btn:hover {
+    background: #0a58ca;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+}
 
 /* Pagination */
 .pagination-container { display: flex; justify-content: center; }

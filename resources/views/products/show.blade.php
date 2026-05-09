@@ -171,7 +171,7 @@
         
         <div class="tab-content active" id="description">
             <div class="description-text">
-                <p>{{ $product->description ?? 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.' }}</p>
+                <p>{{ $product->description ?? 'Discover the exceptional quality and innovative design of our products. Engineered for performance and built to last, our items provide unmatched value and reliability for all your needs.' }}</p>
             </div>
             
             <div class="specs-table">
@@ -190,10 +190,10 @@
                         <p><i class="fa-solid fa-check-circle"></i> {{ $feature }}</p>
                     @endforeach
                 @else
-                    <p><i class="fa-solid fa-check-circle"></i> Some great feature name here</p>
-                    <p><i class="fa-solid fa-check-circle"></i> Lorem ipsum dolor sit amet, consectetur</p>
-                    <p><i class="fa-solid fa-check-circle"></i> Duis aute irure dolor in reprehenderit</p>
-                    <p><i class="fa-solid fa-check-circle"></i> Some great feature name here</p>
+                    <p><i class="fa-solid fa-check-circle"></i> Premium build quality and materials</p>
+                    <p><i class="fa-solid fa-check-circle"></i> Ergonomic design for maximum comfort</p>
+                    <p><i class="fa-solid fa-check-circle"></i> Advanced features for modern lifestyles</p>
+                    <p><i class="fa-solid fa-check-circle"></i> Guaranteed performance and durability</p>
                 @endif
             </div>
         </div>
@@ -233,7 +233,7 @@
     <div class="promo-banner">
         <div class="promo-content">
             <h3>Super discount on more than 100 USD</h3>
-            <p>Have you ever finally just write dummy info</p>
+            <p>Exclusive offers for our valued customers. Grab your favorites today!</p>
             <button class="btn btn-white">Shop now</button>
         </div>
     </div>

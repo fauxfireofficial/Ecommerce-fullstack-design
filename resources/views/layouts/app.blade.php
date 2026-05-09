@@ -130,6 +130,117 @@
             border: 2px solid #fff;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 450px;
+            transform: translateX(120%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-left-color: #10b981; }
+        .toast.error { border-left-color: #ef4444; }
+
+        .toast-icon { font-size: 20px; }
+        .toast.success .toast-icon { color: #10b981; }
+        .toast.error .toast-icon { color: #ef4444; }
+
+        .toast-content { flex: 1; }
+        .toast-title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+        .toast-message { font-size: 13px; color: #64748b; }
+
+        /* Help Dropdown Styling */
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: #fff;
+            min-width: 220px;
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 1px solid #f1f5f9;
+            padding: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 5000;
+        }
+
+        .nav-dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-menu a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            color: #475569 !important;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: 0.2s;
+            margin: 0 !important;
+        }
+
+        .dropdown-menu a:hover {
+            background: #f8fafc;
+            color: var(--primary) !important;
+        }
+
+        .dropdown-menu a i {
+            width: 18px;
+            color: #94a3b8;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .dropdown-menu a:hover i {
+            color: var(--primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #f1f5f9;
+            margin: 8px 0;
+        }
+
+        .dropdown-trigger i {
+            transition: 0.3s;
+        }
+
+        .nav-dropdown:hover .dropdown-trigger i {
+            transform: rotate(180deg);
+        }
     </style>
 
     @yield('styles')
@@ -301,7 +412,17 @@
                 <a href="{{ route('products.gift-boxes') }}">Gift boxes</a>
                 <a href="{{ route('brands') }}">Brands</a>
                 <a href="{{ route('services') }}">Services</a>
-                <a href="#">Help <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></a>
+                <div class="nav-dropdown">
+                    <a href="javascript:void(0)" class="dropdown-trigger">Help <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="{{ route('help.faq') }}"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+                        <a href="{{ route('help.policy') }}"><i class="fa-solid fa-shield-halved"></i> Return & Refund</a>
+                        <a href="{{ route('support.index') }}"><i class="fa-solid fa-envelope"></i> Contact Us</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ route('help.privacy') }}"><i class="fa-solid fa-file-contract"></i> Privacy Policy</a>
+                        <a href="{{ route('help.terms') }}"><i class="fa-solid fa-gavel"></i> Terms & Conditions</a>
+                    </div>
+                </div>
             </div>
             <div class="nav-right">
                 <select>
@@ -329,12 +450,16 @@
     <section class="newsletter desktop-only">
         <h3>Subscribe on our newsletter</h3>
         <p>Get daily news on upcoming offers from many suppliers all over the world</p>
-        <div class="subscribe-form">
+        <form action="{{ route('subscribe') }}" method="POST" class="subscribe-form">
+            @csrf
             <i class="fa-regular fa-envelope"></i>
-            <input type="email" placeholder="Email">
-            <button class="btn btn-primary">Subscribe</button>
-        </div>
+            <input type="email" name="email" placeholder="Email" required>
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+        </form>
     </section>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <footer>
         <div class="container footer-grid">
@@ -342,7 +467,7 @@
                 <a href="{{ url('/') }}" class="logo">
                     <img src="{{ asset('Images/brand-logos/logo-colored.png') }}" alt="Brand Logo" style="height: 35px; width: auto;">
                 </a>
-                <p>Best information about the company<br>gies here but now lorem ipsum is</p>
+                <p>Your premier destination for quality electronics and global sourcing. We connect you with top suppliers worldwide.</p>
                 <div class="socials">
                     <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
                     <a href="#"><i class="fa-brands fa-twitter"></i></a>
@@ -555,6 +680,43 @@
                 }
             });
         }
+    </script>
+
+    <script>
+        function showNotification(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+            const title = type === 'success' ? 'Success!' : 'Error';
+
+            toast.innerHTML = `
+                <div class="toast-icon"><i class="fa-solid ${icon}"></i></div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+            `;
+
+            container.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+
+        @if(session('success'))
+            showNotification("{{ session('success') }}", 'success');
+        @endif
+
+        @error('email')
+            showNotification("{{ $message }}", 'error');
+        @enderror
     </script>
 
     <script src="{{ asset('js/script.js') }}"></script>
