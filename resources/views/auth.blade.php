@@ -157,7 +157,7 @@
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="terms" required>
-                        <span>I agree to the <a href="{{ route('terms') }}" target="_blank">Terms & Conditions</a></span>
+                        <span>I agree to the <a href="{{ route('help.terms') }}" target="_blank">Terms & Conditions</a></span>
                     </label>
                     @error('terms')
                         <span class="error-message">{{ $message }}</span>

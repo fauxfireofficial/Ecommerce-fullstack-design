@@ -69,21 +69,21 @@
                     @foreach(json_decode($product->price_tiers, true) ?? [] as $tier)
                     <div class="price-tier">
                         <span class="qty-range">{{ $tier['range'] }}</span>
-                        <span class="price">${{ number_format($tier['price'], 2) }}</span>
+                        <span class="price">{{ App\Services\CurrencyService::convert($tier['price']) }}</span>
                     </div>
                     @endforeach
                 @else
                     <div class="price-tier">
                         <span class="qty-range">1-50 pcs</span>
-                        <span class="price">${{ number_format($product->price, 2) }}</span>
+                        <span class="price">{{ App\Services\CurrencyService::convert($product->price) }}</span>
                     </div>
                     <div class="price-tier">
                         <span class="qty-range">50-100 pcs</span>
-                        <span class="price">${{ number_format($product->price * 0.95, 2) }}</span>
+                        <span class="price">{{ App\Services\CurrencyService::convert($product->price * 0.95) }}</span>
                     </div>
                     <div class="price-tier">
                         <span class="qty-range">100+ pcs</span>
-                        <span class="price">${{ number_format($product->price * 0.9, 2) }}</span>
+                        <span class="price">{{ App\Services\CurrencyService::convert($product->price * 0.9) }}</span>
                     </div>
                 @endif
             </div>
@@ -222,7 +222,7 @@
                 <div class="related-info">
                     <h4>{{ $related->name }}</h4>
                     <p>{{ $related->category ?? 'Product' }}</p>
-                    <span class="price-range">${{ number_format($related->price, 2) }}</span>
+                    <span class="price-range">{{ App\Services\CurrencyService::convert($related->price) }}</span>
                 </div>
             </a>
             @endforeach
@@ -232,7 +232,7 @@
     <!-- Promo Banner -->
     <div class="promo-banner">
         <div class="promo-content">
-            <h3>Super discount on more than 100 USD</h3>
+            <h3>Super discount on more than {{ App\Services\CurrencyService::convert(100) }}</h3>
             <p>Exclusive offers for our valued customers. Grab your favorites today!</p>
             <button class="btn btn-white">Shop now</button>
         </div>

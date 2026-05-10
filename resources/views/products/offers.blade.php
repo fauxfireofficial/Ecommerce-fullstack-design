@@ -102,8 +102,8 @@
                         </div>
                         
                         <div class="price-row">
-                            <span class="price-now">${{ number_format($product->price, 2) }}</span>
-                            <span class="price-was">${{ number_format($product->compare_price ?: ($product->price * 1.2), 2) }}</span>
+                            <span class="price-now">{{ App\Services\CurrencyService::convert($product->price) }}</span>
+                            <span class="price-was">{{ App\Services\CurrencyService::convert($product->compare_price ?: ($product->price * 1.2)) }}</span>
                         </div>
                         
                         <div class="stock-status {{ $product->stock_quantity < 20 ? 'stock-low' : 'stock-in' }}">

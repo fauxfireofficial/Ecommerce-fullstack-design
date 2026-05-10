@@ -133,7 +133,7 @@
                         <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="cat-item">
                             <div class="cat-item-text">
                                 <h4>{{ $item->name }}</h4>
-                                <p>From USD {{ number_format($item->price, 0) }}</p>
+                                <p>From {{ App\Services\CurrencyService::convert($item->price) }}</p>
                             </div>
                             <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
                         </a>
@@ -176,7 +176,7 @@
             @foreach($recommended as $item)
             <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="card rec-card" style="text-decoration: none;">
                 <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
-                <p class="price">${{ number_format($item->price, 2) }}</p>
+                <p class="price">{{ App\Services\CurrencyService::convert($item->price) }}</p>
                 <p class="title">{{ $item->name }}</p>
             </a>
             @endforeach

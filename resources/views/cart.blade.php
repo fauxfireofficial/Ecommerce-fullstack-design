@@ -68,7 +68,7 @@
                                         </div>
                                     </div>
                                     <div class="text-right">
-                                        <p class="text-base font-bold text-[#1C1C1C]">${{ number_format($item['price'] * $item['quantity'], 2) }}</p>
+                                        <p class="text-base font-bold text-[#1C1C1C]">{{ App\Services\CurrencyService::convert($item['price'] * $item['quantity']) }}</p>
                                         <div class="mt-4">
                                             <select class="qty-dropdown-update w-24 px-2 py-1.5 border border-[#E3E8EE] rounded-md text-sm font-medium text-[#1C1C1C] outline-none bg-white cursor-pointer" data-id="{{ $id }}">
                                                 @for($i = 1; $i <= 10; $i++)
@@ -138,7 +138,7 @@
                         <div class="space-y-3 mb-5">
                             <div class="flex justify-between text-[#505050]">
                                 <span class="text-base">Subtotal:</span>
-                                <span class="text-base font-medium">${{ number_format($total, 2) }}</span>
+                                <span class="text-base font-medium">{{ App\Services\CurrencyService::convert($total) }}</span>
                             </div>
                             <div class="flex justify-between text-[#505050]">
                                 <span class="text-base">Discount:</span>
@@ -154,7 +154,7 @@
 
                         <div class="flex justify-between items-center mb-6">
                             <span class="text-lg font-bold text-[#1C1C1C]">Total:</span>
-                            <span class="text-xl font-bold text-[#1C1C1C]">${{ number_format($total, 2) }}</span>
+                            <span class="text-xl font-bold text-[#1C1C1C]">{{ App\Services\CurrencyService::convert($total) }}</span>
                         </div>
 
                         <a href="{{ route('checkout') }}" class="w-full bg-[#00B517] text-white font-bold py-3.5 rounded-md hover:bg-[#00a014] transition-all flex items-center justify-center text-lg shadow-sm">

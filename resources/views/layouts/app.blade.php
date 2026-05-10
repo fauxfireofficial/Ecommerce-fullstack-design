@@ -241,6 +241,231 @@
         .nav-dropdown:hover .dropdown-trigger i {
             transform: rotate(180deg);
         }
+
+        /* Specific styles for smaller right-side dropdowns */
+        .dropdown-small {
+            min-width: 180px;
+            right: 0;
+        }
+
+        .nav-flag {
+            width: 18px;
+            height: auto;
+            border-radius: 2px;
+            vertical-align: middle;
+            margin: 0 4px;
+        }
+
+        .currency-symbol {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            color: var(--primary);
+            width: 25px;
+            display: inline-block;
+        }
+
+        .nav-right .nav-dropdown {
+            margin-left: 15px;
+        }
+
+        .nav-right .dropdown-trigger {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Upgrade Mobile Sidebar CSS */
+        .mobile-sidebar {
+            position: fixed;
+            top: 0;
+            left: -320px;
+            width: 320px;
+            height: 100vh;
+            background: #fff;
+            z-index: 5000;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+        }
+
+        .mobile-sidebar.active { left: 0; }
+
+        .sidebar-header {
+            padding: 30px 25px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+        }
+
+        .sidebar-user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .sidebar-header .avatar-bg {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            border: 2px solid #fff;
+            box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+            overflow: hidden;
+        }
+
+        .user-text { display: flex; flex-direction: column; }
+        .user-name { font-weight: 700; color: #1e293b; font-size: 16px; }
+        .user-sub-link { font-size: 12px; color: var(--primary); font-weight: 600; text-decoration: none; }
+        .auth-links { font-size: 13px; color: #64748b; }
+        .auth-links a { color: var(--primary); font-weight: 600; }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 20px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .close-btn:hover { color: #ef4444; transform: rotate(90deg); }
+
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+            background: #fff;
+        }
+
+        .sidebar-section { padding: 0 0 25px 0; }
+        .section-label {
+            padding: 0 25px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .sidebar-list li a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 25px;
+            color: #475569;
+            font-weight: 600;
+            font-size: 15px;
+            transition: 0.2s;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-list li a i {
+            width: 20px;
+            color: #94a3b8;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        .sidebar-list li a:hover, .sidebar-list li a.active {
+            background: #f8fafc;
+            color: var(--primary);
+            border-left-color: var(--primary);
+        }
+
+        .sidebar-list li a:hover i, .sidebar-list li a.active i {
+            color: var(--primary);
+        }
+
+        /* Submenu Styling */
+        .sidebar-submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.4s ease-out;
+            background: #f8fafc;
+            list-style: none;
+            padding-left: 15px;
+        }
+
+        .sidebar-submenu.active {
+            max-height: 500px; /* Large enough for items */
+            padding-bottom: 10px;
+        }
+
+        .sidebar-submenu li a {
+            padding: 10px 25px !important;
+            font-size: 14px !important;
+            font-weight: 500 !important;
+            border-left: none !important;
+        }
+
+        .submenu-arrow {
+            margin-left: auto;
+            font-size: 12px;
+            transition: 0.3s;
+            color: #94a3b8;
+        }
+
+        .has-submenu.open .submenu-arrow {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+
+        .sidebar-list.no-icon li a {
+            padding: 10px 25px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 20px 25px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            background: #fff1f2;
+            color: #e11d48;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover { background: #ffe4e6; transform: translateY(-2px); }
+
+        .mobile-sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 4000;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s;
+        }
+        .mobile-sidebar-overlay.active { opacity: 1; visibility: visible; }
     </style>
 
     @yield('styles')
@@ -289,45 +514,98 @@
     <!-- Mobile Sidebar Menu -->
     <div class="mobile-sidebar" id="mobileSidebar">
         <div class="sidebar-header">
-            <div class="avatar-bg">
-                @auth
-                    @if(auth()->user()->avatar)
-                        <img src="{{ asset(auth()->user()->avatar) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            <div class="sidebar-user-info">
+                <div class="avatar-bg">
+                    @auth
+                        @if(auth()->user()->avatar)
+                            <img src="{{ asset(auth()->user()->avatar) }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                        @else
+                            <i class="fa-solid fa-user"></i>
+                        @endif
                     @else
                         <i class="fa-solid fa-user"></i>
-                    @endif
-                @else
-                    <i class="fa-solid fa-user"></i>
-                @endauth
+                    @endauth
+                </div>
+                <div class="user-text">
+                    @auth
+                        <span class="user-name">{{ auth()->user()->name }}</span>
+                        <a href="{{ route('profile.index') }}" class="user-sub-link">View Profile</a>
+                    @else
+                        <span class="user-name">Welcome, Guest</span>
+                        <div class="auth-links">
+                            <a href="{{ route('login') }}">Sign in</a> | <a href="{{ route('register') }}">Register</a>
+                        </div>
+                    @endauth
+                </div>
             </div>
             <i class="fa-solid fa-xmark close-btn" id="closeSidebar"></i>
-            @auth
-                <p><a href="{{ route('profile.index') }}" style="color: inherit;">Hello, {{ auth()->user()->name }}</a></p>
-            @else
-                <p><a href="{{ route('login') }}" style="color: inherit;">Sign in</a> | <a href="{{ route('register') }}" style="color: inherit;">Register</a></p>
-            @endauth
         </div>
+
         <div class="sidebar-content">
-            <ul class="sidebar-list">
-                <li><a href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Home</a></li>
-                <li><a href="#"><i class="fa-solid fa-list-ul"></i> Categories</a></li>
-                <li><a href="#"><i class="fa-regular fa-heart"></i> Favorites</a></li>
-                <li><a href="{{ route('brands') }}"><i class="fa-solid fa-tag"></i> Brands</a></li>
-                <li><a href="{{ route('services') }}"><i class="fa-solid fa-gears"></i> Services</a></li>
-                <li><a href="#"><i class="fa-solid fa-box-archive"></i> My orders</a></li>
-            </ul>
-            <hr>
-            <ul class="sidebar-list">
-                <li><a href="#"><i class="fa-solid fa-globe"></i> English | USD</a></li>
-                <li><a href="{{ route('support.index') }}"><i class="fa-solid fa-headset"></i> Support Center</a></li>
-                <li><a href="#"><i class="fa-regular fa-building"></i> About</a></li>
-            </ul>
-            <hr>
-            <ul class="sidebar-list no-icon">
-                <li><a href="#">User agreement</a></li>
-                <li><a href="#">Partnership</a></li>
-                <li><a href="#">Privacy policy</a></li>
-            </ul>
+            <div class="sidebar-section">
+                <h4 class="section-label">General</h4>
+                <ul class="sidebar-list">
+                    <li><a href="{{ route('home') }}" class="{{ Route::is('home') ? 'active' : '' }}"><i class="fa-solid fa-house"></i> Home</a></li>
+                    <li>
+                        <a href="javascript:void(0)" class="has-submenu" onclick="toggleSidebarSubmenu(this)">
+                            <i class="fa-solid fa-layer-group"></i> All Categories
+                            <i class="fa-solid fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="sidebar-submenu" id="categorySubmenu">
+                            <li><a href="{{ route('products.index') }}">View Everything</a></li>
+                            <li><a href="{{ route('products.index', ['category' => 'Gadgets']) }}">Electronics & Gadgets</a></li>
+                            <li><a href="{{ route('products.index', ['category' => 'Clothing']) }}">Fashion & Clothing</a></li>
+                            <li><a href="{{ route('products.index', ['category' => 'Accessory']) }}">Accessories</a></li>
+                            <li><a href="{{ route('brands') }}">Browse by Brands</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ route('products.offers') }}"><i class="fa-solid fa-fire"></i> Hot Offers</a></li>
+                    <li><a href="{{ route('products.gift-boxes') }}"><i class="fa-solid fa-gift"></i> Gift Boxes</a></li>
+                    <li><a href="{{ route('brands') }}"><i class="fa-solid fa-award"></i> Brands</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="section-label">Account & Orders</h4>
+                <ul class="sidebar-list">
+                    <li><a href="{{ route('profile.index') }}"><i class="fa-solid fa-box-open"></i> My Orders</a></li>
+                    <li><a href="javascript:void(0)" onclick="toggleWishlist(true); document.getElementById('closeSidebar').click();"><i class="fa-solid fa-heart"></i> My Favorites</a></li>
+                    <li><a href="{{ route('support.index') }}"><i class="fa-solid fa-headset"></i> Support Center</a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="section-label">Preferences</h4>
+                @php 
+                    $currentCurrency = App\Services\CurrencyService::getCurrentCurrency();
+                    $shipToFlags = ['USD' => 'us', 'AED' => 'ae', 'PKR' => 'pk'];
+                    $currentFlag = $shipToFlags[$currentCurrency] ?? 'us';
+                @endphp
+                <ul class="sidebar-list">
+                    <li><a href="javascript:void(0)" onclick="openMobileSelection('currency')"><i class="fa-solid fa-globe"></i> English | {{ $currentCurrency }}</a></li>
+                    <li><a href="javascript:void(0)" onclick="openMobileSelection('ship-to')"><i class="fa-solid fa-truck-fast"></i> Ship to <img src="https://flagcdn.com/w20/{{ $currentFlag }}.png" style="width:16px; margin-left:5px; border-radius:2px;"></a></li>
+                </ul>
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="section-label">Information</h4>
+                <ul class="sidebar-list no-icon">
+                    <li><a href="{{ route('help.about') }}">About Us</a></li>
+                    <li><a href="{{ route('help.faq') }}">FAQs</a></li>
+                    <li><a href="{{ route('help.policy') }}">Return Policy</a></li>
+                    <li><a href="{{ route('help.privacy') }}">Privacy Policy</a></li>
+                    <li><a href="{{ route('help.terms') }}">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            
+            @auth
+            <div class="sidebar-footer">
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="logout-btn"><i class="fa-solid fa-right-from-bracket"></i> Log out</button>
+                </form>
+            </div>
+            @endauth
         </div>
     </div>
 
@@ -425,22 +703,40 @@
                 </div>
             </div>
             <div class="nav-right">
-                <select>
-                    <option>English, USD</option>
-                </select>
-                <select>
-                    <option>Ship to 🇩🇪</option>
-                </select>
+                @php 
+                    $currentCurrency = App\Services\CurrencyService::getCurrentCurrency();
+                    $shipToFlags = ['USD' => 'us', 'AED' => 'ae', 'PKR' => 'pk'];
+                    $currentFlag = $shipToFlags[$currentCurrency] ?? 'us';
+                @endphp
+                <!-- Currency Dropdown -->
+                <div class="nav-dropdown">
+                    <a href="javascript:void(0)" class="dropdown-trigger">English, {{ $currentCurrency }} <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></a>
+                    <div class="dropdown-menu dropdown-small">
+                        <a href="javascript:void(0)"><span class="currency-symbol">$</span> USD - US Dollar</a>
+                        <a href="javascript:void(0)"><span class="currency-symbol">د.إ</span> AED - UAE Dirham</a>
+                        <a href="javascript:void(0)"><span class="currency-symbol">Rs.</span> PKR - Pak Rupee</a>
+                    </div>
+                </div>
+
+                <!-- Ship To Dropdown -->
+                <div class="nav-dropdown">
+                    <a href="javascript:void(0)" class="dropdown-trigger">Ship to <img src="https://flagcdn.com/w20/{{ $currentFlag }}.png" alt="Country" class="nav-flag"> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></a>
+                    <div class="dropdown-menu dropdown-small">
+                        <a href="javascript:void(0)"><img src="https://flagcdn.com/w20/us.png" alt="USA" class="nav-flag"> United States</a>
+                        <a href="javascript:void(0)"><img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="nav-flag"> United Arab Emirates</a>
+                        <a href="javascript:void(0)"><img src="https://flagcdn.com/w20/pk.png" alt="PK" class="nav-flag"> Pakistan</a>
+                    </div>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Mobile Navigation Scroll Pills -->
     <div class="mobile-nav-scroll">
-        <div class="mobile-nav-pill active">All category</div>
-        <div class="mobile-nav-pill">Gadgets</div>
-        <div class="mobile-nav-pill">Clocthing</div>
-        <div class="mobile-nav-pill">Accessory</div>
+        <a href="{{ route('products.index') }}" class="mobile-nav-pill {{ !request('category') ? 'active' : '' }}">All category</a>
+        <a href="{{ route('products.index', ['category' => 'Gadgets']) }}" class="mobile-nav-pill {{ request('category') == 'Gadgets' ? 'active' : '' }}">Gadgets</a>
+        <a href="{{ route('products.index', ['category' => 'Clothing']) }}" class="mobile-nav-pill {{ request('category') == 'Clothing' ? 'active' : '' }}">Clothing</a>
+        <a href="{{ route('products.index', ['category' => 'Accessory']) }}" class="mobile-nav-pill {{ request('category') == 'Accessory' ? 'active' : '' }}">Accessory</a>
     </div>
     @endif
 
@@ -476,7 +772,7 @@
                     <a href="#"><i class="fa-brands fa-youtube"></i></a>
                 </div>
             </div>
-            <div class="footer-col"><h4>About</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="{{ route('products.gift-boxes') }}">Gift Boxes</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
+            <div class="footer-col"><h4>About</h4><ul><li><a href="{{ route('help.about') }}">About Us</a></li><li><a href="#">Find store</a></li><li><a href="{{ route('products.gift-boxes') }}">Gift Boxes</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
             <div class="footer-col"><h4>Partnership</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
             <div class="footer-col"><h4>Information</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Money Refund</a></li><li><a href="#">Shipping</a></li><li><a href="#">Contact us</a></li></ul></div>
             <div class="footer-col"><h4>For users</h4><ul><li><a href="{{ route('login') }}">Login</a></li><li><a href="{{ route('register') }}">Register</a></li><li><a href="#">Settings</a></li><li><a href="#">My Orders</a></li></ul></div>
@@ -721,5 +1017,159 @@
 
     <script src="{{ asset('js/script.js') }}"></script>
     @yield('scripts')
+    <script>
+        // Custom Dropdown Selection Logic (Desktop)
+        document.querySelectorAll('.nav-dropdown .dropdown-menu a').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                handlePreferenceChange(this);
+            });
+        });
+
+        function handlePreferenceChange(element) {
+            let selectedCurrency = null;
+
+            // Identify if this is a currency selection or ship-to selection
+            if (element.querySelector('.currency-symbol')) {
+                selectedCurrency = element.textContent.split(' - ')[0].trim();
+            } else if (element.querySelector('.nav-flag')) {
+                const country = element.textContent.trim();
+                if (country === 'United States') selectedCurrency = 'USD';
+                else if (country === 'United Arab Emirates') selectedCurrency = 'AED';
+                else if (country === 'Pakistan') selectedCurrency = 'PKR';
+            } else if (element.hasAttribute('data-currency')) {
+                selectedCurrency = element.getAttribute('data-currency');
+            }
+
+            if (selectedCurrency) {
+                fetch("{{ route('currency.set') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({ currency: selectedCurrency })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        window.location.reload();
+                    }
+                });
+            }
+        }
+
+        // Mobile Selection Logic
+        function openMobileSelection(type) {
+            const modal = document.getElementById('mobilePrefModal');
+            const title = document.getElementById('mobilePrefTitle');
+            const list = document.getElementById('mobilePrefList');
+            
+            list.innerHTML = '';
+            
+            if (type === 'currency') {
+                title.innerText = 'Select Currency';
+                const options = [
+                    { code: 'USD', name: 'USD - US Dollar', symbol: '$' },
+                    { code: 'AED', name: 'AED - UAE Dirham', symbol: 'د.إ' },
+                    { code: 'PKR', name: 'PKR - PK Rupee', symbol: 'Rs.' }
+                ];
+                options.forEach(opt => {
+                    const li = document.createElement('div');
+                    li.className = 'pref-option';
+                    li.innerHTML = `<span>${opt.name}</span> <span class="pref-symbol">${opt.symbol}</span>`;
+                    li.onclick = () => { handlePreferenceChange({ hasAttribute: (a) => a === 'data-currency', getAttribute: (a) => opt.code }); };
+                    list.appendChild(li);
+                });
+            } else {
+                title.innerText = 'Select Ship To';
+                const options = [
+                    { country: 'United States', flag: 'us' },
+                    { country: 'United Arab Emirates', flag: 'ae' },
+                    { country: 'Pakistan', flag: 'pk' }
+                ];
+                options.forEach(opt => {
+                    const li = document.createElement('div');
+                    li.className = 'pref-option';
+                    li.innerHTML = `<img src="https://flagcdn.com/w20/${opt.flag}.png" style="width:20px; border-radius:2px;"> <span>${opt.country}</span>`;
+                    li.onclick = () => { 
+                        // Simulate the same logic as desktop
+                        const mockElement = {
+                            querySelector: (sel) => sel === '.nav-flag' ? true : null,
+                            textContent: opt.country
+                        };
+                        handlePreferenceChange(mockElement);
+                    };
+                    list.appendChild(li);
+                });
+            }
+            
+            modal.classList.add('active');
+            document.getElementById('drawerOverlay').classList.add('active');
+        }
+
+        function closeMobilePref() {
+            document.getElementById('mobilePrefModal').classList.remove('active');
+            document.getElementById('drawerOverlay').classList.remove('active');
+        }
+
+        function toggleSidebarSubmenu(element) {
+            element.classList.toggle('open');
+            const submenu = element.nextElementSibling;
+            submenu.classList.toggle('active');
+        }
+    </script>
+
+    <!-- Mobile Preference Modal -->
+    <div class="mobile-pref-modal" id="mobilePrefModal">
+        <div class="pref-header">
+            <h3 id="mobilePrefTitle">Select Preference</h3>
+            <i class="fa-solid fa-xmark" onclick="closeMobilePref()"></i>
+        </div>
+        <div class="pref-list" id="mobilePrefList">
+            <!-- Dynamic content -->
+        </div>
+    </div>
+
+    <style>
+        .mobile-pref-modal {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            z-index: 6000;
+            border-radius: 24px 24px 0 0;
+            padding: 25px;
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.1);
+        }
+        .mobile-pref-modal.active { bottom: 0; }
+        
+        .pref-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .pref-header h3 { font-size: 18px; font-weight: 700; color: #1e293b; }
+        .pref-header i { font-size: 20px; color: #94a3b8; cursor: pointer; }
+
+        .pref-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            font-weight: 600;
+            color: #475569;
+            transition: 0.2s;
+            gap: 12px;
+        }
+        .pref-option:last-child { border-bottom: none; }
+        .pref-option:active { background: #f8fafc; }
+        .pref-symbol { color: var(--primary); font-weight: 800; }
+    </style>
 </body>
 </html>

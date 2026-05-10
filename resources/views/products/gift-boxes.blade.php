@@ -527,7 +527,7 @@
                     </div>
 
                     <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center;">
-                        <span class="price">${{ number_format($product->price, 2) }}</span>
+                        <span class="price">{{ App\Services\CurrencyService::convert($product->price) }}</span>
                     </div>
                     
                     <div style="margin-top: 20px;">

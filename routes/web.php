@@ -92,10 +92,16 @@ Route::get('/reset-password', [OTPController::class, 'showResetPage'])->name('pa
 Route::post('/reset-password', [OTPController::class, 'resetPassword'])->name('password.update');
 
 // Help & Information Pages
+Route::get('/about-us', [\App\Http\Controllers\HelpController::class, 'about'])->name('help.about');
 Route::get('/faqs', [\App\Http\Controllers\HelpController::class, 'faq'])->name('help.faq');
 Route::get('/return-policy', [\App\Http\Controllers\HelpController::class, 'returnPolicy'])->name('help.policy');
 Route::get('/privacy-policy', [\App\Http\Controllers\HelpController::class, 'privacyPolicy'])->name('help.privacy');
 Route::get('/terms-conditions', [\App\Http\Controllers\HelpController::class, 'termsConditions'])->name('help.terms');
+
+Route::post('/set-currency', function (\Illuminate\Http\Request $request) {
+    session(['currency' => $request->currency]);
+    return response()->json(['success' => true]);
+})->name('currency.set');
 
 // --- Admin Portal Routes ---
 use App\Http\Controllers\AdminAuthController;

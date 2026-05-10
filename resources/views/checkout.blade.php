@@ -103,7 +103,7 @@
                         </div>
                         <div class="sum-item-info">
                             <p class="sum-name">{{ Str::limit($item['name'], 30) }}</p>
-                            <p class="sum-price">${{ number_format($item['price'] * $item['quantity'], 2) }}</p>
+                            <p class="sum-price">{{ App\Services\CurrencyService::convert($item['price'] * $item['quantity']) }}</p>
                         </div>
                     </div>
                     @endforeach
@@ -112,7 +112,7 @@
                 <div class="sum-totals">
                     <div class="sum-row">
                         <span>Subtotal:</span>
-                        <span>${{ number_format($total, 2) }}</span>
+                        <span>{{ App\Services\CurrencyService::convert($total) }}</span>
                     </div>
                     <div class="sum-row">
                         <span>Shipping:</span>
@@ -120,7 +120,7 @@
                     </div>
                     <div class="sum-total-row">
                         <span class="total-label">Total:</span>
-                        <span class="total-amount">${{ number_format($total, 2) }}</span>
+                        <span class="total-amount">{{ App\Services\CurrencyService::convert($total) }}</span>
                     </div>
                 </div>
             </div>
