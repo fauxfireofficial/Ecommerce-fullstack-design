@@ -562,6 +562,7 @@
                     <li><a href="{{ route('products.offers') }}"><i class="fa-solid fa-fire"></i> Hot Offers</a></li>
                     <li><a href="{{ route('products.gift-boxes') }}"><i class="fa-solid fa-gift"></i> Gift Boxes</a></li>
                     <li><a href="{{ route('brands') }}"><i class="fa-solid fa-award"></i> Brands</a></li>
+                    <li><a href="{{ route('services') }}"><i class="fa-solid fa-handshake-angle"></i> Our Services</a></li>
                 </ul>
             </div>
 
@@ -613,8 +614,44 @@
     <!-- Header Section -->
     <header class="header-main">
         <div class="container header-wrap">
+            <!-- Global Custom Mobile Header for sub-pages -->
+            @php
+                $excludedRoutes = ['home', 'products.index'];
+                $isSubPage = !in_array(Route::currentRouteName(), $excludedRoutes);
+                
+                // Dynamic Titles Mapping
+                $pageTitles = [
+                    'services' => 'Services',
+                    'profile.index' => 'Profile page',
+                    'products.offers' => 'Hot Offers',
+                    'products.gift-boxes' => 'Gift Boxes',
+                    'brands' => 'Brands',
+                    'cart.index' => 'My Cart',
+                    'checkout' => 'Checkout',
+                    'orders.show' => 'Order Details',
+                    'help.about' => 'About Us',
+                    'help.faq' => 'FAQs',
+                    'help.policy' => 'Return Policy',
+                    'help.privacy' => 'Privacy Policy',
+                    'help.terms' => 'Terms & Conditions',
+                    'support.index' => 'Support Center'
+                ];
+                $currentTitle = $pageTitles[Route::currentRouteName()] ?? 'Store';
+            @endphp
+
+            @if($isSubPage)
+            <div class="m-custom-header mobile-only" style="width: 100%; border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
+                <div class="m-top-bar" style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center;">
+                        <a href="{{ url()->previous() == url()->current() ? route('home') : url()->previous() }}" class="back-link" style="color: #1e293b; font-size: 20px;"><i class="fa-solid fa-arrow-left"></i></a>
+                        <h2 style="margin: 0 0 0 20px; font-size: 19px; font-weight: 700; color: #1e293b;">{{ $currentTitle }}</h2>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             <!-- Mobile Header Top Row / Desktop Header -->
-            <div class="mobile-header-top desktop-contents">
+            <div class="mobile-header-top desktop-contents {{ $isSubPage ? 'desktop-only' : '' }}">
                 <i class="fa-solid fa-bars mobile-menu-icon mobile-only"></i>
                 
                 <a href="{{ url('/') }}" class="logo mobile-logo-center">
@@ -672,10 +709,12 @@
             </div>
 
             <!-- Mobile Search Bar (hidden on desktop) -->
+            @if(in_array(Route::currentRouteName(), ['home', 'products.index']))
             <form action="{{ route('products.index') }}" method="GET" class="search-box mobile-only">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search">
             </form>
+            @endif
         </div>
     </header>
     @endif
@@ -732,12 +771,14 @@
     </nav>
 
     <!-- Mobile Navigation Scroll Pills -->
+    @if(in_array(Route::currentRouteName(), ['home', 'products.index']))
     <div class="mobile-nav-scroll">
         <a href="{{ route('products.index') }}" class="mobile-nav-pill {{ !request('category') ? 'active' : '' }}">All category</a>
         <a href="{{ route('products.index', ['category' => 'Gadgets']) }}" class="mobile-nav-pill {{ request('category') == 'Gadgets' ? 'active' : '' }}">Gadgets</a>
         <a href="{{ route('products.index', ['category' => 'Clothing']) }}" class="mobile-nav-pill {{ request('category') == 'Clothing' ? 'active' : '' }}">Clothing</a>
         <a href="{{ route('products.index', ['category' => 'Accessory']) }}" class="mobile-nav-pill {{ request('category') == 'Accessory' ? 'active' : '' }}">Accessory</a>
     </div>
+    @endif
     @endif
 
     @yield('content')

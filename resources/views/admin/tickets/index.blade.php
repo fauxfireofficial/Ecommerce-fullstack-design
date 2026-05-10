@@ -11,7 +11,7 @@
         </div>
     </div>
 
-    <div class="table-responsive mt-4">
+    <div class="table-responsive mt-4 desktop-only">
         <table class="admin-table">
             <thead>
                 <tr>
@@ -66,6 +66,47 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobile Ticket Cards -->
+    <div class="mobile-ticket-cards mobile-only">
+        @forelse($tickets as $ticket)
+        <div class="ticket-card-item">
+            <div class="ticket-card-header">
+                <span class="id-badge">#{{ $ticket->id }}</span>
+                <span class="status-pill {{ $ticket->status }}">{{ ucfirst($ticket->status) }}</span>
+            </div>
+            <div class="ticket-card-user">
+                <div class="user-avatar-circle">
+                    {{ strtoupper(substr($ticket->user->name ?? 'U', 0, 1)) }}
+                </div>
+                <div class="user-card-details">
+                    <strong>{{ $ticket->user->name ?? 'Deleted User' }}</strong>
+                    <p>{{ $ticket->category ?? 'General' }}</p>
+                </div>
+            </div>
+            <div class="ticket-card-subject">
+                <strong>Subject:</strong> {{ $ticket->subject }}
+            </div>
+            <div class="ticket-card-footer">
+                <span class="ticket-date"><i class="fa-regular fa-calendar"></i> {{ $ticket->created_at->format('d M Y') }}</span>
+                <div class="ticket-actions">
+                    <button class="btn-icon btn-view" onclick="openRespondModal({{ $ticket->id }}, '{{ addslashes($ticket->user->name ?? 'User') }}', '{{ addslashes($ticket->subject) }}', '{{ addslashes($ticket->message) }}', '{{ addslashes($ticket->admin_reply ?? '') }}', '{{ $ticket->status }}', '{{ $ticket->attachment ? asset('storage/' . $ticket->attachment) : '' }}')">
+                        <i class="fa-solid fa-reply"></i>
+                    </button>
+                    <form action="{{ route('admin.tickets.destroy', $ticket->id) }}" method="POST" onsubmit="return confirmDelete(event, this)">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-icon btn-delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-4">No tickets found.</div>
+        @endforelse
     </div>
 
     <div class="mt-4">
@@ -142,7 +183,7 @@
     .admin-table th { text-align: left; padding: 12px 15px; background: #f8fafc; color: #475569; font-weight: 600; font-size: 13px; border-bottom: 1px solid #e2e8f0; }
     .admin-table td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; color: #334155; }
 
-    .id-badge { font-weight: 700; color: #64748b; font-family: monospace; }
+    .id-badge { font-weight: 700; color: #64748b; font-family: monospace; font-size: 13px; }
     .user-info { display: flex; flex-direction: column; }
     .user-name { font-weight: 600; color: #1e293b; }
     .user-email { color: #64748b; font-size: 12px; }
@@ -159,6 +200,19 @@
     .btn-view:hover { background: #2563eb; color: white; }
     .btn-delete { background: #fef2f2; color: #ef4444; }
     .btn-delete:hover { background: #ef4444; color: white; }
+
+    /* Mobile Cards */
+    .mobile-ticket-cards { display: none; flex-direction: column; gap: 15px; margin-top: 20px; }
+    .ticket-card-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+    .ticket-card-header { display: flex; justify-content: space-between; align-items: center; }
+    .ticket-card-user { display: flex; align-items: center; gap: 12px; }
+    .user-avatar-circle { width: 36px; height: 36px; background: #e0f2fe; color: #0369a1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .user-card-details strong { display: block; font-size: 14px; color: #1e293b; }
+    .user-card-details p { margin: 0; font-size: 12px; color: #64748b; }
+    .ticket-card-subject { font-size: 13px; color: #475569; padding: 8px 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+    .ticket-card-footer { display: flex; justify-content: space-between; align-items: center; }
+    .ticket-date { font-size: 12px; color: #94a3b8; }
+    .ticket-actions { display: flex; gap: 8px; }
 
     /* Modal Styling */
     .admin-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(4px); }
@@ -183,6 +237,16 @@
     .btn-primary { background: #3b82f6; color: white; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
     .btn-primary:hover { background: #2563eb; }
     .btn-secondary { background: #f1f5f9; color: #475569; border: none; padding: 10px 20px; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .admin-card { padding: 15px; }
+        .desktop-only { display: none !important; }
+        .mobile-only { display: flex !important; }
+        .info-grid { grid-template-columns: 1fr; gap: 10px; }
+        .admin-modal { width: 95%; }
+        .modal-body { padding: 15px; }
+    }
 </style>
 @endsection
 

@@ -76,8 +76,8 @@
         </div>
     </div>
 
-    <!-- Products Table -->
-    <div class="products-table-container">
+    <!-- Products Table (Desktop) -->
+    <div class="products-table-container desktop-only">
         <table class="products-table" id="productsTable">
             <thead>
                 <tr>
@@ -109,11 +109,11 @@
                     <td>
                         <span class="stock-badge stock-{{ $product->stock_quantity > 10 ? 'high' : ($product->stock_quantity > 0 ? 'low' : 'out') }}">
                             @if($product->stock_quantity > 10)
-                                <i class="fa-solid fa-check-circle"></i> {{ $product->stock_quantity }} in stock
+                                <i class="fa-solid fa-check-circle"></i> {{ $product->stock_quantity }}
                             @elseif($product->stock_quantity > 0)
-                                <i class="fa-solid fa-exclamation-triangle"></i> {{ $product->stock_quantity }} left
+                                <i class="fa-solid fa-exclamation-triangle"></i> {{ $product->stock_quantity }}
                             @else
-                                <i class="fa-solid fa-times-circle"></i> Out of stock
+                                <i class="fa-solid fa-times-circle"></i> Out
                             @endif
                         </span>
                     </td>
@@ -138,11 +138,63 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="8" class="text-center">No products found. <a href="{{ route('admin.products.create') }}">Add your first product</a></td>
+                    <td colspan="8" class="text-center">No products found.</td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
+    </div>
+
+    <!-- Mobile Product Cards -->
+    <div class="mobile-product-cards mobile-only">
+        @forelse($products as $product)
+        <div class="product-card-item">
+            <div class="p-card-top">
+                <div class="p-card-image">
+                    <img src="{{ asset($product->image ?? 'images/placeholder.jpg') }}" alt="{{ $product->name }}">
+                </div>
+                <div class="p-card-info">
+                    <div class="p-card-header">
+                        <span class="category-badge">{{ ucfirst($product->category ?? 'None') }}</span>
+                        <label class="switch sm">
+                            <input type="checkbox" class="status-toggle" data-id="{{ $product->id }}" {{ $product->status == 'active' ? 'checked' : '' }}>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <h4>{{ $product->name }}</h4>
+                    <p class="p-card-sku">SKU: {{ $product->sku ?? 'N/A' }}</p>
+                </div>
+            </div>
+            <div class="p-card-meta">
+                <div class="meta-item">
+                    <label>Price</label>
+                    <span class="p-price-text">${{ number_format($product->price, 2) }}</span>
+                </div>
+                <div class="meta-item">
+                    <label>Stock</label>
+                    <span class="stock-badge stock-{{ $product->stock_quantity > 10 ? 'high' : ($product->stock_quantity > 0 ? 'low' : 'out') }}">
+                        {{ $product->stock_quantity }}
+                    </span>
+                </div>
+            </div>
+            <div class="p-card-footer">
+                <div class="card-actions">
+                    <a href="{{ route('admin.products.edit', $product->id) }}" class="card-action-btn btn-edit-card">
+                        <i class="fa-solid fa-pen"></i>
+                    </a>
+                    <button class="card-action-btn btn-view-card" onclick="viewProduct({{ $product->id }})">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button class="card-action-btn btn-delete-card" onclick="deleteProduct({{ $product->id }}, '{{ addslashes($product->name) }}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+                <input type="checkbox" class="product-checkbox" value="{{ $product->id }}" onchange="updateBulkActionsBar()">
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-5">No products found.</div>
+        @endforelse
     </div>
 
     <!-- Pagination -->
@@ -468,66 +520,67 @@ input:checked + .slider:before {
     background: var(--gray-50);
 }
 
-/* Responsive Enhancements */
-@media (max-width: 992px) {
-    .products-stats {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
+/* Mobile Product Cards */
+.mobile-product-cards { display: none; flex-direction: column; gap: 15px; margin-top: 20px; }
+.product-card-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+.p-card-top { display: flex; gap: 12px; }
+.p-card-image { width: 80px; height: 80px; border-radius: 8px; overflow: hidden; border: 1px solid #f1f5f9; flex-shrink: 0; }
+.p-card-image img { width: 100%; height: 100%; object-fit: cover; }
+.p-card-info { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.p-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+.p-card-info h4 { margin: 0; font-size: 15px; color: #1e293b; line-height: 1.4; }
+.p-card-sku { margin: 0; font-size: 11px; color: #94a3b8; font-family: monospace; }
 
+.p-card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px 0; border-top: 1px dotted #e2e8f0; border-bottom: 1px dotted #e2e8f0; }
+.p-price-text { font-weight: 700; color: #1e293b; font-size: 15px; }
+
+.p-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.card-actions { display: flex; flex-direction: row; gap: 10px; align-items: center; }
+.card-action-btn { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: 0.2s; }
+.btn-edit-card { background: #eff6ff; color: #2563eb; }
+.btn-view-card { background: #f8fafc; color: #475569; }
+.btn-delete-card { background: #fef2f2; color: #ef4444; }
+
+.switch.sm { width: 36px; height: 18px; }
+.switch.sm .slider:before { height: 12px; width: 12px; left: 3px; bottom: 3px; }
+.switch.sm input:checked + .slider:before { transform: translateX(18px); }
+
+/* Responsive Overrides */
 @media (max-width: 768px) {
+    .desktop-only { display: none !important; }
+    .mobile-only { display: flex !important; }
+    
     .products-stats {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
     }
     
     .filter-bar {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
-    }
-    
-    .search-box-admin {
-        max-width: 100%;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 12px !important;
     }
     
     .filter-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 10px;
-    }
-
-    .filter-group select {
-        width: 100%;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
     }
     
     .bulk-actions-bar {
-        width: 95%;
-        bottom: 10px;
-        padding: 10px;
-        flex-direction: column;
-        border-radius: 15px;
+        width: 95% !important;
+        padding: 10px !important;
+        flex-direction: column !important;
+        border-radius: 15px !important;
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 480px) {
     .products-stats {
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr !important;
     }
-    
     .filter-group {
-        grid-template-columns: 1fr;
-    }
-    
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
-    
-    .page-header .btn {
-        width: 100%;
-        justify-content: center;
+        grid-template-columns: 1fr !important;
     }
 }
 </style>

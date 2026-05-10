@@ -2,6 +2,142 @@
 
 @section('page-title', 'Manage Orders')
 
+@section('styles')
+<style>
+    /* Desktop vs Mobile Toggle */
+    .mobile-order-cards { display: none; }
+    
+    @media (max-width: 768px) {
+        .admin-content { padding: 15px 10px !important; }
+        .page-header { flex-direction: column; align-items: stretch !important; gap: 15px; margin-bottom: 20px !important; }
+        .header-right { width: 100%; }
+        .header-right .btn { width: 100%; justify-content: center; }
+
+        /* Hide desktop table */
+        .orders-table-container { display: none !important; }
+
+        /* Show mobile cards */
+        .mobile-order-cards { display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px; }
+        .order-card-item { background: #fff; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; }
+        
+        .order-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .order-card-id { font-weight: 700; color: #3b82f6; font-size: 15px; }
+        
+        .order-card-user { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .user-avatar-circle { width: 40px; height: 40px; background: #eff6ff; color: #2563eb; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+        .user-info-text strong { display: block; font-size: 14px; color: #1e293b; }
+        .user-info-text p { margin: 0; font-size: 12px; color: #64748b; }
+
+        .order-card-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px 0; border-top: 1px dotted #e2e8f0; border-bottom: 1px dotted #e2e8f0; margin-bottom: 15px; }
+        .meta-item label { display: block; font-size: 10px; color: #94a3b8; text-transform: uppercase; font-weight: 700; margin-bottom: 2px; }
+        .meta-item span { font-size: 13px; font-weight: 600; color: #334155; }
+
+        .order-card-footer { display: flex; justify-content: space-between; align-items: center; }
+        .card-actions { display: flex; gap: 8px; }
+        .card-action-btn { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-view-card { background: #eff6ff; color: #2563eb; }
+        .btn-invoice-card { background: #f0fdf4; color: #16a34a; }
+        .btn-delete-card { background: #fef2f2; color: #ef4444; }
+
+        .orders-stats { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+        .filter-bar { flex-direction: column !important; gap: 12px !important; }
+        .search-box-admin { max-width: 100% !important; }
+        .filter-group { width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .filter-select { width: 100%; }
+
+        .status-select { padding: 4px 8px; font-size: 11px; }
+    }
+
+    /* Professional Centered Order Modal */
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 2000;
+        align-items: center; justify-content: center;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+    .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+    .modal-content {
+        background: #fff; width: 100%; max-width: 900px; border-radius: 20px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        overflow: hidden; transform: scale(0.95); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        max-height: 90vh; display: flex; flex-direction: column;
+    }
+    .modal.active .modal-content { transform: scale(1); }
+    .modal-header { padding: 20px 30px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; }
+    .modal-close { width: 32px; height: 32px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; }
+    .modal-close:hover { background: #e2e8f0; transform: rotate(90deg); }
+    .order-details-content { overflow-y: auto; padding: 0; }
+
+    /* Premium Order Details Styling */
+    .order-details-wrapper { padding: 30px; }
+    .order-id-banner { background: #f8fafc; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border: 1px solid #e2e8f0; }
+    .banner-left h3 { margin: 0; font-size: 24px; color: #1e293b; }
+    .banner-left p { margin: 5px 0 0; color: #64748b; font-size: 14px; }
+    .status-badge-premium { padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 12px; display: inline-flex; align-items: center; gap: 8px; }
+    .status-pending { background: #fff7ed; color: #f97316; }
+    .status-delivered { background: #f0fdf4; color: #16a34a; }
+    .status-cancelled { background: #fef2f2; color: #ef4444; }
+
+    .order-info-grid-premium { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+    .info-card-admin { background: #fff; border: 1px solid #f1f5f9; border-radius: 12px; padding: 20px; }
+    .card-header-admin { display: flex; align-items: center; gap: 10px; font-weight: 700; color: #334155; font-size: 14px; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .card-header-admin i { color: #3b82f6; font-size: 16px; }
+    .customer-name-admin { font-weight: 700; color: #1e293b; margin-bottom: 8px; font-size: 16px; }
+    .customer-meta-admin { font-size: 13px; color: #64748b; margin: 4px 0; display: flex; align-items: center; gap: 8px; }
+    .address-text-admin { font-size: 14px; color: #1e293b; line-height: 1.5; margin-bottom: 5px; }
+    .payment-badge-admin { padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+
+    .items-table-wrapper-admin { border: 1px solid #f1f5f9; border-radius: 12px; overflow: hidden; margin-top: 15px; }
+    .items-table-admin { width: 100%; border-collapse: collapse; }
+    .items-table-admin th { background: #f8fafc; padding: 12px 20px; text-align: left; font-size: 12px; color: #64748b; text-transform: uppercase; }
+    .items-table-admin td { padding: 15px 20px; border-top: 1px solid #f1f5f9; font-size: 14px; }
+    .product-info-admin { display: flex; align-items: center; gap: 15px; }
+    .product-info-admin img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; background: #f1f5f9; }
+    .p-name-admin { font-weight: 700; color: #1e293b; margin: 0; }
+    .p-sku-admin { font-size: 11px; color: #94a3b8; margin: 2px 0 0; font-family: monospace; }
+    .item-total-admin { font-weight: 700; color: #1e293b; }
+
+    .order-footer-admin { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 30px; gap: 30px; }
+    .summary-card-admin { background: #f8fafc; border-radius: 12px; padding: 20px; width: 100%; max-width: 350px; }
+    .s-row-admin { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; color: #64748b; }
+    .s-row-admin.total-admin { border-top: 1.5px solid #e2e8f0; padding-top: 12px; margin-top: 10px; font-weight: 800; color: #1e293b; font-size: 18px; }
+    
+    .footer-actions-admin { display: flex; flex-direction: row; gap: 12px; flex: 1; align-items: center; }
+    .btn-admin { padding: 10px 18px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; font-size: 13px; white-space: nowrap; flex: 1; }
+    .btn-admin-invoice { background: #eff6ff; color: #2563eb; }
+    .btn-admin-delete { background: #fef2f2; color: #ef4444; }
+    .btn-admin-close { background: #f1f5f9; color: #475569; }
+    .btn-admin:hover { filter: brightness(0.95); transform: translateY(-1px); }
+
+    .section-header-admin { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .section-header-admin h4 { margin: 0; font-size: 18px; color: #1e293b; }
+    .status-updater-admin { display: flex; align-items: center; gap: 12px; font-size: 13px; color: #64748b; }
+    .status-select-premium { padding: 8px 12px; border-radius: 8px; border: 1.5px solid #e2e8f0; font-size: 13px; outline: none; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    @media (max-width: 768px) {
+        .modal-content { max-height: 100vh; border-radius: 0; }
+        .order-details-wrapper { padding: 20px; }
+        .order-id-banner { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .order-info-grid-premium { grid-template-columns: 1fr; }
+        .order-footer-admin { flex-direction: column; }
+        .summary-card-admin { max-width: 100%; }
+        .items-table-admin th:nth-child(2), .items-table-admin td:nth-child(2) { display: none; }
+        .section-header-admin { flex-direction: column; align-items: flex-start; gap: 15px; }
+    }
+
+    @media (max-width: 480px) {
+        .orders-stats { grid-template-columns: 1fr !important; }
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="orders-container">
     
@@ -84,7 +220,7 @@
     </div>
 
     <!-- Orders Table -->
-    <div class="orders-table-container">
+    <div class="orders-table-container desktop-only">
         <table class="orders-table" id="ordersTable">
             <thead>
                 <tr>
@@ -151,6 +287,63 @@
         </table>
     </div>
 
+    <!-- Mobile Order Cards -->
+    <div class="mobile-order-cards mobile-only">
+        @forelse($orders as $order)
+        <div class="order-card-item order-row" data-status="{{ $order->status }}" data-date="{{ $order->created_at->format('Y-m-d') }}">
+            <div class="order-card-header">
+                <span class="order-card-id">#{{ $order->id }}</span>
+                <span class="payment-badge payment-{{ strtolower($order->payment_status ?? 'pending') }}">
+                    {{ ucfirst($order->payment_status ?? 'Pending') }}
+                </span>
+            </div>
+            <div class="order-card-user" onclick="viewOrder({{ $order->id }})">
+                <div class="user-avatar-circle">
+                    {{ substr($order->user->name ?? 'G', 0, 1) }}
+                </div>
+                <div class="user-info-text">
+                    <strong>{{ $order->user->name ?? 'Guest User' }}</strong>
+                    <p>{{ $order->user->email ?? 'guest@example.com' }}</p>
+                </div>
+            </div>
+            <div class="order-card-meta">
+                <div class="meta-item">
+                    <label>Amount</label>
+                    <span>${{ number_format($order->total_amount, 2) }}</span>
+                </div>
+                <div class="meta-item">
+                    <label>Date</label>
+                    <span>{{ $order->created_at->format('d M, Y') }}</span>
+                </div>
+            </div>
+            <div class="order-card-footer">
+                <div class="status-box">
+                    <select class="status-select" data-order-id="{{ $order->id }}" onchange="updateOrderStatus(this)">
+                        <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>📋 Pending</option>
+                        <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>⚙️ Processing</option>
+                        <option value="shipped" {{ $order->status == 'shipped' ? 'selected' : '' }}>🚚 Shipped</option>
+                        <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>✅ Delivered</option>
+                        <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>❌ Cancelled</option>
+                    </select>
+                </div>
+                <div class="card-actions">
+                    <button class="card-action-btn btn-view-card" onclick="viewOrder({{ $order->id }})">
+                        <i class="fa-solid fa-eye"></i>
+                    </button>
+                    <button class="card-action-btn btn-invoice-card" onclick="generateInvoice({{ $order->id }})">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                    <button class="card-action-btn btn-delete-card" onclick="deleteOrder({{ $order->id }})">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        @empty
+        <div class="text-center py-5">No orders found</div>
+        @endforelse
+    </div>
+
     <!-- Pagination -->
     <div class="pagination-wrapper">
         {{ $orders->links() }}
@@ -159,105 +352,42 @@
 </div>
 
 <!-- View Order Modal -->
-<div class="modal" id="viewOrderModal">
-    <div class="modal-content modal-large">
-        <div class="modal-header">
-            <h3>Order Details</h3>
-            <span class="modal-close" onclick="closeModal()">&times;</span>
-        </div>
-        <div class="order-details-content" id="orderDetails">
-            <!-- Order details will be loaded here -->
+    <div class="modal" id="viewOrderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order Details</h3>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="order-details-content" id="orderDetails">
+                <!-- Order details will be loaded here -->
+            </div>
         </div>
     </div>
-</div>
 @endsection
-
-
 
 @section('scripts')
 <script>
-    // Filter Orders
-    function filterOrders() {
-        const searchTerm = document.getElementById('searchOrder').value.toLowerCase();
-        const statusFilter = document.getElementById('statusFilter').value;
-        const dateFilter = document.getElementById('dateFilter').value;
-        
-        const rows = document.querySelectorAll('.order-row');
-        const today = new Date();
-        
-        rows.forEach(row => {
-            const orderId = row.querySelector('.order-id')?.innerText || '';
-            const customerName = row.querySelector('.customer-details strong')?.innerText || '';
-            const customerEmail = row.querySelector('.customer-details small')?.innerText || '';
-            const status = row.getAttribute('data-status');
-            const orderDate = new Date(row.getAttribute('data-date'));
-            
-            const matchesSearch = orderId.toLowerCase().includes(searchTerm) || 
-                                customerName.toLowerCase().includes(searchTerm) || 
-                                customerEmail.toLowerCase().includes(searchTerm);
-            const matchesStatus = statusFilter === 'all' || status === statusFilter;
-            
-            let matchesDate = true;
-            if (dateFilter === 'today') {
-                matchesDate = orderDate.toDateString() === today.toDateString();
-            } else if (dateFilter === 'week') {
-                const weekAgo = new Date();
-                weekAgo.setDate(today.getDate() - 7);
-                matchesDate = orderDate >= weekAgo;
-            } else if (dateFilter === 'month') {
-                matchesDate = orderDate.getMonth() === today.getMonth() && 
-                             orderDate.getFullYear() === today.getFullYear();
-            } else if (dateFilter === 'year') {
-                matchesDate = orderDate.getFullYear() === today.getFullYear();
-            }
-            
-            if (matchesSearch && matchesStatus && matchesDate) {
-                row.style.display = '';
-            } else {
-                row.style.display = 'none';
-            }
-        });
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
-    // Update Order Status (AJAX)
-    function updateOrderStatus(selectElement) {
-        const orderId = selectElement.getAttribute('data-order-id');
-        const newStatus = selectElement.value;
-        
-        fetch(`/admin/orders/${orderId}/status`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ status: newStatus })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update the row data-status attribute
-                selectElement.closest('tr').setAttribute('data-status', newStatus);
-                showNotification('Order status updated successfully!', 'success');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Error updating order status', 'error');
-        });
+    function closeModal() {
+        document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+        document.body.style.overflow = '';
     }
 
     // View Order Details
     function viewOrder(orderId) {
         console.log('viewOrder called with ID:', orderId);
         
-        /* Premium Admin Order Details Modal */
         document.getElementById('orderDetails').innerHTML = `
             <div style="text-align: center; padding: 50px;">
                 <i class="fa-solid fa-spinner fa-spin" style="font-size: 30px; color: var(--admin-primary);"></i>
                 <p style="margin-top: 15px;">Loading order details...</p>
             </div>
         `;
-        document.getElementById('viewOrderModal').style.display = 'flex';
+        openModal('viewOrderModal');
         
         fetch(`/admin/orders/${orderId}`)
             .then(response => {

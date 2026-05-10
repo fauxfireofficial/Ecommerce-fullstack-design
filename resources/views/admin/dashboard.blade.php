@@ -173,11 +173,11 @@
     </div>
     <div class="stat-card">
         <div class="stat-icon icon-revenue">
-            <i class="fa-solid fa-indian-rupee-sign"></i>
+            <i class="fa-solid fa-dollar-sign"></i>
         </div>
         <div class="stat-info">
             <h3>Total Revenue</h3>
-            <p>₹{{ number_format($totalRevenue, 2) }}</p>
+            <p>${{ number_format($totalRevenue, 2) }}</p>
         </div>
     </div>
     <div class="stat-card">
@@ -218,7 +218,7 @@
                             {{ $order->user->name }}<br>
                             <small style="color: #64748b;">{{ $order->email ?? $order->user->email ?? '' }}</small>
                         </td>
-                        <td>₹{{ number_format($order->total_amount, 2) }}</td>
+                        <td>${{ number_format($order->total_amount, 2) }}</td>
                         <td>
                             <span class="status-badge status-{{ strtolower($order->status) }}">
                                 {{ $order->status }}
@@ -247,7 +247,7 @@
                 <img src="{{ asset('storage/' . $product->image) }}" onerror="this.src='https://placehold.co/100x100?text=Product'" alt="{{ $product->name }}">
                 <div class="product-mini-info">
                     <h4>{{ $product->name }}</h4>
-                    <p>{{ $product->orders_count }} Sales • ₹{{ number_format($product->price, 2) }}</p>
+                    <p>{{ $product->orders_count }} Sales • ${{ number_format($product->price, 2) }}</p>
                 </div>
             </div>
             @empty

@@ -18,6 +18,8 @@
                                 </a>
                             </li>
                         @endforeach
+                        <li><hr style="border: 0; border-top: 1px solid #eee; margin: 5px 0;"></li>
+                        <li><a href="{{ route('services') }}"><i class="fa-solid fa-handshake-angle" style="margin-right: 8px;"></i> Our Services</a></li>
                     </ul>
                 </aside>
 

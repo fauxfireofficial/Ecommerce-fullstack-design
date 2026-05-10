@@ -58,29 +58,38 @@ class ProfileController extends Controller
             'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         
-        $user = auth()->user();
+        $user = User::find(auth()->id()); // Get a fresh user instance
         
-        // Delete old avatar
+        // Delete old avatar if it exists and is not a default placeholder
         if ($user->avatar && file_exists(public_path($user->avatar))) {
-            unlink(public_path($user->avatar));
+            @unlink(public_path($user->avatar));
         }
         
         // Upload new avatar
-        $avatar = $request->file('avatar');
-        $avatarName = time() . '_' . $avatar->getClientOriginalName();
-        
-        // Ensure directory exists
-        if (!file_exists(public_path('images/avatars'))) {
-            mkdir(public_path('images/avatars'), 0777, true);
+        if ($request->hasFile('avatar')) {
+            $avatar = $request->file('avatar');
+            $avatarName = time() . '_' . str_replace(' ', '_', $avatar->getClientOriginalName());
+            
+            // Ensure avatars directory exists in public folder
+            $path = public_path('images/avatars');
+            if (!file_exists($path)) {
+                mkdir($path, 0777, true);
+            }
+            
+            $avatar->move($path, $avatarName);
+            
+            // Save relative path to database
+            $user->avatar = 'images/avatars/' . $avatarName;
+            $user->save();
+            
+            return response()->json([
+                'success' => true, 
+                'message' => 'Avatar updated successfully',
+                'path' => asset($user->avatar)
+            ]);
         }
         
-        $avatar->move(public_path('images/avatars'), $avatarName);
-        
-        $user->update([
-            'avatar' => 'images/avatars/' . $avatarName
-        ]);
-        
-        return response()->json(['success' => true]);
+        return response()->json(['success' => false, 'message' => 'No file uploaded']);
     }
 
     // Change password

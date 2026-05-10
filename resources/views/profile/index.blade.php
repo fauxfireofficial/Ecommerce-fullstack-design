@@ -7,7 +7,7 @@
     <div class="container">
         
         <!-- Page Header -->
-        <div class="profile-header">
+        <div class="profile-header desktop-only">
             <h1 class="profile-title">My Profile</h1>
             <p class="profile-subtitle">Manage your account information</p>
         </div>
@@ -393,10 +393,6 @@
     background-color: var(--bg-body);
 }
 
-.profile-header {
-    margin-bottom: 35px;
-}
-
 .profile-title {
     font-size: 32px;
     font-weight: 700;
@@ -566,6 +562,20 @@
     border-top: 1px solid var(--gray-200);
     padding-top: 20px;
     color: #ef4444;
+}
+
+/* Password eye fix */
+.password-input-wrapper {
+    position: relative;
+}
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--gray-500);
+    z-index: 5;
 }
 
 .logout-link:hover {
@@ -1087,41 +1097,126 @@
     cursor: pointer;
 }
 
-/* Responsive */
-@media (max-width: 1200px) {
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
+/* Mobile Responsiveness */
 @media (max-width: 992px) {
     .profile-grid {
-        grid-template-columns: 1fr;
+        display: block !important;
+        width: 100% !important;
     }
     
     .profile-sidebar {
-        position: static;
+        width: 100% !important;
+        position: static !important;
+        margin-bottom: 20px;
+    }
+    
+    .profile-main {
+        width: 100% !important;
+        margin-left: 0 !important;
     }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 15px 0 !important;
+    }
+    
+    .profile-container > .container {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+
     .profile-main {
-        padding: 25px;
+        padding: 20px 15px !important;
+    }
+    
+    /* Horizontal Nav on Mobile */
+    .profile-nav {
+        display: flex !important;
+        flex-direction: row !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding: 15px 10px !important;
+        margin-bottom: 20px !important;
+        gap: 12px !important;
+        align-items: center !important;
+        -webkit-overflow-scrolling: touch;
+        background: #fff;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .profile-nav::-webkit-scrollbar { display: none; }
+    
+    .profile-nav .nav-link {
+        flex: 0 0 auto !important;
+        padding: 10px 18px !important;
+        border-radius: 12px !important;
+        font-size: 14px !important;
+        height: 42px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 !important;
+        border: 1px solid #e2e8f0 !important;
+        background: #fff; /* Clean white background for inactive */
+        color: #64748b !important; /* Gray text for inactive */
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    .profile-nav .nav-link.active {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+        color: white !important;
+        border-color: transparent !important;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+    }
+
+    .profile-nav .logout-link {
+        border: 1px solid #fee2e2 !important;
+        background: #fef2f2 !important;
+        color: #ef4444 !important;
+        margin-top: 0 !important;
+    }
+    
+    .profile-nav .nav-link i {
+        margin-right: 8px !important;
+        font-size: 16px !important;
+        width: auto !important;
+        height: auto !important;
+    }
+    
+    /* Hide misplaced eye icon */
+    .toggle-password {
+        display: block !important;
+    }
+    .profile-nav .toggle-password {
+        display: none !important;
     }
     
     .stats-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
     }
     
     .order-body {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 20px;
+        flex-direction: column !important;
+        padding: 15px !important;
     }
     
     .order-summary {
-        width: 100%;
-        text-align: left;
+        width: 100% !important;
+        text-align: left !important;
+        border-top: 1px solid #f1f5f9 !important;
+        padding-top: 15px !important;
+    }
+    
+    .addresses-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .stats-grid {
+        grid-template-columns: 1fr !important;
     }
 }
 </style>
