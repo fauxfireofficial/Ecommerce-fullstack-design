@@ -31,7 +31,10 @@ class Product extends Model
         'price',
         'compare_price',
         'stock_quantity',
-        'category',
+        'category_id',
+        'search_tags',
+        'meta_title',
+        'meta_description',
         'image',
         'images',
         'description',
@@ -81,5 +84,10 @@ class Product extends Model
         return $this->belongsToMany(Order::class, 'order_items')
                     ->withPivot('quantity', 'price')
                     ->withTimestamps();
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

@@ -10,7 +10,7 @@
         <i class="fa-solid fa-chevron-right"></i>
         <a href="{{ route('products.index') }}">Products</a>
         <i class="fa-solid fa-chevron-right"></i>
-        <a href="#">{{ ucfirst($product->category) }}</a>
+        <a href="#">{{ ucfirst($product->category->name ?? 'Product') }}</a>
         <i class="fa-solid fa-chevron-right"></i>
         <span>{{ $product->name }}</span>
     </div>
@@ -221,7 +221,7 @@
                 </div>
                 <div class="related-info">
                     <h4>{{ $related->name }}</h4>
-                    <p>{{ $related->category ?? 'Product' }}</p>
+                    <p>{{ $related->category->name ?? 'Product' }}</p>
                     <span class="price-range">{{ App\Services\CurrencyService::convert($related->price) }}</span>
                 </div>
             </a>

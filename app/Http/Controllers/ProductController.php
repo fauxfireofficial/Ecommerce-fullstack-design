@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -10,10 +11,14 @@ class ProductController extends Controller
     // Show product detail page
     public function show($slug)
     {
-        $product = Product::where('slug', $slug)->orWhere('name', $slug)->firstOrFail();
+        $product = Product::with('category')
+                          ->where('slug', $slug)
+                          ->orWhere('name', $slug)
+                          ->firstOrFail();
         
         // Get related products (same category)
-        $relatedProducts = Product::where('category', $product->category)
+        $relatedProducts = Product::with('category')
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->limit(5)
             ->get();
@@ -21,22 +26,64 @@ class ProductController extends Controller
         return view('products.show', compact('product', 'relatedProducts'));
     }
     
-    // Products listing page
+    // Products listing / search page
     public function index(Request $request)
     {
-        $query = Product::query();
+        $query = Product::with('category')->where('status', 'active');
 
-        if ($request->has('category')) {
-            $query->where('category', $request->category);
+        // ─── 1. SMART SEARCH ───────────────────────────────────────────
+        // Searches: name, brand, search_tags, and category name
+        if ($request->filled('search')) {
+            $s = $request->search;
+            $query->where(function ($q) use ($s) {
+                $q->where('name', 'like', "%{$s}%")
+                  ->orWhere('brand', 'like', "%{$s}%")
+                  ->orWhere('search_tags', 'like', "%{$s}%")
+                  ->orWhere('description', 'like', "%{$s}%")
+                  ->orWhereHas('category', function ($q2) use ($s) {
+                      $q2->where('name', 'like', "%{$s}%");
+                  });
+            });
         }
 
-        if ($request->has('brand')) {
+        // ─── 2. CATEGORY FILTER ────────────────────────────────────────
+        if ($request->filled('category')) {
+            $cat = Category::where('name', $request->category)
+                           ->orWhere('slug', $request->category)
+                           ->first();
+            $query->where('category_id', $cat ? $cat->id : -1);
+        }
+
+        // ─── 3. BRAND FILTER ───────────────────────────────────────────
+        if ($request->filled('brand')) {
             $query->where('brand', $request->brand);
         }
 
-        $products = $query->paginate(20);
+        if ($request->filled('brands')) {
+            $query->whereIn('brand', (array) $request->brands);
+        }
+
+        // ─── 4. PRICE RANGE FILTER ─────────────────────────────────────
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // ─── 5. SORTING ────────────────────────────────────────────────
+        switch ($request->sort) {
+            case 'price_low':  $query->orderBy('price', 'asc'); break;
+            case 'price_high': $query->orderBy('price', 'desc'); break;
+            case 'newest':     $query->orderBy('created_at', 'desc'); break;
+            case 'popularity': $query->orderBy('views', 'desc'); break;
+            default:           $query->orderBy('is_recommended', 'desc')->orderBy('created_at', 'desc');
+        }
+
+        $products = $query->paginate(20)->withQueryString();
         return view('products.index', compact('products'));
     }
+
 
     // Brands page
     public function brands()
@@ -67,7 +114,8 @@ class ProductController extends Controller
     // Hot Offers page
     public function hotOffers()
     {
-        $products = Product::where('status', 'active')
+        $products = Product::with('category')
+            ->where('status', 'active')
             ->where('is_deal', true)
             ->orderBy('discount_percent', 'desc')
             ->paginate(16);
@@ -80,8 +128,11 @@ class ProductController extends Controller
     // Gift Boxes page
     public function giftBoxes()
     {
-        $products = Product::where('status', 'active')
-            ->where('category', 'Gift Boxes')
+        $category = Category::where('name', 'Gift Boxes')->first();
+        
+        $products = Product::with('category')
+            ->where('status', 'active')
+            ->where('category_id', $category ? $category->id : -1)
             ->orderBy('created_at', 'desc')
             ->paginate(16);
 

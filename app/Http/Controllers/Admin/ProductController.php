@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -20,7 +21,7 @@ class ProductController extends Controller
         }
 
         if ($request->has('category_filter') && $request->category_filter != 'all') {
-            $query->where('category', $request->category_filter);
+            $query->where('category_id', $request->category_filter);
         }
 
         if ($request->has('search') && !empty($request->search)) {
@@ -28,7 +29,9 @@ class ProductController extends Controller
             $query->where(function($q) use ($s) {
                 $q->where('name', 'like', "%$s%")
                   ->orWhere('sku', 'like', "%$s%")
-                  ->orWhere('category', 'like', "%$s%");
+                  ->orWhereHas('category', function($q2) use ($s) {
+                      $q2->where('name', 'like', "%$s%");
+                  });
             });
         }
 
@@ -40,7 +43,7 @@ class ProductController extends Controller
             'activeProducts' => Product::where('status', 'active')->count(),
             'totalViews' => Product::sum('views'),
             'lowStock' => Product::where('stock_quantity', '<=', 10)->where('stock_quantity', '>', 0)->count(),
-            'categories' => Product::getCategories(),
+            'categories' => Category::all(),
         ];
         
         return view('admin.products.index', $data);
@@ -49,7 +52,7 @@ class ProductController extends Controller
     // Show create form
     public function create()
     {
-        $categories = Product::getCategories();
+        $categories = Category::all();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -62,7 +65,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'compare_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'category' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
             'status' => 'in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable|string',
@@ -82,7 +85,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->compare_price = $request->compare_price;
         $product->stock_quantity = $request->stock_quantity;
-        $product->category = $request->category;
+        $product->category_id = $request->category_id;
         $product->status = $request->status ?? 'active';
         $product->description = $request->description;
         $product->features = $request->features;
@@ -91,6 +94,9 @@ class ProductController extends Controller
         $product->dimensions = $request->dimensions;
         $product->is_deal = $request->has('is_deal');
         $product->discount_percent = $request->discount_percent;
+        $product->search_tags = $request->search_tags;
+        $product->meta_title = $request->meta_title;
+        $product->meta_description = $request->meta_description;
         
         $product->colors = $request->colors ? array_map('trim', explode(',', $request->colors)) : null;
         $product->sizes = $request->sizes ? array_map('trim', explode(',', $request->sizes)) : null;
@@ -125,7 +131,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::findOrFail($id);
-        $categories = Product::getCategories();
+        $categories = Category::all();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
@@ -140,7 +146,7 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'compare_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
-            'category' => 'required|string',
+            'category_id' => 'required|exists:categories,id',
             'status' => 'in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'gallery_images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
@@ -150,6 +156,9 @@ class ProductController extends Controller
             'colors' => 'nullable|string',
             'sizes' => 'nullable|string',
             'materials' => 'nullable|string',
+            'search_tags' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string',
         ]);
 
         $product->name = $request->name;
@@ -157,7 +166,7 @@ class ProductController extends Controller
         $product->price = $request->price;
         $product->compare_price = $request->compare_price;
         $product->stock_quantity = $request->stock_quantity;
-        $product->category = $request->category;
+        $product->category_id = $request->category_id;
         $product->status = $request->status;
         $product->description = $request->description;
         $product->features = $request->features;
@@ -166,6 +175,9 @@ class ProductController extends Controller
         $product->dimensions = $request->dimensions;
         $product->is_deal = $request->has('is_deal');
         $product->discount_percent = $request->discount_percent;
+        $product->search_tags = $request->search_tags;
+        $product->meta_title = $request->meta_title;
+        $product->meta_description = $request->meta_description;
         
         $product->colors = $request->colors ? array_map('trim', explode(',', $request->colors)) : null;
         $product->sizes = $request->sizes ? array_map('trim', explode(',', $request->sizes)) : null;
@@ -237,7 +249,7 @@ class ProductController extends Controller
     // Get product details (AJAX)
     public function show($id)
     {
-        $product = Product::findOrFail($id);
+        $product = Product::with('category')->findOrFail($id);
         return response()->json($product);
     }
 

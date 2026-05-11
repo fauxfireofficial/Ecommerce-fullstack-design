@@ -20,8 +20,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         \Illuminate\Support\Facades\View::composer('*', function ($view) {
-            $categories = \App\Models\Product::distinct()->pluck('category');
-            $view->with('categories', $categories);
+            try {
+                $categories = \App\Models\Category::all();
+            } catch (\Exception $e) {
+                $categories = collect();
+            }
+            $view->with('navCategories', $categories);
         });
     }
 }

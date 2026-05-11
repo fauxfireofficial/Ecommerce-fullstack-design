@@ -66,7 +66,7 @@
             <select id="categoryFilter" onchange="applyFilters()" class="filter-select">
                 <option value="all">All Categories</option>
                 @foreach($categories as $category)
-                    <option value="{{ $category }}" {{ request('category_filter') == $category ? 'selected' : '' }}>{{ ucfirst($category) }}</option>
+                    <option value="{{ $category->id }}" {{ request('category_filter') == $category->id ? 'selected' : '' }}>{{ ucfirst($category->name) }}</option>
                 @endforeach
             </select>
             <select id="offerFilter" onchange="applyFilters()" class="filter-select" style="border-color: #f43f5e; color: #f43f5e; font-weight: 600;">
@@ -93,7 +93,7 @@
             </thead>
             <tbody id="productsTableBody">
                 @forelse($products as $product)
-                <tr class="product-row" data-category="{{ $product->category }}" data-status="{{ $product->status }}" data-stock="{{ $product->stock_quantity }}" data-is-deal="{{ $product->is_deal ? '1' : '0' }}">
+                <tr class="product-row" data-category="{{ $product->category->name ?? '' }}" data-status="{{ $product->status }}" data-stock="{{ $product->stock_quantity }}" data-is-deal="{{ $product->is_deal ? '1' : '0' }}">
                     <td><input type="checkbox" class="product-checkbox" value="{{ $product->id }}"></td>
                     <td class="product-cell">
                         <div class="product-img-sm">
@@ -117,7 +117,7 @@
                             @endif
                         </span>
                     </td>
-                    <td><span class="category-badge">{{ ucfirst($product->category ?? 'None') }}</span></td>
+                    <td><span class="category-badge">{{ ucfirst($product->category->name ?? 'None') }}</span></td>
                     <td>
                         <label class="switch">
                             <input type="checkbox" class="status-toggle" data-id="{{ $product->id }}" {{ $product->status == 'active' ? 'checked' : '' }}>
@@ -155,7 +155,7 @@
                 </div>
                 <div class="p-card-info">
                     <div class="p-card-header">
-                        <span class="category-badge">{{ ucfirst($product->category ?? 'None') }}</span>
+                        <span class="category-badge">{{ ucfirst($product->category->name ?? 'None') }}</span>
                         <label class="switch sm">
                             <input type="checkbox" class="status-toggle" data-id="{{ $product->id }}" {{ $product->status == 'active' ? 'checked' : '' }}>
                             <span class="slider round"></span>
@@ -708,7 +708,7 @@ function viewProduct(productId) {
                             <h3>${data.name}</h3>
                             <p class="product-price">$${data.price}</p>
                             <p>SKU: ${data.sku || 'N/A'}</p>
-                            <p>Category: ${data.category || 'None'}</p>
+                            <p>Category: ${data.category ? data.category.name : 'None'}</p>
                         </div>
                     </div>
                     <div><strong>Description:</strong><p>${data.description || 'No description provided.'}</p></div>

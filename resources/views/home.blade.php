@@ -10,14 +10,20 @@
                 <aside class="hero-sidebar desktop-only">
                     <ul>
                         <li><a href="{{ route('products.index') }}" class="{{ !request('category') ? 'active' : '' }}">All Categories</a></li>
-                        @foreach($categories as $category)
+                        @foreach($navCategories as $category)
                             <li>
-                                <a href="{{ route('products.index', ['category' => $category]) }}" 
-                                   class="{{ request('category') == $category ? 'active' : '' }}">
-                                    {{ $category }}
+                                <a href="{{ route('products.index', ['category' => $category->name]) }}" 
+                                   class="{{ request('category') == $category->name ? 'active' : '' }}">
+                                    {{ $category->name }}
                                 </a>
                             </li>
                         @endforeach
+                        <li>
+                            <a href="{{ route('products.index', ['category' => 'Accessories']) }}" 
+                               class="{{ request('category') == 'Accessories' ? 'active' : '' }}">
+                                Accessories
+                            </a>
+                        </li>
                         <li><hr style="border: 0; border-top: 1px solid #eee; margin: 5px 0;"></li>
                         <li><a href="{{ route('services') }}"><i class="fa-solid fa-handshake-angle" style="margin-right: 8px;"></i> Our Services</a></li>
                     </ul>
@@ -77,7 +83,7 @@
                             <h3>Deals and offers</h3>
                             <p>Limited time discounts</p>
                         </div>
-                        <div class="deals-header-right">
+                        <div class="deals-header-right desktop-only">
                             <a href="{{ route('products.offers') }}" class="view-all-btn">
                                 View All <i class="fa-solid fa-arrow-right-long"></i>
                             </a>
@@ -94,7 +100,7 @@
             <div class="deals-items">
                 @foreach($deals as $deal)
                 <a href="{{ route('products.show', $deal->slug ?? $deal->id) }}" class="deal-item" style="text-decoration: none;">
-                    <img src="{{ asset($deal->image) }}" alt="{{ $deal->name }}">
+                    <img src="{{ asset($deal->image) }}" alt="{{ $deal->name }}" loading="lazy">
                     <h4>{{ $deal->name }}</h4>
                     @if($deal->discount_percent)
                         <span class="badge-discount">-{{ $deal->discount_percent }}%</span>
@@ -103,30 +109,33 @@
                 @endforeach
             </div>
             
-          
+            <div class="mobile-only" style="width: 100%; text-align: center; padding: 15px 0; background: #f8fafc; border-top: 1px solid #e2e8f0;">
+                <a href="{{ route('products.offers') }}" style="color: #3b82f6; font-weight: 700; font-size: 14px; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    View All <i class="fa-solid fa-arrow-right-long"></i>
+                </a>
+            </div>
         </section>
 
         @php
             $categoryStyles = [
-                'Home interiors' => ['class' => 'home-outdoor', 'img' => 'images/cardbg/outdoor.jpg'],
-                'Computer and tech' => ['class' => 'electronics', 'img' => 'images/cardbg/gadgets.png'],
-                'Mobile and Tablets' => ['class' => 'electronics', 'img' => 'images/cardbg/gadgets.png'],
-                'Clothes and wear' => ['class' => 'clothing', 'img' => 'images/cardbg/Banner-img.jpg'],
-                'Tools, equipments' => ['class' => 'default-cat', 'img' => 'images/cardbg/outdoor.jpg'],
-                'Health and Beauty' => ['class' => 'default-cat', 'img' => 'images/cardbg/Banner-img.jpg'],
-                'Sports and outdoor' => ['class' => 'default-cat', 'img' => 'images/cardbg/outdoor.jpg'],
-                'Accessories' => ['class' => 'default-cat', 'img' => 'images/cardbg/Banner-img.jpg'],
+                'Home & Outdoor' => ['class' => 'home-outdoor', 'img' => 'images/cardbg/outdoor.jpg'],
+                'Electronics & Gadgets' => ['class' => 'electronics', 'img' => 'images/cardbg/gadgets.png'],
+                'Fashion' => ['class' => 'clothing', 'img' => 'images/cardbg/Banner-img.jpg'],
             ];
+            
+            // Only show these specific blocks on the home page as requested
+            $homePageCategories = ['Home & Outdoor', 'Electronics & Gadgets', 'Fashion'];
         @endphp
 
-        @foreach($categoryProducts as $categoryName => $products)
+        @foreach($homePageCategories as $categoryName)
+            @php $products = $categoryProducts[$categoryName] ?? collect(); @endphp
             @if($products->count() > 0)
                 @php 
                     $style = $categoryStyles[$categoryName] ?? ['class' => 'default-cat', 'img' => 'images/cardbg/Banner-img.jpg'];
                 @endphp
                 <section class="category-block card">
                     <div class="cat-main {{ $style['class'] }}">
-                        <img src="{{ asset($style['img']) }}" alt="image" class="cat-main-bg">
+                        <img src="{{ asset($style['img']) }}" alt="image" class="cat-main-bg" loading="lazy">
                         <h3>{{ $categoryName }}</h3>
                         <a href="{{ route('products.index', ['category' => $categoryName]) }}" class="btn btn-white desktop-only" style="display: inline-block; text-decoration: none;">Source now</a>
                     </div>
@@ -137,7 +146,7 @@
                                 <h4>{{ $item->name }}</h4>
                                 <p>From {{ App\Services\CurrencyService::convert($item->price) }}</p>
                             </div>
-                            <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
+                            <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" loading="lazy">
                         </a>
                         @endforeach
                     </div>
@@ -152,7 +161,7 @@
 
         <!-- Inquiry Section -->
         <section class="inquiry-section">
-            <img src="{{ asset('images/cardbg/Quotebg.jpg') }}" alt="Error" class="inquiry-bg">
+            <img src="{{ asset('images/cardbg/Quotebg.jpg') }}" alt="Error" class="inquiry-bg" loading="lazy">
             <div class="inquiry-text">
                 <h2>An easy way to send requests to all suppliers</h2>
                 <p class="desktop-only">Get multiple quotes from verified sellers within minutes. Streamline your sourcing process today.</p>
@@ -177,7 +186,7 @@
         <section class="recommended-grid">
             @foreach($recommended as $item)
             <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="card rec-card" style="text-decoration: none;">
-                <img src="{{ asset($item->image) }}" alt="{{ $item->name }}">
+                <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" loading="lazy">
                 <p class="price">{{ App\Services\CurrencyService::convert($item->price) }}</p>
                 <p class="title">{{ $item->name }}</p>
             </a>
@@ -189,22 +198,22 @@
         <h3 class="section-title desktop-only">Our extra services</h3>
         <section class="services-grid desktop-only">
             <div class="card service-card">
-                <div class="service-img"><img src="{{ asset('images/cardbg/industrybg.png') }}" alt="Service 1"></div>
+                <div class="service-img"><img src="{{ asset('images/cardbg/industrybg.png') }}" alt="Service 1" loading="lazy"></div>
                 <div class="service-icon"><i class="fa-solid fa-magnifying-glass"></i></div>
                 <div class="service-body"><h4>Source from Industry Hubs</h4></div>
             </div>
             <div class="card service-card">
-                <div class="service-img"><img src="{{ asset('images/cardbg/Customizebg.png') }}" alt="Service 2"></div>
+                <div class="service-img"><img src="{{ asset('images/cardbg/Customizebg.png') }}" alt="Service 2" loading="lazy"></div>
                 <div class="service-icon"><i class="fa-solid fa-box-open"></i></div>
                 <div class="service-body"><h4>Customize Your Products</h4></div>
             </div>
             <div class="card service-card">
-                <div class="service-img"><img src="{{ asset('images/cardbg/shippingbg.png') }}" alt="Service 3"></div>
+                <div class="service-img"><img src="{{ asset('images/cardbg/shippingbg.png') }}" alt="Service 3" loading="lazy"></div>
                 <div class="service-icon"><i class="fa-solid fa-paper-plane"></i></div>
                 <div class="service-body"><h4>Fast, reliable shipping by ocean or air</h4></div>
             </div>
             <div class="card service-card">
-                <div class="service-img"><img src="{{ asset('images/cardbg/monitoring.png') }}" alt="Service 4"></div>
+                <div class="service-img"><img src="{{ asset('images/cardbg/monitoring.png') }}" alt="Service 4" loading="lazy"></div>
                 <div class="service-icon"><i class="fa-solid fa-shield-halved"></i></div>
                 <div class="service-body"><h4>Product monitoring and inspection</h4></div>
             </div>
@@ -214,70 +223,70 @@
         <h3 class="section-title desktop-only">Suppliers by region</h3>
         <section class="region-grid desktop-only">
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/ae.png" alt="UAE">
+                <img src="https://flagcdn.com/w40/ae.png" alt="UAE" loading="lazy">
                 <div class="region-info">
                     <h5>Arabic Emirates</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/au.png" alt="Australia">
+                <img src="https://flagcdn.com/w40/au.png" alt="Australia" loading="lazy">
                 <div class="region-info">
                     <h5>Australia</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/us.png" alt="USA">
+                <img src="https://flagcdn.com/w40/us.png" alt="USA" loading="lazy">
                 <div class="region-info">
                     <h5>United States</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/ru.png" alt="Russia">
+                <img src="https://flagcdn.com/w40/ru.png" alt="Russia" loading="lazy">
                 <div class="region-info">
                     <h5>Russia</h5>
                     <p>shopname.ru</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/it.png" alt="Italy">
+                <img src="https://flagcdn.com/w40/it.png" alt="Italy" loading="lazy">
                 <div class="region-info">
                     <h5>Italy</h5>
                     <p>shopname.it</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/dk.png" alt="Denmark">
+                <img src="https://flagcdn.com/w40/dk.png" alt="Denmark" loading="lazy">
                 <div class="region-info">
                     <h5>Denmark</h5>
                     <p>denmark.com.dk</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/fr.png" alt="France">
+                <img src="https://flagcdn.com/w40/fr.png" alt="France" loading="lazy">
                 <div class="region-info">
                     <h5>France</h5>
                     <p>shopname.com.fr</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/ae.png" alt="UAE">
+                <img src="https://flagcdn.com/w40/ae.png" alt="UAE" loading="lazy">
                 <div class="region-info">
                     <h5>Arabic Emirates</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/cn.png" alt="China">
+                <img src="https://flagcdn.com/w40/cn.png" alt="China" loading="lazy">
                 <div class="region-info">
                     <h5>China</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/gb.png" alt="UK">
+                <img src="https://flagcdn.com/w40/gb.png" alt="UK" loading="lazy">
                 <div class="region-info">
                     <h5>Great Britain</h5>
                     <p>shopname.co.uk</p>
@@ -288,7 +297,7 @@
     </main>
 @endsection
 
-@push('styles')
+@section('styles')
 <style>
     /* Make all product cards clickable with proper cursor */
     .deal-item,
@@ -387,4 +396,4 @@
         }
     }
 </style>
-@endpush
+@endsection

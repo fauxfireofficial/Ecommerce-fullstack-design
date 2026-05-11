@@ -518,7 +518,7 @@
                     <img src="{{ asset($product->image) }}" alt="{{ $product->name }}">
                 </div>
                 <div class="card-info">
-                    <span class="category-label">{{ $product->category }}</span>
+                    <span class="category-label">{{ $product->category->name ?? '' }}</span>
                     <h4>{{ $product->name }}</h4>
                     
                     <div class="rating-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">

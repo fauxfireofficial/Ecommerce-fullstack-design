@@ -90,7 +90,7 @@
                     </div>
                     
                     <div class="card-body">
-                        <span class="category-tag">{{ $product->category }}</span>
+                        <span class="category-tag">{{ $product->category->name ?? '' }}</span>
                         
                         <h3 class="product-title">
                             <a href="{{ route('products.show', $product->slug) }}">{{ $product->name }}</a>

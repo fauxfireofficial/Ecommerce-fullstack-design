@@ -67,15 +67,15 @@
 
                         <div class="form-group">
                             <label for="category">Category <span class="required">*</span></label>
-                            <select id="category" name="category" class="form-control" required>
+                            <select id="category" name="category_id" class="form-control" required>
                                 <option value="">Select Category</option>
                                 @foreach($categories as $cat)
-                                    <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>
-                                        {{ $cat }}
+                                    <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
+                                        {{ $cat->name }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('category') <span class="error">{{ $message }}</span> @enderror
+                            @error('category_id') <span class="error">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
@@ -169,6 +169,13 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="search_tags">Search Tags (Keywords)</label>
+                        <input type="text" id="search_tags" name="search_tags" class="form-control" value="{{ old('search_tags') }}" placeholder="Mobile, Apple, iOS, Smartphone">
+                        <small>Enter tags separated by commas. Helps users find this product.</small>
+                        @error('search_tags') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div class="form-group">
                         <label for="features">Key Features</label>
                         <textarea id="features" name="features" rows="3" class="form-control" placeholder="One feature per line">{{ old('features') }}</textarea>
                         <small>Enter product features, one per line</small>
@@ -196,6 +203,21 @@
                         <input type="text" id="materials" name="materials" class="form-control" value="{{ old('materials') }}" placeholder="Cotton, Polyester, Leather">
                         <small>Comma separated values</small>
                         @error('materials') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+
+                    <!-- SEO Settings -->
+                    <h4 class="section-title mt-4 mb-3" style="font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 8px;">SEO Settings</h4>
+                    <div class="form-group">
+                        <label for="meta_title">Meta Title</label>
+                        <input type="text" id="meta_title" name="meta_title" class="form-control" value="{{ old('meta_title') }}" placeholder="Optimized Title for Search Engines">
+                        <small>Leave blank to use product name</small>
+                        @error('meta_title') <span class="error">{{ $message }}</span> @enderror
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="meta_description">Meta Description</label>
+                        <textarea id="meta_description" name="meta_description" rows="3" class="form-control" placeholder="Brief description for search engine results">{{ old('meta_description') }}</textarea>
+                        @error('meta_description') <span class="error">{{ $message }}</span> @enderror
                     </div>
                 </div>
             </div>

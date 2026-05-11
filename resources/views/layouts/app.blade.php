@@ -553,9 +553,9 @@
                         </a>
                         <ul class="sidebar-submenu" id="categorySubmenu">
                             <li><a href="{{ route('products.index') }}">View Everything</a></li>
-                            <li><a href="{{ route('products.index', ['category' => 'Gadgets']) }}">Electronics & Gadgets</a></li>
-                            <li><a href="{{ route('products.index', ['category' => 'Clothing']) }}">Fashion & Clothing</a></li>
-                            <li><a href="{{ route('products.index', ['category' => 'Accessory']) }}">Accessories</a></li>
+                            @foreach($navCategories as $cat)
+                            <li><a href="{{ route('products.index', ['category' => $cat->name]) }}">{{ $cat->name }}</a></li>
+                            @endforeach
                             <li><a href="{{ route('brands') }}">Browse by Brands</a></li>
                         </ul>
                     </li>

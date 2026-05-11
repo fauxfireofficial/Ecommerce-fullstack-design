@@ -296,7 +296,13 @@
         <div class="m-custom-header mobile-only">
             <div class="m-top-bar">
                 <a href="{{ route('home') }}" class="back-link"><i class="fa-solid fa-arrow-left"></i></a>
-                <h2>{{ request('category') ?? 'Mobile accessory' }}</h2>
+                <h2>
+                    @if(request('search'))
+                        Results for "{{ request('search') }}"
+                    @else
+                        {{ request('category') ?? 'All Products' }}
+                    @endif
+                </h2>
                 <div class="m-icons">
                     <a href="{{ route('cart.index') }}"><i class="fa-solid fa-cart-shopping"></i></a>
                     <a href="{{ route('profile.index') }}"><i class="fa-solid fa-user"></i></a>
@@ -310,11 +316,10 @@
 
             <div class="m-scroll-pills">
                 <a href="{{ route('products.index') }}" class="m-pill {{ !request('category') ? 'active' : '' }}">All</a>
-                <a href="{{ route('products.index', ['category' => 'Gadgets']) }}" class="m-pill {{ request('category') == 'Gadgets' ? 'active' : '' }}">Gadgets</a>
-                <a href="{{ route('products.index', ['category' => 'Phones']) }}" class="m-pill {{ request('category') == 'Phones' ? 'active' : '' }}">Phones</a>
-                <a href="{{ route('products.index', ['category' => 'Clothing']) }}" class="m-pill {{ request('category') == 'Clothing' ? 'active' : '' }}">Clothing</a>
-                <a href="{{ route('products.index', ['category' => 'Accessory']) }}" class="m-pill {{ request('category') == 'Accessory' ? 'active' : '' }}">Accessory</a>
-                <a href="{{ route('products.index', ['category' => 'Tablets']) }}" class="m-pill {{ request('category') == 'Tablets' ? 'active' : '' }}">Tablets</a>
+                @foreach($navCategories as $cat)
+                <a href="{{ route('products.index', ['category' => $cat->name]) }}" 
+                   class="m-pill {{ request('category') == $cat->name ? 'active' : '' }}">{{ $cat->name }}</a>
+                @endforeach
             </div>
 
             <div class="m-sort-filter-row">
@@ -368,10 +373,12 @@
                 <div class="filter-block">
                     <h4>Category <i class="fa-solid fa-chevron-up"></i></h4>
                     <ul class="filter-list">
-                        <li><a href="{{ route('products.index', ['category' => 'Gadgets']) }}" class="{{ request('category') == 'Gadgets' ? 'active' : '' }}">Gadgets</a></li>
-                        <li><a href="{{ route('products.index', ['category' => 'Electronics']) }}" class="{{ request('category') == 'Electronics' ? 'active' : '' }}">Electronics</a></li>
-                        <li><a href="{{ route('products.index', ['category' => 'Clothing']) }}" class="{{ request('category') == 'Clothing' ? 'active' : '' }}">Clothing</a></li>
-                        <li><a href="{{ route('products.index', ['category' => 'Accessory']) }}" class="{{ request('category') == 'Accessory' ? 'active' : '' }}">Accessories</a></li>
+                        @foreach($navCategories as $cat)
+                        <li>
+                            <a href="{{ route('products.index', ['category' => $cat->name]) }}" 
+                               class="{{ request('category') == $cat->name ? 'active' : '' }}">{{ $cat->name }}</a>
+                        </li>
+                        @endforeach
                         <li><a href="{{ route('products.index') }}" class="see-all">See all</a></li>
                     </ul>
                 </div>
@@ -444,7 +451,16 @@
             <div class="main-list-content">
                 <div class="list-header card">
                     <div class="list-header-left">
-                        <span>{{ number_format($products->total()) }} items in <strong>{{ request('category') ?? 'All Categories' }}</strong></span>
+                        <span>
+                            {{ number_format($products->total()) }} items
+                            @if(request('search')) 
+                                for <strong>"{{ request('search') }}"</strong>
+                            @elseif(request('category'))
+                                in <strong>{{ request('category') }}</strong>
+                            @else
+                                in <strong>All Categories</strong>
+                            @endif
+                        </span>
                     </div>
                     <div class="list-header-right">
                         <label class="verified-only">
@@ -574,9 +590,10 @@
             <div class="m-filter-block">
                 <h4>Category</h4>
                 <div class="m-filter-options">
-                    <a href="{{ route('products.index', ['category' => 'Gadgets']) }}" class="{{ request('category') == 'Gadgets' ? 'active' : '' }}">Gadgets</a>
-                    <a href="{{ route('products.index', ['category' => 'Clothing']) }}" class="{{ request('category') == 'Clothing' ? 'active' : '' }}">Clothing</a>
-                    <a href="{{ route('products.index', ['category' => 'Accessory']) }}" class="{{ request('category') == 'Accessory' ? 'active' : '' }}">Accessories</a>
+                    @foreach($navCategories as $cat)
+                    <a href="{{ route('products.index', ['category' => $cat->name]) }}" 
+                       class="{{ request('category') == $cat->name ? 'active' : '' }}">{{ $cat->name }}</a>
+                    @endforeach
                 </div>
             </div>
 
