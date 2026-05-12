@@ -63,6 +63,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/support', [\App\Http\Controllers\SupportController::class, 'index'])->name('support.index');
     Route::post('/support', [\App\Http\Controllers\SupportController::class, 'store'])->name('support.store');
     Route::get('/support/{id}', [\App\Http\Controllers\SupportController::class, 'show'])->name('support.show');
+
+    // Review Routes
+    Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+    Route::put('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
 });
 
 // Authentication Routes
@@ -174,6 +178,11 @@ Route::prefix('admin')->group(function () {
         Route::put('/subscribers/{id}/toggle', [\App\Http\Controllers\Admin\SubscriberController::class, 'toggleStatus'])->name('admin.subscribers.toggle');
         Route::delete('/subscribers/{id}', [\App\Http\Controllers\Admin\SubscriberController::class, 'destroy'])->name('admin.subscribers.destroy');
 
+        // Review Management
+        Route::get('/reviews', [\App\Http\Controllers\Admin\ReviewController::class, 'index'])->name('admin.reviews.index');
+        Route::put('/reviews/{id}/status', [\App\Http\Controllers\Admin\ReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
+        Route::post('/reviews/{id}/reply', [\App\Http\Controllers\Admin\ReviewController::class, 'reply'])->name('admin.reviews.reply');
+        Route::delete('/reviews/{id}', [\App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });

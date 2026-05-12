@@ -84,6 +84,14 @@ class OrderController extends Controller
         // Clear Cart
         session()->forget('cart');
 
+        // Send Order Placed confirmation email
+        try {
+            $order->load('items.product', 'user');
+            \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\OrderPlacedMail($order));
+        } catch (\Exception $e) {
+            // Silently fail — do not block the success page if mail fails
+        }
+
         return view('order-success', compact('order'));
     }
     public function show($id)

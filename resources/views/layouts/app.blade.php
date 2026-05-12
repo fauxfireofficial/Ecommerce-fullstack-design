@@ -643,9 +643,27 @@
             <div class="m-custom-header mobile-only" style="width: 100%; border-bottom: 1px solid #e2e8f0; padding: 15px 0;">
                 <div class="m-top-bar" style="display: flex; align-items: center; justify-content: space-between;">
                     <div style="display: flex; align-items: center;">
-                        <a href="{{ url()->previous() == url()->current() ? route('home') : url()->previous() }}" class="back-link" style="color: #1e293b; font-size: 20px;"><i class="fa-solid fa-arrow-left"></i></a>
+                        @if(Route::currentRouteName() == 'products.show')
+                            <a href="{{ route('home') }}" class="back-link" style="color: #1e293b; font-size: 20px;"><i class="fa-solid fa-arrow-left"></i></a>
+                        @else
+                            <a href="{{ url()->previous() == url()->current() ? route('home') : url()->previous() }}" class="back-link" style="color: #1e293b; font-size: 20px;"><i class="fa-solid fa-arrow-left"></i></a>
+                        @endif
                         <h2 style="margin: 0 0 0 20px; font-size: 19px; font-weight: 700; color: #1e293b;">{{ $currentTitle }}</h2>
                     </div>
+                    @if(Route::currentRouteName() == 'products.show')
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        @php 
+                            $cartCount = session()->has('cart') ? count(session('cart')) : 0; 
+                        @endphp
+                        <a href="{{ auth()->check() ? route('profile.index') : route('login') }}" style="color: #1e293b; text-decoration: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        </a>
+                        <a href="javascript:void(0)" onclick="toggleCart(true)" style="color: #1e293b; position: relative; text-decoration: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                            <span class="icon-badge cart-count" style="display: {{ $cartCount > 0 ? 'flex' : 'none' }};">{{ $cartCount }}</span>
+                        </a>
+                    </div>
+                    @endif
                 </div>
             </div>
             @endif

@@ -11,7 +11,7 @@ class ProductController extends Controller
     // Show product detail page
     public function show($slug)
     {
-        $product = Product::with('category')
+        $product = Product::with(['category', 'reviews.user'])
                           ->where('slug', $slug)
                           ->orWhere('name', $slug)
                           ->firstOrFail();
@@ -22,8 +22,17 @@ class ProductController extends Controller
             ->where('id', '!=', $product->id)
             ->limit(5)
             ->get();
+
+        // Check if current user has purchased this product
+        $userHasPurchased = false;
+        if (auth()->check()) {
+            $userHasPurchased = \App\Models\OrderItem::whereHas('order', function($query) {
+                $query->where('user_id', auth()->id())
+                      ->whereIn('status', ['completed', 'delivered', 'processing']);
+            })->where('product_id', $product->id)->exists();
+        }
         
-        return view('products.show', compact('product', 'relatedProducts'));
+        return view('products.show', compact('product', 'relatedProducts', 'userHasPurchased'));
     }
     
     // Products listing / search page

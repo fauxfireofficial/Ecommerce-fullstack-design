@@ -435,6 +435,9 @@
             <a href="{{ route('admin.subscribers.index') }}" class="menu-item {{ request()->routeIs('admin.subscribers.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-envelope-open-text"></i> Newsletter Subscribers
             </a>
+            <a href="{{ route('admin.reviews.index') }}" class="menu-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-star"></i> Customer Reviews
+            </a>
         </nav>
 
         <div class="sidebar-footer">

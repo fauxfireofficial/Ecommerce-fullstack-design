@@ -438,15 +438,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     // Fix for Back Button (bfcache)
     window.addEventListener('pageshow', function(event) {
-        // Reset loading states on all interactive buttons
-        document.querySelectorAll('.btn-heart, .btn-add-cart').forEach(button => {
+        // Reset ALL interactive buttons when page is restored from cache
+        document.querySelectorAll('.btn-heart, .btn-add-cart, .btn-buy').forEach(button => {
             button.disabled = false;
-            
-            // For wishlist buttons specifically
+        });
+
+        // Restore Buy Now button text if stuck
+        document.querySelectorAll('.btn-buy').forEach(button => {
+            if (button.querySelector('.fa-spinner')) {
+                button.innerHTML = 'Buy now';
+            }
+        });
+
+        // Restore Add to Cart button text if stuck
+        document.querySelectorAll('.btn-add-cart').forEach(button => {
+            if (button.querySelector('.fa-spinner')) {
+                button.innerHTML = 'Add to cart';
+            }
+        });
+
+        // For wishlist, if spinner is stuck — reload to get correct state
+        document.querySelectorAll('.btn-heart').forEach(button => {
             const icon = button.querySelector('i');
             if (icon && icon.classList.contains('fa-spinner')) {
-                // If we are coming back from another page and it's still spinning,
-                // we should probably just reload to get the correct auth/wishlist state
                 window.location.reload();
             }
         });

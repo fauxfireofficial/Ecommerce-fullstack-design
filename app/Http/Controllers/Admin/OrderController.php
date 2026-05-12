@@ -41,8 +41,10 @@ class OrderController extends Controller
         $order->save();
         
         if ($oldStatus !== $order->status && $order->user && $order->user->email) {
-            if (in_array($order->status, ['confirmed', 'cancelled', 'processing'])) {
+            if (in_array($order->status, ['confirmed', 'cancelled'])) {
                 \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusMail($order, $order->status));
+            } elseif ($order->status === 'shipped') {
+                \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderShippedMail($order));
             } elseif ($order->status === 'delivered') {
                 \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderFeedbackMail($order));
             }
@@ -70,8 +72,10 @@ class OrderController extends Controller
             $order->save();
 
             if ($oldStatus !== $order->status && $order->user && $order->user->email) {
-                if (in_array($order->status, ['confirmed', 'cancelled', 'processing'])) {
+                if (in_array($order->status, ['confirmed', 'cancelled'])) {
                     \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderStatusMail($order, $order->status));
+                } elseif ($order->status === 'shipped') {
+                    \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderShippedMail($order));
                 } elseif ($order->status === 'delivered') {
                     \Illuminate\Support\Facades\Mail::to($order->user->email)->send(new \App\Mail\OrderFeedbackMail($order));
                 }

@@ -86,6 +86,49 @@ class Product extends Model
                     ->withTimestamps();
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(Review::class)->where('status', 'approved');
+    }
+
+    // Get average rating
+    public function getAverageRatingAttribute()
+    {
+        return $this->reviews()->avg('rating') ?: 0;
+    }
+
+    // Check if user has already reviewed
+    public function hasUserReviewed($userId)
+    {
+        return Review::where('product_id', $this->id)
+                     ->where('user_id', $userId)
+                     ->exists();
+    }
+
+    // Get star distribution
+    public function getStarDistributionAttribute()
+    {
+        $distribution = [
+            5 => 0,
+            4 => 0,
+            3 => 0,
+            2 => 0,
+            1 => 0,
+        ];
+
+        $counts = $this->reviews()
+            ->select('rating', \DB::raw('count(*) as total'))
+            ->groupBy('rating')
+            ->pluck('total', 'rating')
+            ->toArray();
+
+        foreach ($counts as $rating => $count) {
+            $distribution[$rating] = $count;
+        }
+
+        return $distribution;
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
