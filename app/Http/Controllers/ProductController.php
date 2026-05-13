@@ -41,7 +41,6 @@ class ProductController extends Controller
         $query = Product::with('category')->where('status', 'active');
 
         // ─── 1. SMART SEARCH ───────────────────────────────────────────
-        // Searches: name, brand, search_tags, and category name
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
@@ -64,10 +63,6 @@ class ProductController extends Controller
         }
 
         // ─── 3. BRAND FILTER ───────────────────────────────────────────
-        if ($request->filled('brand')) {
-            $query->where('brand', $request->brand);
-        }
-
         if ($request->filled('brands')) {
             $query->whereIn('brand', (array) $request->brands);
         }
@@ -80,7 +75,13 @@ class ProductController extends Controller
             $query->where('price', '<=', $request->max_price);
         }
 
-        // ─── 5. SORTING ────────────────────────────────────────────────
+        // ─── 5. RATINGS FILTER ──────────────────────────────────────────
+        if ($request->filled('rating')) {
+            $query->withAvg('reviews', 'rating')
+                  ->having('reviews_avg_rating', '>=', $request->rating);
+        }
+
+        // ─── 6. SORTING ────────────────────────────────────────────────
         switch ($request->sort) {
             case 'price_low':  $query->orderBy('price', 'asc'); break;
             case 'price_high': $query->orderBy('price', 'desc'); break;
@@ -90,6 +91,11 @@ class ProductController extends Controller
         }
 
         $products = $query->paginate(20)->withQueryString();
+
+        if ($request->ajax() || $request->header('X-Requested-With') == 'XMLHttpRequest') {
+            return view('products.index', compact('products'))->fragment('product-list-container');
+        }
+
         return view('products.index', compact('products'));
     }
 
@@ -121,13 +127,29 @@ class ProductController extends Controller
     }
 
     // Hot Offers page
-    public function hotOffers()
+    public function hotOffers(Request $request)
     {
-        $products = Product::with('category')
+        $query = Product::with('category')
             ->where('status', 'active')
-            ->where('is_deal', true)
-            ->orderBy('discount_percent', 'desc')
-            ->paginate(16);
+            ->where('is_deal', true);
+
+        // Sorting
+        switch ($request->sort) {
+            case 'price_low':
+                $query->orderBy('price', 'asc');
+                break;
+            case 'price_high':
+                $query->orderBy('price', 'desc');
+                break;
+            case 'discount':
+                $query->orderBy('discount_percent', 'desc');
+                break;
+            case 'best':
+            default:
+                $query->orderBy('discount_percent', 'desc');
+        }
+
+        $products = $query->paginate(16)->withQueryString();
 
         $settings = \App\Models\Setting::all()->pluck('value', 'key');
             

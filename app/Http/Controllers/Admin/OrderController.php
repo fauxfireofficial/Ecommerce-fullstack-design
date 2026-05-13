@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
+use Stripe\Stripe;
+use Stripe\Refund;
 
 class OrderController extends Controller
 {
@@ -96,5 +99,48 @@ class OrderController extends Controller
         $order->delete();
         
         return response()->json(['success' => true, 'message' => 'Order deleted successfully']);
+    }
+    /**
+     * Refund an order via Stripe
+     */
+    public function refund($id)
+    {
+        $order = Order::findOrFail($id);
+        
+        // Find the successful stripe transaction
+        $transaction = Transaction::where('order_id', $order->id)
+            ->where('payment_method', 'stripe')
+            ->where('status', 'success')
+            ->first();
+
+        if (!$transaction || !$transaction->transaction_id) {
+            return response()->json(['success' => false, 'message' => 'No refundable Stripe transaction found.']);
+        }
+
+        try {
+            Stripe::setApiKey(config('services.stripe.secret'));
+
+            // Create refund on Stripe
+            $refund = Refund::create([
+                'payment_intent' => $transaction->transaction_id,
+                'amount' => (int)($transaction->amount * 100), // amount in cents
+            ]);
+
+            // Update Transaction status
+            $transaction->update([
+                'status' => 'refunded',
+                'metadata' => array_merge($transaction->metadata ?? [], [
+                    'refund_id' => $refund->id,
+                    'refunded_at' => now()->toDateTimeString()
+                ])
+            ]);
+
+            // Update Order Payment Status
+            $order->update(['payment_status' => 'refunded']);
+
+            return response()->json(['success' => true, 'message' => 'Refund processed successfully!']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Stripe Refund Error: ' . $e->getMessage()]);
+        }
     }
 }

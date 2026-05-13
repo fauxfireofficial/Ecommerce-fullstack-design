@@ -44,6 +44,7 @@ class Product extends Model
         'is_deal',
         'discount_percent',
         'views',
+        'sold_count',
         'brand',
         'weight',
         'dimensions',

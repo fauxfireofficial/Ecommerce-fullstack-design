@@ -99,8 +99,11 @@
             </div>
             <div class="deals-items">
                 @foreach($deals as $deal)
-                <a href="{{ route('products.show', $deal->slug ?? $deal->id) }}" class="deal-item" style="text-decoration: none;">
-                    <img src="{{ asset($deal->image) }}" alt="{{ $deal->name }}" loading="lazy">
+                <a href="{{ route('products.show', $deal->slug ?? $deal->id) }}" class="deal-item" style="text-decoration: none; position: relative;">
+                    @if($deal->stock_quantity <= 0)
+                        <div class="sold-out-badge-sm">Sold Out</div>
+                    @endif
+                    <img src="{{ asset($deal->image) }}" alt="{{ $deal->name }}" loading="lazy" style="{{ $deal->stock_quantity <= 0 ? 'opacity: 0.5;' : '' }}">
                     <h4>{{ $deal->name }}</h4>
                     @if($deal->discount_percent)
                         <span class="badge-discount">-{{ $deal->discount_percent }}%</span>
@@ -185,8 +188,11 @@
         <h3 class="section-title">Recommended items</h3>
         <section class="recommended-grid">
             @foreach($recommended as $item)
-            <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="card rec-card" style="text-decoration: none;">
-                <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" loading="lazy">
+            <a href="{{ route('products.show', $item->slug ?? $item->id) }}" class="card rec-card" style="text-decoration: none; position: relative;">
+                @if($item->stock_quantity <= 0)
+                    <div class="sold-out-badge-sm">Sold Out</div>
+                @endif
+                <img src="{{ asset($item->image) }}" alt="{{ $item->name }}" loading="lazy" style="{{ $item->stock_quantity <= 0 ? 'opacity: 0.5;' : '' }}">
                 <p class="price">{{ App\Services\CurrencyService::convert($item->price) }}</p>
                 <p class="title">{{ $item->name }}</p>
             </a>
@@ -223,70 +229,70 @@
         <h3 class="section-title desktop-only">Suppliers by region</h3>
         <section class="region-grid desktop-only">
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/ae.png" alt="UAE" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/ae.svg" alt="UAE" loading="lazy">
                 <div class="region-info">
                     <h5>Arabic Emirates</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/au.png" alt="Australia" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/au.svg" alt="Australia" loading="lazy">
                 <div class="region-info">
                     <h5>Australia</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/us.png" alt="USA" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/us.svg" alt="USA" loading="lazy">
                 <div class="region-info">
                     <h5>United States</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/ru.png" alt="Russia" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/ru.svg" alt="Russia" loading="lazy">
                 <div class="region-info">
                     <h5>Russia</h5>
                     <p>shopname.ru</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/it.png" alt="Italy" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/it.svg" alt="Italy" loading="lazy">
                 <div class="region-info">
                     <h5>Italy</h5>
                     <p>shopname.it</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/dk.png" alt="Denmark" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/dk.svg" alt="Denmark" loading="lazy">
                 <div class="region-info">
                     <h5>Denmark</h5>
                     <p>denmark.com.dk</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/fr.png" alt="France" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/fr.svg" alt="France" loading="lazy">
                 <div class="region-info">
                     <h5>France</h5>
                     <p>shopname.com.fr</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/ae.png" alt="UAE" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/ae.svg" alt="UAE" loading="lazy">
                 <div class="region-info">
                     <h5>Arabic Emirates</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/cn.png" alt="China" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/cn.svg" alt="China" loading="lazy">
                 <div class="region-info">
                     <h5>China</h5>
                     <p>shopname.ae</p>
                 </div>
             </div>
             <div class="region-item">
-                <img src="https://flagcdn.com/w40/gb.png" alt="UK" loading="lazy">
+                <img src="https://flagicons.lipis.dev/flags/4x3/gb.svg" alt="UK" loading="lazy">
                 <div class="region-info">
                     <h5>Great Britain</h5>
                     <p>shopname.co.uk</p>
@@ -342,6 +348,22 @@
     .cat-item:hover img,
     .rec-card:hover img {
         transform: scale(1.05);
+    }
+
+    .sold-out-badge-sm {
+        position: absolute;
+        top: 20%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(15, 23, 42, 0.9);
+        color: white;
+        padding: 4px 10px;
+        border-radius: 4px;
+        font-size: 10px;
+        font-weight: 700;
+        z-index: 5;
+        white-space: nowrap;
+        text-transform: uppercase;
     }
 
     /* Deals Section View All Button */

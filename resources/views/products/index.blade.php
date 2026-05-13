@@ -284,13 +284,43 @@
             .breadcrumb { display: block !important; }
         }
     }
+
+    .sold-out-badge {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(15, 23, 42, 0.85);
+        color: white;
+        padding: 6px 15px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        z-index: 5;
+        white-space: nowrap;
+        pointer-events: none;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .product-img { position: relative; }
 </style>
 @endsection
 
 @section('content')
     <main class="container page-content">
         <div class="breadcrumb">
-            <a href="#">Home</a> <i class="fa-solid fa-chevron-right"></i> <a href="#">Clothings</a> <i class="fa-solid fa-chevron-right"></i> <a href="#">Men's wear</a> <i class="fa-solid fa-chevron-right"></i> <span>Summer clothing</span>
+            <a href="{{ route('home') }}">Home</a> 
+            <i class="fa-solid fa-chevron-right"></i> 
+            <a href="{{ route('products.index') }}">Products</a>
+            @if(request('category'))
+                <i class="fa-solid fa-chevron-right"></i> 
+                <span>{{ request('category') }}</span>
+            @endif
+            @if(request('search'))
+                <i class="fa-solid fa-chevron-right"></i> 
+                <span>Search: {{ request('search') }}</span>
+            @endif
         </div>
 
         <div class="m-custom-header mobile-only">
@@ -439,20 +469,20 @@
 
                 <div class="filter-block">
                     <h4>Ratings <i class="fa-solid fa-chevron-up"></i></h4>
-                    <div class="checkbox-group">
-                        <label><input type="checkbox"> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></label>
-                        <label><input type="checkbox"> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></span></label>
-                        <label><input type="checkbox"> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></span></label>
-                        <label><input type="checkbox"> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></span></label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="rating" value="5" class="rating-filter" {{ request('rating') == 5 ? 'checked' : '' }}> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></span></label>
+                        <label><input type="radio" name="rating" value="4" class="rating-filter" {{ request('rating') == 4 ? 'checked' : '' }}> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i></span> & up</label>
+                        <label><input type="radio" name="rating" value="3" class="rating-filter" {{ request('rating') == 3 ? 'checked' : '' }}> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></span> & up</label>
+                        <label><input type="radio" name="rating" value="2" class="rating-filter" {{ request('rating') == 2 ? 'checked' : '' }}> <span class="stars"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i><i class="fa-regular fa-star"></i></span> & up</label>
                     </div>
                 </div>
             </aside>
 
-            <div class="main-list-content">
-                <div class="list-header card">
-                    <div class="list-header-left">
-                        <span>
-                            {{ number_format($products->total()) }} items
+                <div class="main-list-content" id="mainListContent">
+                    <div class="list-header card">
+                        <div class="list-header-left">
+                            <span>
+                                <span id="itemCountDisplay">{{ number_format($products->total()) }}</span> items
                             @if(request('search')) 
                                 for <strong>"{{ request('search') }}"</strong>
                             @elseif(request('category'))
@@ -529,7 +559,10 @@
                     @forelse($products as $product)
                     <div class="product-card card">
                         <div class="product-img">
-                            <img src="{{ asset($product->image ?? 'Images/items/1.png') }}" alt="{{ $product->name }}">
+                            @if($product->stock_quantity <= 0)
+                                <div class="sold-out-badge">Sold Out</div>
+                            @endif
+                            <img src="{{ asset($product->image ?? 'Images/items/1.png') }}" alt="{{ $product->name }}" style="{{ $product->stock_quantity <= 0 ? 'opacity: 0.5;' : '' }}">
                         </div>
                         <div class="product-info">
                             <h4 class="product-title">{{ $product->name }}</h4>
@@ -792,21 +825,93 @@
         document.getElementById('drawerOverlay').classList.add('active');
     }
 
+    // AJAX Filtering Logic
     function updateUrlParams(params) {
         const url = new URL(window.location.href);
+        
         Object.keys(params).forEach(key => {
-            if (Array.isArray(params[key])) {
+            if (params[key] === null || params[key] === '') {
+                url.searchParams.delete(key);
+            } else if (Array.isArray(params[key])) {
                 url.searchParams.delete(key);
                 params[key].forEach(val => url.searchParams.append(key, val));
-            } else if (params[key]) {
-                url.searchParams.set(key, params[key]);
             } else {
-                url.searchParams.delete(key);
+                url.searchParams.set(key, params[key]);
             }
         });
-        window.location.href = url.toString();
+
+        fetchFilteredProducts(url);
     }
 
+    function fetchFilteredProducts(url) {
+        const content = document.getElementById('mainListContent');
+        if (!content) return;
+
+        // Show loading state
+        content.style.opacity = '0.5';
+        content.style.pointerEvents = 'none';
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const newContent = doc.getElementById('mainListContent');
+            if (newContent) {
+                content.innerHTML = newContent.innerHTML;
+            }
+            
+            content.style.opacity = '1';
+            content.style.pointerEvents = 'auto';
+            window.history.pushState({}, '', url);
+            
+            if (window.AOS) AOS.refresh();
+        })
+        .catch(err => {
+            console.error('Filter failed:', err);
+            window.location.href = url;
+        });
+    }
+
+    // Auto-apply for checkboxes, radios and rating
+    document.querySelectorAll('.brand-filter, .feature-filter, .condition-filter, .rating-filter').forEach(el => {
+        el.addEventListener('change', applyDesktopFilters);
+    });
+
+    function applyDesktopFilters() {
+        const min = document.getElementById('minPriceInput').value;
+        const max = document.getElementById('maxPriceInput').value;
+        const brands = Array.from(document.querySelectorAll('.brand-filter:checked')).map(cb => cb.value);
+        const features = Array.from(document.querySelectorAll('.feature-filter:checked')).map(cb => cb.value);
+        const condition = document.querySelector('.condition-filter:checked') ? document.querySelector('.condition-filter:checked').value : 'any';
+        const rating = document.querySelector('.rating-filter:checked') ? document.querySelector('.rating-filter:checked').value : null;
+        
+        updateUrlParams({ 
+            min_price: min, 
+            max_price: max, 
+            'brands[]': brands,
+            'features[]': features,
+            condition: condition,
+            rating: rating
+        });
+    }
+
+    // Pagination AJAX
+    document.addEventListener('click', function(e) {
+        const link = e.target.closest('.pagination-wrapper a, .pagination a');
+        if (link && link.href) {
+            e.preventDefault();
+            fetchFilteredProducts(new URL(link.href));
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+
+    // Remove filter pill logic
     function removeFilter(key, value = null) {
         const url = new URL(window.location.href);
         if (value) {
@@ -816,7 +921,7 @@
         } else {
             url.searchParams.delete(key);
         }
-        window.location.href = url.toString();
+        fetchFilteredProducts(url);
     }
 </script>
 @endsection

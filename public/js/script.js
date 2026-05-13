@@ -177,50 +177,50 @@ document.addEventListener('DOMContentLoaded', function() {
         else { matchText.innerText = "Passwords do not match"; matchText.className = "match-text match-error"; }
     }
 
-    // Add to Cart Functionality
-    const addToCartButtons = document.querySelectorAll('.btn-add-cart');
-    addToCartButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const productId = this.getAttribute('data-id');
-            const qtyInput = document.querySelector('.qty-input');
-            const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
+    // Add to Cart Functionality (Event Delegation)
+    document.addEventListener('click', function(e) {
+        const button = e.target.closest('.btn-add-cart');
+        if (!button) return;
 
-            const originalContent = this.innerHTML;
-            this.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
-            this.disabled = true;
+        e.preventDefault();
+        const productId = button.getAttribute('data-id');
+        const qtyInput = document.querySelector('.qty-input');
+        const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
 
-            fetch(window.routes.cartAdd, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ product_id: productId, quantity: quantity })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    this.innerHTML = '<i class="fa-solid fa-check"></i> Added!';
-                    this.classList.remove('btn-primary');
-                    this.classList.add('btn-success');
-                    document.querySelectorAll('.cart-count').forEach(b => {
-                        b.textContent = data.cartCount;
-                        b.style.display = data.cartCount > 0 ? 'flex' : 'none';
-                    });
-                    setTimeout(() => {
-                        this.innerHTML = originalContent;
-                        this.classList.remove('btn-success');
-                        this.classList.add('btn-primary');
-                        this.disabled = false;
-                    }, 2000);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                this.innerHTML = originalContent;
-                this.disabled = false;
-            });
+        const originalContent = button.innerHTML;
+        button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Adding...';
+        button.disabled = true;
+
+        fetch(window.routes.cartAdd, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({ product_id: productId, quantity: quantity })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                button.innerHTML = '<i class="fa-solid fa-check"></i> Added!';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+                document.querySelectorAll('.cart-count').forEach(b => {
+                    b.textContent = data.cartCount;
+                    b.style.display = data.cartCount > 0 ? 'flex' : 'none';
+                });
+                setTimeout(() => {
+                    button.innerHTML = originalContent;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-primary');
+                    button.disabled = false;
+                }, 2000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            button.innerHTML = originalContent;
+            button.disabled = false;
         });
     });
 
@@ -259,63 +259,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Wishlist Functionality
-    const wishlistButtons = document.querySelectorAll('.btn-heart');
-    wishlistButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const productId = this.getAttribute('data-id');
-            if (!productId) return;
+    // Wishlist Functionality (Event Delegation)
+    document.addEventListener('click', function(e) {
+        const button = e.target.closest('.btn-heart');
+        if (!button) return;
 
-            const icon = this.querySelector('i');
-            if (!icon) return;
+        e.preventDefault();
+        const productId = button.getAttribute('data-id');
+        if (!productId) return;
 
-            const originalClass = icon.className;
-            icon.className = 'fa-solid fa-spinner fa-spin';
-            this.disabled = true;
+        const icon = button.querySelector('i');
+        if (!icon) return;
 
-            fetch(window.routes.wishlistToggle, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ product_id: productId })
-            })
-            .then(async response => {
-                if (response.status === 401) {
-                    // Reset button state before redirecting
-                    icon.className = originalClass;
-                    this.disabled = false;
-                    window.location.href = '/login';
-                    return;
-                }
-                
-                const data = await response.json();
-                
-                this.disabled = false;
-                if (data.status === 'added') {
-                    icon.className = 'fa-solid fa-heart text-danger';
-                } else if (data.status === 'removed') {
-                    icon.className = 'fa-regular fa-heart';
-                } else {
-                    icon.className = originalClass;
-                }
-                
-                if(data.wishlistCount !== undefined) {
-                    document.querySelectorAll('.wishlist-count').forEach(b => {
-                        b.textContent = data.wishlistCount;
-                        b.style.display = data.wishlistCount > 0 ? 'flex' : 'none';
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
+        const originalClass = icon.className;
+        icon.className = 'fa-solid fa-spinner fa-spin';
+        button.disabled = true;
+
+        fetch(window.routes.wishlistToggle, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ product_id: productId })
+        })
+        .then(async response => {
+            if (response.status === 401) {
                 icon.className = originalClass;
-                this.disabled = false;
-            });
+                button.disabled = false;
+                window.location.href = '/login';
+                return;
+            }
+            
+            const data = await response.json();
+            button.disabled = false;
+            if (data.status === 'added') {
+                icon.className = 'fa-solid fa-heart text-danger';
+            } else if (data.status === 'removed') {
+                icon.className = 'fa-regular fa-heart';
+            } else {
+                icon.className = originalClass;
+            }
+            
+            if(data.wishlistCount !== undefined) {
+                document.querySelectorAll('.wishlist-count').forEach(b => {
+                    b.textContent = data.wishlistCount;
+                    b.style.display = data.wishlistCount > 0 ? 'flex' : 'none';
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            icon.className = originalClass;
+            button.disabled = false;
         });
     });
 

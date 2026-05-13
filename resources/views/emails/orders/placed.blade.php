@@ -51,7 +51,6 @@
     <div class="card">
         <!-- Header -->
         <div class="header">
-            <div class="icon">✅</div>
             <h1>Order Confirmed!</h1>
             <p>Thank you for shopping with us</p>
         </div>

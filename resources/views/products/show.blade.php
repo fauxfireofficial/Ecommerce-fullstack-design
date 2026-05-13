@@ -1,6 +1,217 @@
 {{-- resources/views/products/show.blade.php --}}
 @extends('layouts.app')
 
+@section('styles')
+<style>
+    /* Lightbox Styles */
+    .lightbox-modal {
+        display: none;
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(5px);
+        overflow: hidden;
+        animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .lightbox-content {
+        position: relative;
+        margin: auto;
+        padding: 0;
+        width: 90%;
+        max-width: 900px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .lightbox-content img {
+        max-width: 100%;
+        max-height: 85vh;
+        object-fit: contain;
+        border-radius: 12px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes zoomIn {
+        from { transform: scale(0.9); }
+        to { transform: scale(1); }
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 25px;
+        right: 35px;
+        color: #f1f5f9;
+        font-size: 40px;
+        font-weight: 300;
+        cursor: pointer;
+        transition: 0.3s;
+        z-index: 10001;
+    }
+
+    .lightbox-close:hover { color: #fff; transform: rotate(90deg); }
+
+    .zoom-icon-hint {
+        position: absolute;
+        bottom: 15px;
+        right: 15px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 6px 12px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        opacity: 0;
+        transition: 0.3s;
+    }
+
+    .main-image:hover .zoom-icon-hint { opacity: 1; }
+
+    .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        padding: 0 30px;
+        transform: translateY(-50%);
+        pointer-events: none;
+    }
+
+    .lightbox-btn {
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        pointer-events: auto;
+        transition: 0.3s;
+    }
+
+    .lightbox-btn:hover { background: #fff; color: #0f172a; }
+
+    /* Product Image Fit Fixes */
+    .product-gallery {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .main-image {
+        background: #fff;
+        border: 1px solid #f1f5f9;
+        border-radius: 16px;
+        width: 100%;
+        height: 480px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        padding: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .main-image:hover {
+        border-color: #e2e8f0;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    }
+
+    .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        transition: transform 0.5s ease;
+    }
+
+    .thumbnail-list {
+        display: flex;
+        gap: 12px;
+        padding: 5px 0;
+        overflow-x: auto;
+    }
+
+    .thumbnail {
+        width: 65px;
+        height: 65px;
+        border-radius: 10px;
+        border: 2px solid #f1f5f9;
+        padding: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        background: #fff;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .thumbnail.active {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .thumbnail:hover {
+        border-color: var(--primary);
+    }
+
+    .thumbnail img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 6px;
+    }
+
+    /* Discount Badge Styles */
+    .product-discount-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: #ef4444;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 6px;
+        font-weight: 800;
+        font-size: 14px;
+        z-index: 10;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .sale-tag-detail {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: #fff1f2;
+        color: #e11d48;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 10px;
+        border: 1px solid #ffe4e6;
+    }
+</style>
+@endsection
+
 @section('content')
 <main class="container">
     
@@ -10,7 +221,7 @@
         <i class="fa-solid fa-chevron-right"></i>
         <a href="{{ route('products.index') }}">Products</a>
         <i class="fa-solid fa-chevron-right"></i>
-        <a href="#">{{ ucfirst($product->category->name ?? 'Product') }}</a>
+        <a href="{{ route('products.index', ['category' => $product->category->name ?? '']) }}">{{ ucfirst($product->category->name ?? 'Product') }}</a>
         <i class="fa-solid fa-chevron-right"></i>
         <span>{{ $product->name }}</span>
     </div>
@@ -19,8 +230,14 @@
     <div class="product-detail-grid">
         <!-- Left Column - Product Gallery -->
         <div class="product-gallery">
-            <div class="main-image">
+            <div class="main-image" onclick="openLightbox()" style="cursor: zoom-in; position: relative;">
+                @if($product->discount_percent)
+                    <div class="product-discount-badge">-{{ $product->discount_percent }}%</div>
+                @endif
                 <img src="{{ asset($product->image ?? 'images/placeholder.jpg') }}" alt="{{ $product->name }}" id="mainProductImage">
+                <div class="zoom-icon-hint">
+                    <i class="fa-solid fa-expand"></i> Click to enlarge
+                </div>
             </div>
             <div class="thumbnail-list">
                 <div class="thumbnail active">
@@ -39,6 +256,9 @@
         <!-- Middle Column - Product Info -->
         <div class="product-info-detail">
             <div class="stock-badge">{{ $product->stock_quantity > 0 ? 'In stock' : 'Out of stock' }}</div>
+            @if($product->discount_percent)
+                <div class="sale-tag-detail"><i class="fa-solid fa-tag"></i> Special Offer: Save {{ $product->discount_percent }}% Off</div>
+            @endif
             <h1 class="product-title-detail">{{ $product->name }}</h1>
             
             <div class="product-rating">
@@ -91,6 +311,16 @@
             <!-- Product Attributes -->
             <div class="product-attributes">
                 <div class="attr-row">
+                    <span class="attr-label">Availability:</span>
+                    <span class="attr-value">
+                        @if($product->stock_quantity > 0)
+                            <span class="text-success" style="font-weight: 700;"><i class="fa-solid fa-check-circle"></i> In Stock ({{ $product->stock_quantity }} available)</span>
+                        @else
+                            <span class="text-danger" style="font-weight: 700;"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</span>
+                        @endif
+                    </span>
+                </div>
+                <div class="attr-row">
                     <span class="attr-label">Price:</span>
                     <span class="attr-value">{{ $product->is_negotiable ? 'Negotiable' : 'Fixed' }}</span>
                 </div>
@@ -98,42 +328,28 @@
                     <span class="attr-label">Type:</span>
                     <span class="attr-value">{{ $product->type ?? 'Classic' }}</span>
                 </div>
-                <div class="attr-row">
-                    <span class="attr-label">Material:</span>
-                    <span class="attr-value">{{ $product->material ?? 'Premium quality' }}</span>
-                </div>
-                <div class="attr-row">
-                    <span class="attr-label">Design:</span>
-                    <span class="attr-value">{{ $product->design ?? 'Modern' }}</span>
-                </div>
-                <div class="attr-row">
-                    <span class="attr-label">Customization:</span>
-                    <span class="attr-value">{{ $product->customization ?? 'Customized logo and design available' }}</span>
-                </div>
-                <div class="attr-row">
-                    <span class="attr-label">Protection:</span>
-                    <span class="attr-value">{{ $product->protection ?? 'Refund Policy' }}</span>
-                </div>
-                <div class="attr-row">
-                    <span class="attr-label">Warranty:</span>
-                    <span class="attr-value">{{ $product->warranty ?? '2 years full warranty' }}</span>
-                </div>
             </div>
 
             <!-- Quantity Selector -->
-            <div class="quantity-section">
+            <div class="quantity-section {{ $product->stock_quantity <= 0 ? 'disabled-section' : '' }}">
                 <label>Quantity:</label>
                 <div class="quantity-selector">
-                    <button class="qty-btn minus">-</button>
-                    <input type="number" value="1" min="1" max="{{ $product->stock_quantity }}" class="qty-input">
-                    <button class="qty-btn plus">+</button>
+                    <button class="qty-btn minus" {{ $product->stock_quantity <= 0 ? 'disabled' : '' }}>-</button>
+                    <input type="number" value="{{ $product->stock_quantity > 0 ? 1 : 0 }}" min="{{ $product->stock_quantity > 0 ? 1 : 0 }}" max="{{ $product->stock_quantity }}" class="qty-input" {{ $product->stock_quantity <= 0 ? 'disabled' : '' }}>
+                    <button class="qty-btn plus" {{ $product->stock_quantity <= 0 ? 'disabled' : '' }}>+</button>
                 </div>
                 <span class="unit">Pieces</span>
             </div>
 
             <div class="action-buttons">
-                <button class="btn btn-primary btn-buy" data-id="{{ $product->id }}">Buy now</button>
-                <button class="btn btn-add-cart btn-cart" data-id="{{ $product->id }}">Add to cart</button>
+                @if($product->stock_quantity > 0)
+                    <button class="btn btn-primary btn-buy" data-id="{{ $product->id }}">Buy now</button>
+                    <button class="btn btn-add-cart btn-cart" data-id="{{ $product->id }}">Add to cart</button>
+                @else
+                    <button class="btn btn-secondary" style="background: #e2e8f0; color: #64748b; cursor: not-allowed; width: 100%; border-radius: 10px; font-weight: 700; padding: 12px;" disabled>
+                        <i class="fa-solid fa-circle-xmark"></i> Out of Stock
+                    </button>
+                @endif
                 <button class="btn btn-heart btn-wishlist" data-id="{{ $product->id }}"><i class="fa-regular fa-heart"></i></button>
             </div>
         </div>
@@ -402,6 +618,18 @@
 
 </main>
 
+<!-- Image Lightbox Modal -->
+<div id="imageLightbox" class="lightbox-modal">
+    <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
+    <div class="lightbox-content">
+        <img id="lightboxImg" src="">
+    </div>
+    <div class="lightbox-nav">
+        <button class="lightbox-btn prev" onclick="changeLightboxImg(-1)"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="lightbox-btn next" onclick="changeLightboxImg(1)"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+</div>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Tab Switching Logic
@@ -559,6 +787,47 @@
             imageInput.files = selectedFiles.files;
             btn.parentElement.remove();
         };
+
+        // Lightbox Logic
+        const allImages = [];
+        const mainImgUrl = "{{ asset($product->image) }}";
+        allImages.push(mainImgUrl);
+        @if($product->images)
+            @foreach(json_decode($product->images, true) ?? [] as $img)
+                allImages.push("{{ asset($img) }}");
+            @endforeach
+        @endif
+
+        let currentImgIndex = 0;
+
+        window.openLightbox = function() {
+            const currentSrc = document.getElementById('mainProductImage').src;
+            // Extract filename to find index
+            const currentFilename = currentSrc.split('/').pop();
+            currentImgIndex = allImages.findIndex(img => img.split('/').pop() === currentFilename);
+            if(currentImgIndex === -1) currentImgIndex = 0;
+            
+            document.getElementById('lightboxImg').src = allImages[currentImgIndex];
+            document.getElementById('imageLightbox').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        window.closeLightbox = function() {
+            document.getElementById('imageLightbox').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        window.changeLightboxImg = function(direction) {
+            currentImgIndex += direction;
+            if (currentImgIndex >= allImages.length) currentImgIndex = 0;
+            if (currentImgIndex < 0) currentImgIndex = allImages.length - 1;
+            document.getElementById('lightboxImg').src = allImages[currentImgIndex];
+        }
+
+        // Close on ESC
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeLightbox();
+        });
     });
 </script>
 @endsection

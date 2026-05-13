@@ -137,6 +137,23 @@
             </div>
         </div>
 
+        <div class="info-grid" style="margin-top: -20px; margin-bottom: 30px;">
+            <div class="info-box">
+                <h3>Payment Info:</h3>
+                Method: <strong>{{ strtoupper($order->payment_method ?? 'N/A') }}</strong><br>
+                Status: 
+                @if($order->payment_status === 'paid')
+                    <strong style="color: #10b981;">PAID</strong>
+                @else
+                    <strong style="color: #ef4444;">{{ strtoupper($order->payment_status ?? 'UNPAID') }}</strong>
+                @endif
+            </div>
+            <div class="info-box">
+                <h3>Order Status:</h3>
+                <strong>{{ strtoupper($order->status) }}</strong>
+            </div>
+        </div>
+
         <table>
             <thead>
                 <tr>

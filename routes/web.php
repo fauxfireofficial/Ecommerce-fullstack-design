@@ -67,7 +67,15 @@ Route::middleware(['auth'])->group(function () {
     // Review Routes
     Route::post('/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
     Route::put('/reviews/{id}', [\App\Http\Controllers\ReviewController::class, 'update'])->name('reviews.update');
+
+    // Stripe Payment Routes
+    Route::get('/payment/stripe/{orderId}', [\App\Http\Controllers\StripeController::class, 'checkout'])->name('stripe.checkout');
+    Route::get('/payment/success', [\App\Http\Controllers\StripeController::class, 'success'])->name('payment.success');
+    Route::get('/payment/cancel', [\App\Http\Controllers\StripeController::class, 'cancel'])->name('payment.cancel');
 });
+
+// Stripe Webhook (outside auth - called by Stripe servers)
+Route::post('/stripe/webhook', [\App\Http\Controllers\StripeController::class, 'handleWebhook'])->name('stripe.webhook');
 
 // Authentication Routes
 Route::get('/auth', [AuthController::class, 'showAuthForm'])->name('auth');
@@ -142,6 +150,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'show'])->name('admin.orders.show');
         Route::put('/orders/{id}/status', [\App\Http\Controllers\Admin\OrderController::class, 'updateStatus'])->name('admin.orders.updateStatus');
         Route::get('/orders/{id}/invoice', [\App\Http\Controllers\Admin\OrderController::class, 'invoice'])->name('admin.orders.invoice');
+        Route::post('/orders/{id}/refund', [\App\Http\Controllers\Admin\OrderController::class, 'refund'])->name('admin.orders.refund');
         Route::post('/orders/bulk-update', [\App\Http\Controllers\Admin\OrderController::class, 'bulkUpdate'])->name('admin.orders.bulkUpdate');
         Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
 

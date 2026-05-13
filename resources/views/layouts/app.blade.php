@@ -584,7 +584,7 @@
                 @endphp
                 <ul class="sidebar-list">
                     <li><a href="javascript:void(0)" onclick="openMobileSelection('currency')"><i class="fa-solid fa-globe"></i> English | {{ $currentCurrency }}</a></li>
-                    <li><a href="javascript:void(0)" onclick="openMobileSelection('ship-to')"><i class="fa-solid fa-truck-fast"></i> Ship to <img src="https://flagcdn.com/w20/{{ $currentFlag }}.png" style="width:16px; margin-left:5px; border-radius:2px;"></a></li>
+                    <li><a href="javascript:void(0)" onclick="openMobileSelection('ship-to')"><i class="fa-solid fa-truck-fast"></i> Ship to <img src="https://flagicons.lipis.dev/flags/4x3/{{ $currentFlag }}.svg" style="width:16px; margin-left:5px; border-radius:2px;"></a></li>
                 </ul>
             </div>
 
@@ -777,11 +777,11 @@
 
                 <!-- Ship To Dropdown -->
                 <div class="nav-dropdown">
-                    <a href="javascript:void(0)" class="dropdown-trigger">Ship to <img src="https://flagcdn.com/w20/{{ $currentFlag }}.png" alt="Country" class="nav-flag"> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></a>
+                    <a href="javascript:void(0)" class="dropdown-trigger">Ship to <img src="https://flagicons.lipis.dev/flags/4x3/{{ $currentFlag }}.svg" alt="Country" class="nav-flag"> <i class="fa-solid fa-chevron-down" style="font-size:10px;"></i></a>
                     <div class="dropdown-menu dropdown-small">
-                        <a href="javascript:void(0)"><img src="https://flagcdn.com/w20/us.png" alt="USA" class="nav-flag"> United States</a>
-                        <a href="javascript:void(0)"><img src="https://flagcdn.com/w20/ae.png" alt="UAE" class="nav-flag"> United Arab Emirates</a>
-                        <a href="javascript:void(0)"><img src="https://flagcdn.com/w20/pk.png" alt="PK" class="nav-flag"> Pakistan</a>
+                        <a href="javascript:void(0)"><img src="https://flagicons.lipis.dev/flags/4x3/us.svg" alt="US" class="nav-flag"> United States</a>
+                        <a href="javascript:void(0)"><img src="https://flagicons.lipis.dev/flags/4x3/ae.svg" alt="AE" class="nav-flag"> United Arab Emirates</a>
+                        <a href="javascript:void(0)"><img src="https://flagicons.lipis.dev/flags/4x3/pk.svg" alt="PK" class="nav-flag"> Pakistan</a>
                     </div>
                 </div>
             </div>
@@ -844,7 +844,7 @@
         <div class="footer-bottom">
             <div class="container" style="display: flex; justify-content: space-between; width: 100%;">
                 <span>&copy; 2026 Ecommerce.</span>
-                <span class="desktop-only" style="display: flex; align-items: center; gap: 5px;"><img src="https://flagcdn.com/w20/us.png" alt="US" style="width: 16px;"> English <i class="fa-solid fa-chevron-up" style="font-size: 10px;"></i></span>
+                <span class="desktop-only" style="display: flex; align-items: center; gap: 5px;"><img src="https://flagicons.lipis.dev/flags/4x3/us.svg" alt="US" style="width: 16px;"> English <i class="fa-solid fa-chevron-up" style="font-size: 10px;"></i></span>
             </div>
         </div>
     </footer>

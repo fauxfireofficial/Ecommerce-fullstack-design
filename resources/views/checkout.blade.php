@@ -9,6 +9,22 @@
     <div class="checkout-layout-grid">
         <!-- Left: Delivery Information -->
         <div class="checkout-main-content">
+            @if(session('error'))
+                <div class="alert alert-danger mb-4" style="border-radius: 12px; padding: 15px; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i> {{ session('error') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger mb-4" style="border-radius: 12px; padding: 15px; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="card checkout-form-card">
                 <h3>Delivery Information</h3>
                 <form action="{{ route('order.store') }}" method="POST" id="checkout-form">
@@ -76,9 +92,16 @@
                     <div class="form-group mt-3">
                         <label>Payment Method</label>
                         <div class="payment-selection">
-                            <label class="payment-option active">
-                                <input type="radio" name="payment_method" value="cod" checked>
+                            <label class="payment-option" id="label-cod">
+                                <input type="radio" name="payment_method" value="cod" checked onchange="togglePaymentSelection('cod')">
+                                <i class="fa-solid fa-truck-fast"></i>
                                 <span>Cash on Delivery</span>
+                            </label>
+                            
+                            <label class="payment-option mt-3" id="label-stripe">
+                                <input type="radio" name="payment_method" value="stripe" onchange="togglePaymentSelection('stripe')">
+                                <i class="fa-brands fa-stripe"></i>
+                                <span>Pay Online (Card / Stripe)</span>
                             </label>
                         </div>
                     </div>
@@ -223,25 +246,51 @@
         display: flex;
         align-items: center;
         gap: 15px;
-        padding: 20px;
-        border: 2px solid #3b82f6;
+        padding: 22px 25px;
+        border: 2px solid #e2e8f0;
         border-radius: 16px;
-        background: #f0f7ff;
+        background: #ffffff;
         cursor: pointer;
         font-weight: 700;
-        color: #1e293b;
-        transition: 0.3s;
-        box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
-    }
-
-    .payment-option i {
-        font-size: 20px;
-        color: #3b82f6;
+        color: #475569;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
     }
 
     .payment-option:hover {
-        background: #e0f2fe;
-        transform: translateY(-2px);
+        border-color: #cbd5e1;
+        background: #f8fafc;
+    }
+
+    .payment-option.active {
+        border-color: #3b82f6;
+        background: #f0f7ff;
+        color: #1e293b;
+        box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1);
+    }
+
+    .payment-option i {
+        font-size: 24px;
+        width: 30px;
+        text-align: center;
+        color: #64748b;
+        transition: color 0.3s;
+    }
+
+    .payment-option.active i {
+        color: #3b82f6;
+    }
+
+    .payment-option input[type="radio"] {
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .payment-option span {
+        font-size: 15px;
+        flex: 1;
     }
 
     .btn-checkout-green {
@@ -414,4 +463,25 @@
         }
     }
 </style>
+
+<script>
+    function togglePaymentSelection(method) {
+        // Remove active class from all
+        document.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('active'));
+        
+        // Add active class to selected
+        const selectedLabel = document.getElementById('label-' + method);
+        if (selectedLabel) {
+            selectedLabel.classList.add('active');
+        }
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+        const checked = document.querySelector('input[name="payment_method"]:checked');
+        if (checked) {
+            togglePaymentSelection(checked.value);
+        }
+    });
+</script>
 @endsection

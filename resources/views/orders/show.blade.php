@@ -62,6 +62,12 @@
                             <div class="item-info-premium">
                                 <h4>{{ $item->product->name ?? 'Product Unavailable' }}</h4>
                                 <p class="item-meta">SKU: {{ $item->product->sku ?? 'N/A' }}</p>
+                                
+                                @if($order->status == 'delivered' && $item->product && $item->product->reviews->isEmpty())
+                                    <button class="btn-write-review" onclick="openReviewModal({{ $item->product->id }}, '{{ addslashes($item->product->name) }}')">
+                                        <i class="fa-solid fa-star"></i> Write a Review
+                                    </button>
+                                @endif
                             </div>
                             <div class="item-pricing">
                                 <div class="price-qty">
@@ -105,8 +111,12 @@
                 <div class="info-block-premium">
                     <h3 class="info-title"><i class="fa-solid fa-credit-card"></i> Payment Information</h3>
                     <div class="info-content">
-                        <p><strong>Method:</strong> Cash on Delivery</p>
-                        <p><strong>Status:</strong> {{ $order->status == 'delivered' ? 'Paid' : 'Pending' }}</p>
+                        <p><strong>Method:</strong> {{ $order->stripe_session_id ? 'Online Payment (Stripe)' : 'Cash on Delivery' }}</p>
+                        <p><strong>Status:</strong> 
+                            <span class="badge {{ $order->payment_status == 'paid' || $order->status == 'delivered' ? 'text-success' : 'text-warning' }}" style="font-weight: 700;">
+                                {{ $order->payment_status == 'paid' || $order->status == 'delivered' ? 'Paid' : 'Pending' }}
+                            </span>
+                        </p>
                     </div>
                 </div>
 
@@ -120,7 +130,299 @@
     </div>
 </div>
 
+<!-- Review Modal -->
+<div id="reviewModal" class="modal-overlay">
+    <div class="modal-content-custom">
+        <div class="modal-header-custom">
+            <h3>Write a Review</h3>
+            <button class="btn-close-modal" onclick="closeReviewModal()">&times;</button>
+        </div>
+        <div class="modal-body-custom">
+            <form action="{{ route('reviews.store') }}" method="POST" id="reviewForm" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" name="product_id" id="reviewProductId">
+                <p id="modalProductName" style="font-weight: bold; margin-bottom: 15px; color: #1e293b;"></p>
+                
+                <label class="form-label">Rating</label>
+                <div class="star-rating-input">
+                    <input type="radio" id="star5" name="rating" value="5" required/><label for="star5" title="5 stars"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star4" name="rating" value="4"/><label for="star4" title="4 stars"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star3" name="rating" value="3"/><label for="star3" title="3 stars"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star2" name="rating" value="2"/><label for="star2" title="2 stars"><i class="fa-solid fa-star"></i></label>
+                    <input type="radio" id="star1" name="rating" value="1"/><label for="star1" title="1 star"><i class="fa-solid fa-star"></i></label>
+                </div>
+
+                <label class="form-label">Your Review</label>
+                <textarea name="comment" class="form-textarea" rows="4" placeholder="What did you like or dislike?" required minlength="10" style="margin-bottom: 20px;"></textarea>
+                
+                <div class="file-upload-section">
+                    <label class="form-label">Add New Photos (Max 3 total)</label>
+                    <label for="review-images" class="file-upload-wrapper-dashed">
+                        <i class="fa-solid fa-camera"></i>
+                        <span>Click to upload images</span>
+                        <input type="file" id="review-images" name="images[]" multiple accept="image/*" style="display: none;">
+                    </label>
+                    <div id="image-preview-container" class="preview-grid"></div>
+                </div>
+
+                <button type="submit" class="btn-submit-review">Submit Review</button>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    const reviewModal = document.getElementById('reviewModal');
+    const reviewForm = document.getElementById('reviewForm');
+    const productIdInput = document.getElementById('reviewProductId');
+    const modalProductName = document.getElementById('modalProductName');
+    const imageInput = document.getElementById('review-images');
+    const previewContainer = document.getElementById('image-preview-container');
+    let selectedFiles = new DataTransfer();
+
+    function openReviewModal(productId, productName) {
+        productIdInput.value = productId;
+        modalProductName.innerText = productName;
+        reviewModal.style.display = 'flex';
+        // Reset form
+        reviewForm.reset();
+        previewContainer.innerHTML = '';
+        selectedFiles = new DataTransfer();
+    }
+
+    function closeReviewModal() {
+        reviewModal.style.display = 'none';
+    }
+
+    if (imageInput) {
+        imageInput.onchange = function() {
+            const files = Array.from(this.files);
+            
+            if (selectedFiles.files.length + files.length > 3) {
+                alert('You can only upload a maximum of 3 images total.');
+                this.value = '';
+                return;
+            }
+
+            files.forEach(file => {
+                selectedFiles.items.add(file);
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.createElement('div');
+                    div.className = 'preview-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" class="preview-thumb">
+                        <button type="button" class="remove-preview" onclick="removeNewImage(this, '${file.name}')">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    `;
+                    previewContainer.appendChild(div);
+                }
+                reader.readAsDataURL(file);
+            });
+            
+            this.files = selectedFiles.files;
+        };
+    }
+
+    window.removeNewImage = function(btn, fileName) {
+        const dt = new DataTransfer();
+        for (let i = 0; i < selectedFiles.files.length; i++) {
+            const file = selectedFiles.files[i];
+            if (file.name !== fileName) dt.items.add(file);
+        }
+        selectedFiles = dt;
+        imageInput.files = selectedFiles.files;
+        btn.parentElement.remove();
+    };
+
+    window.onclick = function(event) {
+        if (event.target == reviewModal) {
+            closeReviewModal();
+        }
+    }
+</script>
+@endsection
+
+@section('styles')
 <style>
+    /* Star Rating Input */
+    .star-rating-input {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 5px;
+        margin-bottom: 25px;
+    }
+    .star-rating-input input { display: none; }
+    .star-rating-input label {
+        font-size: 28px;
+        color: #e2e8f0;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .star-rating-input input:checked ~ label,
+    .star-rating-input label:hover,
+    .star-rating-input label:hover ~ label {
+        color: #f59e0b;
+    }
+
+    /* File Upload */
+    .file-upload-wrapper-dashed {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        border: 2px dashed #e2e8f0;
+        border-radius: 16px;
+        background: #fafafa;
+        cursor: pointer;
+        transition: 0.3s;
+        gap: 10px;
+    }
+    .file-upload-wrapper-dashed:hover {
+        border-color: #3b82f6;
+        background: #f0f7ff;
+    }
+    .file-upload-wrapper-dashed i {
+        font-size: 24px;
+        color: #94a3b8;
+    }
+    .file-upload-wrapper-dashed span {
+        font-size: 14px;
+        color: #64748b;
+        font-weight: 500;
+    }
+
+    .preview-grid {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+    .preview-item {
+        position: relative;
+        width: 70px;
+        height: 70px;
+    }
+    .preview-thumb {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+    }
+    .remove-preview {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        width: 20px;
+        height: 20px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        cursor: pointer;
+    }
+
+    .btn-write-review {
+        margin-top: 10px;
+        background: #f0f7ff;
+        color: #3b82f6;
+        border: 1px solid #dbeafe;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-write-review:hover {
+        background: #3b82f6;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        z-index: 9999;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .modal-content-custom {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header-custom {
+        padding: 25px 30px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .modal-header-custom h3 { margin: 0; font-size: 20px; font-weight: 800; color: #1e293b; }
+    .btn-close-modal { background: none; border: none; font-size: 28px; color: #94a3b8; cursor: pointer; }
+
+    .modal-body-custom { padding: 30px; }
+    
+    .form-label { display: block; font-weight: 700; font-size: 14px; color: #475569; margin-bottom: 10px; }
+    .form-textarea {
+        width: 100%;
+        padding: 15px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        outline: none;
+        transition: 0.2s;
+        font-family: inherit;
+        resize: none;
+    }
+    .form-textarea:focus { border-color: #3b82f6; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
+    
+    .btn-submit-review {
+        width: fit-content;
+        min-width: 150px;
+        background: #3b82f6;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 10px;
+    }
+    .btn-submit-review:hover { background: #2563eb; transform: translateY(-2px); }
+
 /* Order Details Premium Styles */
 .order-details-container {
     padding: 60px 0;

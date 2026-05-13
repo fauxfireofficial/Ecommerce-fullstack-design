@@ -15,8 +15,10 @@ class Order extends Model
         'total_amount',
         'status',
         'payment_status',
+        'payment_method',
         'shipping_address',
         'shipping_phone',
+        'stripe_session_id',
         'subtotal',
         'shipping_cost',
         'tax',
@@ -42,6 +44,12 @@ class Order extends Model
     public function items()
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    // Relationship with Transactions
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
     }
 
     // Generate order number

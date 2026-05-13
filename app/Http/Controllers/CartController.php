@@ -33,8 +33,21 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
 
         if(isset($cart[$product->id])) {
-            $cart[$product->id]['quantity'] += $quantity;
+            $newQuantity = $cart[$product->id]['quantity'] + $quantity;
+            if ($newQuantity > $product->stock_quantity) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Insufficient stock! Only ' . $product->stock_quantity . ' units available.'
+                ], 400);
+            }
+            $cart[$product->id]['quantity'] = $newQuantity;
         } else {
+            if ($quantity > $product->stock_quantity) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Insufficient stock! Only ' . $product->stock_quantity . ' units available.'
+                ], 400);
+            }
             $cart[$product->id] = [
                 "name" => $product->name,
                 "quantity" => $quantity,
@@ -119,6 +132,14 @@ class CartController extends Controller
     public function update(Request $request)
     {
         if($request->id && $request->quantity){
+            $product = Product::find($request->id);
+            if ($product && $request->quantity > $product->stock_quantity) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Insufficient stock! Only ' . $product->stock_quantity . ' units available.'
+                ], 400);
+            }
+            
             $cart = session()->get('cart');
             $cart[$request->id]["quantity"] = $request->quantity;
             session()->put('cart', $cart);

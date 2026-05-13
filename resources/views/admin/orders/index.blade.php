@@ -121,6 +121,12 @@
 
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+    /* Refund & Payment Status Styles */
+    .payment-refunded { background: #fffbeb; color: #d97706; }
+    .btn-admin-refund { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .btn-admin-refund:hover { background: #fef3c7; }
+    .btn-admin:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
+
     @media (max-width: 768px) {
         .modal-content { max-height: 100vh; border-radius: 0; }
         .order-details-wrapper { padding: 20px; }
@@ -130,10 +136,13 @@
         .summary-card-admin { max-width: 100%; }
         .items-table-admin th:nth-child(2), .items-table-admin td:nth-child(2) { display: none; }
         .section-header-admin { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .footer-actions-admin { flex-wrap: wrap; }
+        .btn-admin { flex: 1 1 calc(50% - 6px); min-width: 120px; padding: 10px 12px; font-size: 12px; }
     }
 
     @media (max-width: 480px) {
         .orders-stats { grid-template-columns: 1fr !important; }
+        .btn-admin { flex: 1 1 100%; }
     }
 </style>
 @endsection
@@ -442,8 +451,8 @@
                                     <i class="fa-solid fa-credit-card"></i> <span>Payment Info</span>
                                 </div>
                                 <div class="card-body-admin">
-                                    <p><strong>Method:</strong> Cash on Delivery</p>
-                                    <p><strong>Status:</strong> <span class="payment-badge-admin payment-${(data.payment_status || 'pending').toLowerCase()}">${data.payment_status || 'Pending'}</span></p>
+                                    <p><strong>Method:</strong> ${data.payment_method === 'stripe' ? '<i class="fa-brands fa-stripe" style="color:#635bff;"></i> Stripe' : '<i class="fa-solid fa-money-bill-wave" style="color:#16a34a;"></i> Cash on Delivery'}</p>
+                                    <p><strong>Status:</strong> <span class="payment-badge-admin payment-${(data.payment_status || 'pending').toLowerCase()}" style="${data.payment_status === 'refunded' ? 'background:#fffbeb;color:#d97706;' : ''}">${(data.payment_status || 'Pending').toUpperCase()}</span></p>
                                     <p><strong>Currency:</strong> USD ($)</p>
                                 </div>
                             </div>
@@ -507,13 +516,20 @@
                             
                             <div class="footer-actions-admin">
                                 <button class="btn-admin btn-admin-invoice" onclick="generateInvoice(${data.id})">
-                                    <i class="fa-solid fa-file-invoice"></i> Download Invoice
+                                    <i class="fa-solid fa-file-invoice"></i> Invoice
                                 </button>
+                                
+                                ${data.payment_method === 'stripe' && data.payment_status === 'paid' ? `
+                                    <button class="btn-admin" style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a;" onclick="refundOrder(${data.id})">
+                                        <i class="fa-solid fa-rotate-left"></i> Refund
+                                    </button>
+                                ` : ''}
+
                                 <button class="btn-admin btn-admin-delete" onclick="deleteOrder(${data.id}, true)">
-                                    <i class="fa-solid fa-trash"></i> Delete Order
+                                    <i class="fa-solid fa-trash"></i> Delete
                                 </button>
                                 <button class="btn-admin btn-admin-close" onclick="closeModal()">
-                                    Close Details
+                                    Close
                                 </button>
                             </div>
                         </div>
@@ -580,9 +596,7 @@
         });
     });
 
-    function closeModal() {
-        document.getElementById('viewOrderModal').style.display = 'none';
-    }
+
 
     // Delete Order
     async function deleteOrder(orderId, fromModal = false) {
@@ -618,10 +632,48 @@
         });
     }
 
+    // Refund Order
+    async function refundOrder(orderId) {
+        const confirmed = await customConfirm('Refund Order', 'Are you sure you want to refund this payment via Stripe? This action will return the money to the customer.', true);
+        if (!confirmed) return;
+
+        // Show loading state on the button
+        const btn = event.currentTarget;
+        const originalContent = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+        btn.disabled = true;
+
+        fetch(`/admin/orders/${orderId}/refund`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                showNotification(data.message, 'success');
+                closeModal();
+                setTimeout(() => window.location.reload(), 1500);
+            } else {
+                showNotification(data.message, 'error');
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('Error processing refund', 'error');
+            btn.innerHTML = originalContent;
+            btn.disabled = false;
+        });
+    }
+
     // Close modal when clicking outside
     window.onclick = function(event) {
         if (event.target.classList.contains('modal')) {
-            event.target.style.display = 'none';
+            closeModal();
         }
     }
 </script>

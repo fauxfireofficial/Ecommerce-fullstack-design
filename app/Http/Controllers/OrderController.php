@@ -68,6 +68,7 @@ class OrderController extends Controller
             'postal_code' => $request->postal_code,
             'status' => 'pending',
             'payment_status' => 'pending',
+            'payment_method' => $request->payment_method ?? 'cod',
         ]);
 
         // Create Order Items
@@ -81,22 +82,52 @@ class OrderController extends Controller
             ]);
         }
 
-        // Clear Cart
-        session()->forget('cart');
+        // Clear Cart (only for COD, Stripe handles this in success)
+        if ($request->payment_method !== 'stripe') {
+            session()->forget('cart');
 
-        // Send Order Placed confirmation email
-        try {
-            $order->load('items.product', 'user');
-            \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\OrderPlacedMail($order));
-        } catch (\Exception $e) {
-            // Silently fail — do not block the success page if mail fails
+            // Deduct Stock
+            foreach ($cart as $id => $details) {
+                $product = \App\Models\Product::find($id);
+                if ($product) {
+                    $product->decrement('stock_quantity', $details['quantity']);
+                    $product->increment('sold_count', $details['quantity']);
+                }
+            }
+
+            // Create Transaction Record for Auditing
+            \App\Models\Transaction::create([
+                'order_id' => $order->id,
+                'transaction_id' => 'COD-' . strtoupper(bin2hex(random_bytes(4))),
+                'payment_method' => 'cod',
+                'amount' => $order->total_amount,
+                'currency' => 'USD',
+                'status' => 'pending',
+                'metadata' => [
+                    'payment_type' => 'cash_on_delivery'
+                ]
+            ]);
+
+            // Send Order Placed confirmation email
+            try {
+                $order->load('items.product', 'user');
+                \Illuminate\Support\Facades\Mail::to($request->email)->send(new \App\Mail\OrderPlacedMail($order));
+            } catch (\Exception $e) {
+                // Silently fail
+            }
+
+            return view('order-success', compact('order'));
         }
 
-        return view('order-success', compact('order'));
+        // Redirect to Stripe Checkout
+        return redirect()->route('stripe.checkout', $order->id)->withInput();
     }
     public function show($id)
     {
-        $order = Order::with('items.product')->where('user_id', auth()->id())->findOrFail($id);
+        $order = Order::with(['items.product.reviews' => function($query) {
+            $query->where('user_id', auth()->id());
+        }])->where('user_id', auth()->id())->findOrFail($id);
+        
         return view('orders.show', compact('order'));
     }
 }

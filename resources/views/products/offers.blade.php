@@ -61,11 +61,11 @@
             </div>
             <div class="filter-actions">
                 <div class="custom-select-wrapper">
-                    <select class="custom-select">
-                        <option>Sort by: Best Match</option>
-                        <option>Price: Low to High</option>
-                        <option>Price: High to Low</option>
-                        <option>Biggest Discount</option>
+                    <select class="custom-select" onchange="updateSort(this.value)">
+                        <option value="best" {{ request('sort') == 'best' || !request('sort') ? 'selected' : '' }}>Sort by: Best Match</option>
+                        <option value="price_low" {{ request('sort') == 'price_low' ? 'selected' : '' }}>Price: Low to High</option>
+                        <option value="price_high" {{ request('sort') == 'price_high' ? 'selected' : '' }}>Price: High to Low</option>
+                        <option value="discount" {{ request('sort') == 'discount' ? 'selected' : '' }}>Biggest Discount</option>
                     </select>
                     <i class="fa-solid fa-chevron-down"></i>
                 </div>
@@ -73,13 +73,13 @@
         </div>
 
         <!-- Premium Product Grid -->
-        <div class="offers-grid">
+        <div class="offers-grid" id="offersGrid">
             @forelse($products as $product)
                 <div class="offer-card" data-aos="fade-up">
                     <div class="card-header">
                         <span class="discount-pill">-{{ $product->discount_percent ?: '15' }}%</span>
-                        <button class="wishlist-btn" data-id="{{ $product->id }}">
-                            <i class="fa-regular fa-heart"></i>
+                        <button class="wishlist-btn btn-heart" data-id="{{ $product->id }}">
+                            <i class="fa-{{ auth()->check() && auth()->user()->wishlist && auth()->user()->wishlist->contains('product_id', $product->id) ? 'solid' : 'regular' }} fa-heart {{ auth()->check() && auth()->user()->wishlist && auth()->user()->wishlist->contains('product_id', $product->id) ? 'text-danger' : '' }}"></i>
                         </button>
                     </div>
                     
@@ -110,7 +110,7 @@
                             {{ $product->stock_quantity < 20 ? 'Only ' . $product->stock_quantity . ' left' : 'In Stock' }}
                         </div>
                         
-                        <button class="add-to-cart-btn" data-id="{{ $product->id }}">
+                        <button class="add-to-cart-btn btn-add-cart" data-id="{{ $product->id }}">
                             <i class="fa-solid fa-cart-plus"></i> Add to Cart
                         </button>
                     </div>
@@ -126,7 +126,7 @@
         </div>
 
         <!-- Pagination -->
-        <div class="pagination-container mt-5">
+        <div class="pagination-container mt-5" id="paginationContainer">
             {{ $products->links() }}
         </div>
     </div>
@@ -651,5 +651,71 @@
             document.querySelector(".timer-display").innerHTML = "EXPIRED";
         }
     }, 1000);
+
+    // AJAX Sorting and Pagination
+    function updateSort(val) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('sort', val);
+        fetchProducts(url);
+    }
+
+    function fetchProducts(url) {
+        const grid = document.getElementById('offersGrid');
+        const pagination = document.getElementById('paginationContainer');
+        const count = document.querySelector('.count-badge');
+        
+        // Show loading state
+        grid.style.opacity = '0.4';
+        grid.style.pointerEvents = 'none';
+        grid.style.transition = 'opacity 0.3s ease';
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            
+            const newGrid = doc.getElementById('offersGrid');
+            const newPagination = doc.getElementById('paginationContainer');
+            const newCount = doc.querySelector('.count-badge');
+            
+            if (newGrid) grid.innerHTML = newGrid.innerHTML;
+            if (newPagination) pagination.innerHTML = newPagination.innerHTML;
+            if (newCount) count.innerHTML = newCount.innerHTML;
+            
+            grid.style.opacity = '1';
+            grid.style.pointerEvents = 'auto';
+            
+            window.history.pushState({}, '', url);
+            
+            // Re-initialize AOS if present
+            if (window.AOS) {
+                AOS.refresh();
+            }
+
+            // Scroll to top of grid
+            window.scrollTo({
+                top: document.querySelector('.filter-bar').offsetTop - 100,
+                behavior: 'smooth'
+            });
+        })
+        .catch(err => {
+            console.error('AJAX Load Failed:', err);
+            window.location.href = url; // Fallback to full reload
+        });
+    }
+
+    // Handle pagination links via event delegation
+    document.getElementById('paginationContainer').addEventListener('click', function(e) {
+        const link = e.target.closest('a');
+        if (link && link.href) {
+            e.preventDefault();
+            fetchProducts(new URL(link.href));
+        }
+    });
 </script>
 @endsection
