@@ -317,10 +317,11 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Countdown Timer
-    if (document.getElementById('days')) {
-        let countDownDate = new Date();
-        countDownDate.setDate(countDownDate.getDate() + 4);
-        const targetTime = countDownDate.getTime();
+    const timerElement = document.getElementById('deals-countdown');
+    if (timerElement) {
+        const expiryDate = timerElement.getAttribute('data-expiry');
+        const targetTime = new Date(expiryDate).getTime();
+        
         setInterval(function() {
             const distance = targetTime - new Date().getTime();
             if (distance < 0) return;

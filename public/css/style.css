@@ -324,28 +324,40 @@ button {
 }
 
 .hero-banner h2 {
-    font-size: 28px;
-    margin-bottom: 15px;
-    font-weight: 400;
+    font-size: 32px;
+    margin-bottom: 4px;
+    font-weight: 500;
     color: var(--dark);
     line-height: 1.2;
+    max-width: 400px;
 }
 
-.hero-banner h2 span {
-    font-weight: 700;
-    display: block;
-    font-size: 32px;
+.hero-subtitle {
+    font-size: 18px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 25px;
+    max-width: 450px;
+    line-height: 1.5;
 }
 
-.hero-banner .btn {
+.hero-banner .btn-white {
     background: var(--white);
     color: var(--dark);
     border: none;
-    font-weight: 500;
-    padding: 10px 20px;
-    border-radius: 6px;
+    font-weight: 600;
+    padding: 12px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
     position: relative;
     z-index: 1;
+}
+
+.hero-banner .btn-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    background: #f8fafc;
 }
 
 .hero-right {
@@ -2607,7 +2619,7 @@ hr {
 /* Product Detail Grid */
 .product-detail-grid {
     display: grid;
-    grid-template-columns: 1fr 1.2fr 280px;
+    grid-template-columns: 1fr 1.2fr;
     gap: 24px;
     margin-bottom: 40px;
 }
@@ -3132,10 +3144,6 @@ hr {
         grid-template-columns: 1fr 1fr;
     }
 
-    .supplier-card {
-        grid-column: span 2;
-    }
-
     .related-products-grid {
         grid-template-columns: repeat(3, 1fr);
     }
@@ -3144,10 +3152,6 @@ hr {
 @media (max-width: 768px) {
     .product-detail-grid {
         grid-template-columns: 1fr;
-    }
-
-    .supplier-card {
-        grid-column: span 1;
     }
 
     .related-products-grid {

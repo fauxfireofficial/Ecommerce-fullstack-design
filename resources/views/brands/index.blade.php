@@ -228,16 +228,15 @@
 <div class="brands-page">
     <div class="brands-container">
         
-        <div class="section-header">
-            <h1>Official Store Brands</h1>
-            <p>Explore products from the world's leading manufacturers and local favorites.</p>
-        </div>
-
-        <!-- Featured Brands Section -->
+        <!-- 
+            Featured Brands Section 
+            Displays the most prominent brands with large cards, logos, and descriptions.
+        -->
         <div class="top-brands-section">
             <div class="top-brands-grid">
                 @foreach($topBrands as $brand)
-                    <a href="{{ route('products.index', ['brand' => $brand['name']]) }}" class="brand-card">
+                    <a href="{{ route('products.index', ['brands[]' => $brand['name']]) }}" class="brand-card">
+                        <!-- Brand Logo with Fallback: Shows a text-based placeholder if the image is missing -->
                         <div class="brand-logo-wrapper" id="wrapper-{{ Str::slug($brand['name']) }}">
                             <img src="{{ asset($brand['logo']) }}" alt="{{ $brand['name'] }} Logo" 
                                  onerror="this.style.display='none'; document.getElementById('placeholder-{{ Str::slug($brand['name']) }}').style.display='flex';">
@@ -254,12 +253,15 @@
             </div>
         </div>
 
-        <!-- All Brands Section -->
+        <!-- 
+            All Brands Section 
+            A comprehensive grid for exploring additional brands across the platform.
+        -->
         <div class="all-brands-section">
             <h2>Explore More Brands</h2>
             <div class="brands-grid">
                 @foreach($allBrands as $brand)
-                    <a href="{{ route('products.index', ['brand' => $brand['name']]) }}" class="small-brand-card">
+                    <a href="{{ route('products.index', ['brands[]' => $brand['name']]) }}" class="small-brand-card">
                         <div class="logo-sm" id="wrapper-sm-{{ Str::slug($brand['name']) }}">
                             <img src="{{ asset($brand['logo']) }}" alt="{{ $brand['name'] }}"
                                  onerror="this.style.display='none'; document.getElementById('placeholder-sm-{{ Str::slug($brand['name']) }}').style.display='flex';">

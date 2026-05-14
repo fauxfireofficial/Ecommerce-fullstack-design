@@ -25,6 +25,16 @@ class SettingSeeder extends Seeder
             ['key' => 'hot_offers_subtitle_color', 'value' => '#94a3b8', 'type' => 'color'],
             ['key' => 'hot_offers_floating_1', 'value' => 'images/tech/laptop.jpg', 'type' => 'image'],
             ['key' => 'hot_offers_floating_2', 'value' => 'images/tech/iPhone.jpg', 'type' => 'image'],
+            ['key' => 'site_logo', 'value' => 'Images/brand-logos/logo-symbol.png', 'type' => 'image'],
+            ['key' => 'site_name', 'value' => 'Brand', 'type' => 'text'],
+            ['key' => 'site_name_color', 'value' => '#1e293b', 'type' => 'color'],
+            ['key' => 'site_name_size', 'value' => '20', 'type' => 'text'],
+            ['key' => 'home_hero_title', 'value' => 'Latest trending Electronic items', 'type' => 'text'],
+            ['key' => 'home_hero_subtitle', 'value' => 'Premium gadgets at unbeatable prices.', 'type' => 'text'],
+            ['key' => 'home_hero_btn_text', 'value' => 'Learn more', 'type' => 'text'],
+            ['key' => 'home_hero_image', 'value' => 'images/cardbg/Banner-img.jpg', 'type' => 'image'],
+            ['key' => 'home_card_1_text', 'value' => 'Get US $10 off with a new supplier', 'type' => 'text'],
+            ['key' => 'home_card_2_text', 'value' => 'Send quotes with supplier preferences', 'type' => 'text'],
         ];
 
         foreach ($settings as $setting) {

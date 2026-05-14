@@ -17,7 +17,10 @@
             @method('PUT')
             
             <div class="form-grid">
-                <!-- Left Column -->
+                <!-- 
+                    Product Essentials 
+                    Loads existing data for name, brand, SKU, and inventory.
+                -->
                 <div class="form-column">
                     <div class="form-group">
                         <label for="name">Product Name <span class="required">*</span></label>
@@ -27,7 +30,14 @@
 
                     <div class="form-group">
                         <label for="brand">Brand / Supplier</label>
-                        <input type="text" id="brand" name="brand" class="form-control" value="{{ old('brand', $product->brand) }}" placeholder="e.g. Nike, Apple, Local Supplier">
+                        <select id="brand" name="brand" class="form-control">
+                            <option value="">Select Brand</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->name }}" {{ old('brand', $product->brand) == $brand->name ? 'selected' : '' }}>
+                                    {{ $brand->name }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('brand') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
@@ -123,7 +133,10 @@
                     </div>
                 </div>
 
-                <!-- Right Column -->
+                <!-- 
+                    Media and Advanced Metadata 
+                    Handles existing images, gallery management, and SEO fields.
+                -->
                 <div class="form-column">
                     <!-- Main Image Section -->
                     <div class="form-group">
@@ -548,6 +561,9 @@
 
 @section('scripts')
 <script>
+/**
+ * Previews a new main image and resets the 'remove' flag.
+ */
 function previewImage(input) {
     const preview = document.getElementById('imagePreview');
     const placeholder = document.getElementById('uploadPlaceholder');
@@ -565,6 +581,9 @@ function previewImage(input) {
     }
 }
 
+/**
+ * Flags the main image for removal and displays the upload placeholder.
+ */
 function removeMainImage() {
     document.getElementById('image').value = '';
     document.getElementById('imagePreview').style.display = 'none';
@@ -572,6 +591,10 @@ function removeMainImage() {
     document.getElementById('removeMainImageInput').value = '1';
 }
 
+/**
+ * Marks a specific gallery image for deletion.
+ * Dimmed state provides visual feedback before the final save.
+ */
 function removeGalleryImage(path, id) {
     if(confirm('Are you sure you want to remove this gallery image?')) {
         document.getElementById('remove-input-' + id).value = path;

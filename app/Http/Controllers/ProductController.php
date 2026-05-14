@@ -8,7 +8,10 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    // Show product detail page
+    /**
+     * Display the detailed information of a specific product.
+     * Searches by slug or name and fetches related products and purchase history.
+     */
     public function show($slug)
     {
         $product = Product::with(['category', 'reviews.user'])
@@ -35,12 +38,17 @@ class ProductController extends Controller
         return view('products.show', compact('product', 'relatedProducts', 'userHasPurchased'));
     }
     
-    // Products listing / search page
+    /**
+     * Display a listing of products with comprehensive filtering and searching capabilities.
+     * Supports search by keyword, category, brand, price range, and ratings.
+     */
     public function index(Request $request)
     {
+        // Initialize the base query with active status
         $query = Product::with('category')->where('status', 'active');
 
         // ─── 1. SMART SEARCH ───────────────────────────────────────────
+        // Filters products by name, brand, tags, description, or category name
         if ($request->filled('search')) {
             $s = $request->search;
             $query->where(function ($q) use ($s) {
@@ -55,6 +63,7 @@ class ProductController extends Controller
         }
 
         // ─── 2. CATEGORY FILTER ────────────────────────────────────────
+        // Filters by category name or slug
         if ($request->filled('category')) {
             $cat = Category::where('name', $request->category)
                            ->orWhere('slug', $request->category)
@@ -63,11 +72,14 @@ class ProductController extends Controller
         }
 
         // ─── 3. BRAND FILTER ───────────────────────────────────────────
-        if ($request->filled('brands')) {
-            $query->whereIn('brand', (array) $request->brands);
+        // Handles multiple brand selections (array) or a single brand parameter
+        if ($request->filled('brands') || $request->filled('brand')) {
+            $brands = $request->brands ?? $request->brand;
+            $query->whereIn('brand', (array) $brands);
         }
 
         // ─── 4. PRICE RANGE FILTER ─────────────────────────────────────
+        // Filters products within the specified minimum and maximum price range
         if ($request->filled('min_price')) {
             $query->where('price', '>=', $request->min_price);
         }
@@ -76,12 +88,14 @@ class ProductController extends Controller
         }
 
         // ─── 5. RATINGS FILTER ──────────────────────────────────────────
+        // Calculates average rating and filters based on minimum threshold
         if ($request->filled('rating')) {
             $query->withAvg('reviews', 'rating')
                   ->having('reviews_avg_rating', '>=', $request->rating);
         }
 
         // ─── 6. SORTING ────────────────────────────────────────────────
+        // Applies sorting logic based on price, date, or popularity
         switch ($request->sort) {
             case 'price_low':  $query->orderBy('price', 'asc'); break;
             case 'price_high': $query->orderBy('price', 'desc'); break;
@@ -90,8 +104,10 @@ class ProductController extends Controller
             default:           $query->orderBy('is_recommended', 'desc')->orderBy('created_at', 'desc');
         }
 
+        // Execute pagination
         $products = $query->paginate(20)->withQueryString();
 
+        // Handle AJAX requests for smooth infinity scrolling or tab switching
         if ($request->ajax() || $request->header('X-Requested-With') == 'XMLHttpRequest') {
             return view('products.index', compact('products'))->fragment('product-list-container');
         }
@@ -100,7 +116,10 @@ class ProductController extends Controller
     }
 
 
-    // Brands page
+    /**
+     * Display the brands index page.
+     * Categorizes brands into featured top brands and others.
+     */
     public function brands()
     {
         // Set local paths. You can download logos to public/Images/logos/

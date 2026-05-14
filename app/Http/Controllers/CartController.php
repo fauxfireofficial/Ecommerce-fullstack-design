@@ -15,9 +15,16 @@ class CartController extends Controller
         $cart = session()->get('cart', []);
         
         $total = 0;
-        foreach($cart as $item) {
-            $total += $item['price'] * $item['quantity'];
+        foreach($cart as $id => $item) {
+            $product = Product::find($id);
+            if ($product) {
+                // Recalculate price in case tiers changed or to be safe
+                $cart[$id]['price'] = $this->calculateTieredPrice($product, $item['quantity']);
+            }
+            $total += $cart[$id]['price'] * $item['quantity'];
         }
+
+        session()->put('cart', $cart);
 
         return view('cart', compact('cart', 'total'));
     }
@@ -41,6 +48,8 @@ class CartController extends Controller
                 ], 400);
             }
             $cart[$product->id]['quantity'] = $newQuantity;
+            // Update price based on new bulk quantity
+            $cart[$product->id]['price'] = $this->calculateTieredPrice($product, $newQuantity);
         } else {
             if ($quantity > $product->stock_quantity) {
                 return response()->json([
@@ -48,10 +57,11 @@ class CartController extends Controller
                     'message' => 'Insufficient stock! Only ' . $product->stock_quantity . ' units available.'
                 ], 400);
             }
+            
             $cart[$product->id] = [
                 "name" => $product->name,
                 "quantity" => $quantity,
-                "price" => $product->price,
+                "price" => $this->calculateTieredPrice($product, $quantity),
                 "image" => $product->image
             ];
         }
@@ -141,8 +151,13 @@ class CartController extends Controller
             }
             
             $cart = session()->get('cart');
-            $cart[$request->id]["quantity"] = $request->quantity;
-            session()->put('cart', $cart);
+            if (isset($cart[$request->id])) {
+                $cart[$request->id]["quantity"] = (int)$request->quantity;
+                if ($product) {
+                    $cart[$request->id]["price"] = $this->calculateTieredPrice($product, $request->quantity);
+                }
+                session()->put('cart', $cart);
+            }
             
             return response()->json([
                 'status' => 'success',
@@ -152,12 +167,58 @@ class CartController extends Controller
     }
 
     /**
+     * Helper to calculate tiered pricing based on product quantity.
+     */
+    private function calculateTieredPrice($product, $quantity)
+    {
+        $priceTiers = json_decode($product->price_tiers, true) ?? [];
+        $basePrice = $product->price;
+        $pricePerUnit = $basePrice;
+
+        if (!empty($priceTiers)) {
+            foreach ($priceTiers as $tier) {
+                $range = $tier['range'];
+                if (str_contains($range, '+')) {
+                    $min = (int)$range;
+                    if ($quantity >= $min) {
+                        $pricePerUnit = (float)$tier['price'];
+                    }
+                } else {
+                    $parts = explode('-', $range);
+                    $min = (int)$parts[0];
+                    $max = (int)($parts[1] ?? $min);
+                    if ($quantity >= $min && $quantity <= $max) {
+                        $pricePerUnit = (float)$tier['price'];
+                    }
+                }
+            }
+        } else {
+            // Default bulk discounts if no tiers defined
+            if ($quantity >= 100) {
+                $pricePerUnit = $basePrice * 0.9;
+            } elseif ($quantity >= 50) {
+                $pricePerUnit = $basePrice * 0.95;
+            }
+        }
+
+        return $pricePerUnit;
+    }
+
+    /**
      * Get latest 6 items for cart drawer.
      */
     public function getLatest()
     {
         $cart = session()->get('cart', []);
         
+        foreach($cart as $id => $item) {
+            $product = Product::find($id);
+            if ($product) {
+                $cart[$id]['price'] = $this->calculateTieredPrice($product, $item['quantity']);
+            }
+        }
+        session()->put('cart', $cart);
+
         // Reverse to show latest added first, then take 6
         $latest = array_slice(array_reverse($cart, true), 0, 6, true);
         

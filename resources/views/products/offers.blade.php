@@ -93,7 +93,9 @@
                         <span class="category-tag">{{ $product->category->name ?? '' }}</span>
                         
                         <h3 class="product-title">
-                            <a href="{{ route('products.show', $product->slug) }}">{{ $product->name }}</a>
+                            <a href="{{ route('products.show', $product->slug) }}" class="stretched-link" style="text-decoration: none; color: inherit;">
+                                {{ $product->name }}
+                            </a>
                         </h3>
                         
                         <div class="rating-row">
@@ -579,6 +581,8 @@
 }
 
 .add-to-cart-btn {
+    position: relative;
+    z-index: 10;
     width: 100%;
     background: #0d6efd;
     color: white;
@@ -595,10 +599,41 @@
     gap: 10px;
 }
 
+.stretched-link::after {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    content: "";
+}
+
 .add-to-cart-btn:hover {
     background: #0a58ca;
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(13, 110, 253, 0.3);
+}
+
+.wishlist-btn {
+    position: relative;
+    z-index: 10;
+    background: #f8fafc;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.wishlist-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
 }
 
 /* Pagination */

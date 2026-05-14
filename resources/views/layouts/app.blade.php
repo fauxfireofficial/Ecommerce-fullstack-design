@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Brand - Ecommerce Store</title>
+    <title>{{ $siteSettings['site_name'] ?? 'Brand' }} - Ecommerce Store</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -506,7 +506,11 @@
             </div>
         </div>
         <div class="drawer-footer">
-            <a href="{{ route('cart.index') }}" class="btn btn-primary w-100 py-2">View All Cart</a>
+            <div class="cart-summary-row mb-3" style="display: flex; justify-content: space-between; font-weight: 700; font-size: 16px; color: #1e293b; padding: 0 5px;">
+                <span>Subtotal:</span>
+                <span id="drawerCartTotal">0.00</span>
+            </div>
+            <a href="{{ route('cart.index') }}" class="btn btn-primary w-100 py-2" style="font-weight: 700; border-radius: 10px;">View All Cart</a>
         </div>
     </div>
 
@@ -673,7 +677,14 @@
                 <i class="fa-solid fa-bars mobile-menu-icon mobile-only"></i>
                 
                 <a href="{{ url('/') }}" class="logo mobile-logo-center">
-                    <img src="{{ asset('Images/brand-logos/logo-colored.png') }}" alt="Brand Logo" class="main-logo-img">
+                    @if(isset($siteSettings['site_logo']))
+                        <img src="{{ str_starts_with($siteSettings['site_logo'], 'data:') ? $siteSettings['site_logo'] : asset($siteSettings['site_logo']) }}" alt="{{ $siteSettings['site_name'] ?? 'Brand' }}" class="main-logo-img">
+                    @else
+                        <img src="{{ asset('Images/brand-logos/logo-colored.png') }}" alt="Brand Logo" class="main-logo-img">
+                    @endif
+                    @if(isset($siteSettings['site_name']))
+                        <span class="logo-text ms-2 d-none d-sm-inline" style="font-weight: 800; font-size: {{ $siteSettings['site_name_size'] ?? '20' }}px; color: {{ $siteSettings['site_name_color'] ?? '#1e293b' }};">{{ $siteSettings['site_name'] }}</span>
+                    @endif
                 </a>
                 
                 <div class="mobile-icons mobile-only">
@@ -822,23 +833,47 @@
                 <a href="{{ url('/') }}" class="logo">
                     <img src="{{ asset('Images/brand-logos/logo-colored.png') }}" alt="Brand Logo" style="height: 35px; width: auto;">
                 </a>
-                <p>Your premier destination for quality electronics and global sourcing. We connect you with top suppliers worldwide.</p>
+                <p>{{ $footerSettings['footer_description'] ?? 'Your premier destination for quality electronics and global sourcing. We connect you with top suppliers worldwide.' }}</p>
                 <div class="socials">
-                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                    <a href="#"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="#"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                    @php
+                        $socials = [
+                            'social_fb' => 'fa-facebook-f',
+                            'social_twitter' => 'fa-twitter',
+                            'social_linkedin' => 'fa-linkedin-in',
+                            'social_instagram' => 'fa-instagram',
+                            'social_youtube' => 'fa-youtube'
+                        ];
+                    @endphp
+                    @foreach($socials as $key => $icon)
+                        @if(!empty($footerSettings[$key]))
+                            <a href="{{ $footerSettings[$key] }}" target="_blank"><i class="fa-brands {{ $icon }}"></i></a>
+                        @endif
+                    @endforeach
                 </div>
             </div>
-            <div class="footer-col"><h4>About</h4><ul><li><a href="{{ route('help.about') }}">About Us</a></li><li><a href="#">Find store</a></li><li><a href="{{ route('products.gift-boxes') }}">Gift Boxes</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
-            <div class="footer-col"><h4>Partnership</h4><ul><li><a href="#">About Us</a></li><li><a href="#">Find store</a></li><li><a href="#">Categories</a></li><li><a href="#">Blogs</a></li></ul></div>
-            <div class="footer-col"><h4>Information</h4><ul><li><a href="#">Help Center</a></li><li><a href="#">Money Refund</a></li><li><a href="#">Shipping</a></li><li><a href="#">Contact us</a></li></ul></div>
-            <div class="footer-col"><h4>For users</h4><ul><li><a href="{{ route('login') }}">Login</a></li><li><a href="{{ route('register') }}">Register</a></li><li><a href="#">Settings</a></li><li><a href="#">My Orders</a></li></ul></div>
+            @for($i = 1; $i <= 4; $i++)
+                @if($i == 2) @continue @endif
+                @php
+                    $colTitle = $footerSettings['footer_col_'.$i.'_title'] ?? null;
+                    $colLinks = json_decode($footerSettings['footer_col_'.$i.'_links'] ?? '[]', true);
+                @endphp
+                
+                {{-- Only show if title is not empty --}}
+                @if(!empty($colTitle))
+                    <div class="footer-col">
+                        <h4>{{ $colTitle }}</h4>
+                        <ul>
+                            @foreach($colLinks as $link)
+                                <li><a href="{{ $link['url'] }}">{{ $link['name'] }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+            @endfor
             <div class="footer-col app-buttons">
                 <h4>Get app</h4>
-                <img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play">
+                <a href="{{ $footerSettings['footer_app_store_url'] ?? '#' }}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store"></a>
+                <a href="{{ $footerSettings['footer_google_play_url'] ?? '#' }}" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play"></a>
             </div>
         </div>
         <div class="footer-bottom">
@@ -963,13 +998,17 @@
                     }
 
                     let html = '';
+                    let total = 0;
                     data.forEach(item => {
+                        total += item.price * item.quantity;
                         html += `
                             <div class="drawer-item" id="cart-item-${item.id}">
                                 <img src="/${item.image || 'images/placeholder.jpg'}" alt="${item.name}">
                                 <div class="drawer-item-info">
                                     <h4>${item.name}</h4>
-                                    <p>$${parseFloat(item.price).toFixed(2)}</p>
+                                    <p style="font-weight: 700; color: var(--primary);">${formatCurrency(item.price * item.quantity)}</p>
+                                    <small style="color: #64748b;">${formatCurrency(item.price)} / unit</small>
+                                    <br>
                                     <small>Qty: ${item.quantity}</small>
                                 </div>
                                 <button class="remove-item-btn" onclick="removeFromCartDrawer(${item.id})">
@@ -979,6 +1018,8 @@
                         `;
                     });
                     container.innerHTML = html;
+                    const totalEl = document.getElementById('drawerCartTotal');
+                    if (totalEl) totalEl.innerText = formatCurrency(total);
                 });
         }
 
@@ -1075,10 +1116,26 @@
     </script>
 
     <script src="{{ asset('js/script.js') }}"></script>
+    <script>
+        window.currencyConfig = @json(App\Services\CurrencyService::getRates()[App\Services\CurrencyService::getCurrentCurrency()] ?? App\Services\CurrencyService::getRates()['USD']);
+
+        function formatCurrency(amount) {
+            const config = window.currencyConfig;
+            const converted = amount * config.rate;
+            const formatted = converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            if (config.position === 'before') {
+                return config.symbol + ' ' + formatted;
+            } else {
+                return formatted + ' ' + config.symbol;
+            }
+        }
+    </script>
+
     @yield('scripts')
     <script>
         // Custom Dropdown Selection Logic (Desktop)
-        document.querySelectorAll('.nav-dropdown .dropdown-menu a').forEach(item => {
+        document.querySelectorAll('.nav-dropdown .dropdown-small a').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
                 handlePreferenceChange(this);

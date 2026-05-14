@@ -10,7 +10,10 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-    // Display products list
+    /**
+     * Display a listing of products in the admin panel.
+     * Includes filtering by status, category, brand, and search keywords.
+     */
     public function index(Request $request)
     {
         $query = Product::orderBy('created_at', 'desc');
@@ -22,6 +25,10 @@ class ProductController extends Controller
 
         if ($request->has('category_filter') && $request->category_filter != 'all') {
             $query->where('category_id', $request->category_filter);
+        }
+
+        if ($request->has('brand_filter') && $request->brand_filter != 'all') {
+            $query->where('brand', $request->brand_filter);
         }
 
         if ($request->has('search') && !empty($request->search)) {
@@ -44,19 +51,27 @@ class ProductController extends Controller
             'totalViews' => Product::sum('views'),
             'lowStock' => Product::where('stock_quantity', '<=', 10)->where('stock_quantity', '>', 0)->count(),
             'categories' => Category::all(),
+            'brands' => \App\Models\Brand::all(),
         ];
         
         return view('admin.products.index', $data);
     }
 
-    // Show create form
+    /**
+     * Show the form for creating a new product.
+     * Pre-fetches categories and brands for the selection dropdowns.
+     */
     public function create()
     {
         $categories = Category::all();
-        return view('admin.products.create', compact('categories'));
+        $brands = \App\Models\Brand::all();
+        return view('admin.products.create', compact('categories', 'brands'));
     }
 
-    // Store new product
+    /**
+     * Store a newly created product in the database.
+     * Validates input, handles main and gallery image uploads, and generates a unique slug.
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -97,7 +112,7 @@ class ProductController extends Controller
         $product->search_tags = $request->search_tags;
         $product->meta_title = $request->meta_title;
         $product->meta_description = $request->meta_description;
-        
+        // Format attributes from comma-separated strings into arrays
         $product->colors = $request->colors ? array_map('trim', explode(',', $request->colors)) : null;
         $product->sizes = $request->sizes ? array_map('trim', explode(',', $request->sizes)) : null;
         $product->materials = $request->materials ? array_map('trim', explode(',', $request->materials)) : null;
@@ -132,10 +147,14 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $categories = Category::all();
-        return view('admin.products.edit', compact('product', 'categories'));
+        $brands = \App\Models\Brand::all();
+        return view('admin.products.edit', compact('product', 'categories', 'brands'));
     }
 
-    // Update product
+    /**
+     * Update an existing product's information.
+     * Handles complex logic for updating images, including removing old ones and adding new ones to the gallery.
+     */
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -236,7 +255,9 @@ class ProductController extends Controller
     }
 
 
-    // Toggle product status (AJAX)
+    /**
+     * Toggle the status of a product (active/inactive) via AJAX.
+     */
     public function toggleStatus(Request $request, $id)
     {
         $product = Product::findOrFail($id);
@@ -253,7 +274,9 @@ class ProductController extends Controller
         return response()->json($product);
     }
 
-    // Delete product
+    /**
+     * Delete a single product and its associated main image.
+     */
     public function destroy($id)
     {
         $product = Product::findOrFail($id);
@@ -268,7 +291,9 @@ class ProductController extends Controller
         return response()->json(['success' => true]);
     }
 
-    // Bulk delete products
+    /**
+     * Handle bulk deletion of multiple products selected in the admin grid.
+     */
     public function bulkDelete(Request $request)
     {
         $products = Product::whereIn('id', $request->ids)->get();

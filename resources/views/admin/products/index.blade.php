@@ -5,7 +5,10 @@
 @section('content')
 <div class="products-container">
     
-    <!-- Page Header -->
+    <!-- 
+        Page Header 
+        Displays the main title and the "Add New Product" call to action.
+    -->
     <div class="page-header">
         <div class="header-left">
             <h2>All Products</h2>
@@ -16,7 +19,10 @@
         </a>
     </div>
 
-    <!-- Stats Cards -->
+    <!-- 
+        Summary Stats 
+        Quick overview cards showing total products, active status, views, and low stock warnings.
+    -->
     <div class="products-stats">
         <div class="stat-card-mini">
             <div class="stat-icon-sm" style="background: #e8f0fe;">
@@ -56,7 +62,10 @@
         </div>
     </div>
 
-    <!-- Filter Bar -->
+    <!-- 
+        Filter and Search Bar 
+        Allows administrators to search by keyword and filter by category, brand, or promotional status.
+    -->
     <div class="filter-bar">
         <div class="search-box-admin">
             <i class="fa-solid fa-search"></i>
@@ -67,6 +76,12 @@
                 <option value="all">All Categories</option>
                 @foreach($categories as $category)
                     <option value="{{ $category->id }}" {{ request('category_filter') == $category->id ? 'selected' : '' }}>{{ ucfirst($category->name) }}</option>
+                @endforeach
+            </select>
+            <select id="brandFilter" onchange="applyFilters()" class="filter-select">
+                <option value="all">All Brands</option>
+                @foreach($brands as $brand)
+                    <option value="{{ $brand->name }}" {{ request('brand_filter') == $brand->name ? 'selected' : '' }}>{{ $brand->name }}</option>
                 @endforeach
             </select>
             <select id="offerFilter" onchange="applyFilters()" class="filter-select" style="border-color: #f43f5e; color: #f43f5e; font-weight: 600;">
@@ -217,6 +232,8 @@
     </div>
 </div>
 
+</div>
+
 <!-- Bulk Actions Bar -->
 <div class="bulk-actions-bar" id="bulkActionsBar" style="display: none;">
     <span><i class="fa-regular fa-square-check"></i> <span id="selectedCount">0</span> items selected</span>
@@ -230,6 +247,26 @@
         <button class="btn btn-sm btn-warning" onclick="bulkDeactivate()">
             <i class="fa-solid fa-ban"></i> Deactivate
         </button>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+
+<div class="modal custom-modal" id="deleteProductModal">
+    <div class="modal-content delete-modal-content">
+        <div class="delete-icon">
+            <i class="fa-solid fa-trash-can"></i>
+        </div>
+        <h3>Delete Product?</h3>
+        <p>Are you sure you want to remove "<span id="delete_product_name_display"></span>"? This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button type="button" class="btn btn-secondary" id="cancelProductDelete">Cancel</button>
+            <form id="deleteProductForm" method="POST" style="display: inline;">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger-modal">Delete Permanently</button>
+            </form>
+        </div>
     </div>
 </div>
 @endsection
@@ -583,28 +620,126 @@ input:checked + .slider:before {
         grid-template-columns: 1fr !important;
     }
 }
+
+/* Delete Modal Styling */
+.custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+}
+
+.delete-modal-content {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    animation: modalSlideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.delete-icon {
+    width: 70px;
+    height: 70px;
+    background: #fef2f2;
+    color: #ef4444;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    margin: 0 auto 20px;
+}
+
+.delete-modal-content h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.delete-modal-content p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.btn-secondary {
+    background: #f1f5f9;
+    color: #475569;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-danger-modal {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+}
+
+.btn-danger-modal:hover { background: #dc2626; transform: translateY(-2px); }
+.btn-secondary:hover { background: #e2e8f0; }
 </style>
 </style>
 @endsection
 
 @section('scripts')
 <script>
-// Apply Filters (Server-side)
+/**
+ * Refreshes the product list based on the selected search and filter criteria.
+ * Constructs a new URL with parameters and reloads the page.
+ */
 function applyFilters() {
     const search = document.getElementById('searchProduct').value;
     const category = document.getElementById('categoryFilter').value;
+    const brand = document.getElementById('brandFilter').value;
     const offer = document.getElementById('offerFilter').value;
     
     let url = new URL(window.location.href);
     url.searchParams.set('search', search);
     url.searchParams.set('category_filter', category);
+    url.searchParams.set('brand_filter', brand);
     url.searchParams.set('offer_filter', offer);
     url.searchParams.set('page', 1); // Reset to page 1 on filter change
     
     window.location.href = url.toString();
 }
 
-// Toggle Status
+/**
+ * Toggles a product's active/inactive status via a background API call.
+ */
 document.querySelectorAll('.status-toggle').forEach(toggle => {
     toggle.addEventListener('change', function() {
         const productId = this.getAttribute('data-id');
@@ -724,12 +859,26 @@ function closeModal() {
 }
 
 function deleteProduct(id, name) {
-    if (confirm(`Delete "${name}"?`)) {
-        fetch(`/admin/products/${id}`, {
-            method: 'DELETE',
-            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-        }).then(() => location.reload());
-    }
+    const modal = document.getElementById('deleteProductModal');
+    const form = document.getElementById('deleteProductForm');
+    const nameSpan = document.getElementById('delete_product_name_display');
+    
+    nameSpan.innerText = name;
+    form.action = `/admin/products/${id}`;
+    modal.style.display = 'flex';
 }
+
+document.getElementById('cancelProductDelete').addEventListener('click', function() {
+    document.getElementById('deleteProductModal').style.display = 'none';
+});
+
+// Close modal if clicked outside
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('deleteProductModal');
+    if (e.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
 </script>
 @endsection

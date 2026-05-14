@@ -16,7 +16,10 @@
             @csrf
             
             <div class="form-grid">
-                <!-- Left Column -->
+                <!-- 
+                    Basic Information Section 
+                    Includes name, brand selection, SKU, and inventory details.
+                -->
                 <div class="form-column">
                     <div class="form-group">
                         <label for="name">Product Name <span class="required">*</span></label>
@@ -26,7 +29,14 @@
 
                     <div class="form-group">
                         <label for="brand">Brand / Supplier</label>
-                        <input type="text" id="brand" name="brand" class="form-control" value="{{ old('brand') }}" placeholder="e.g. Nike, Apple, Local Supplier">
+                        <select id="brand" name="brand" class="form-control">
+                            <option value="">Select Brand</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->name }}" {{ old('brand') == $brand->name ? 'selected' : '' }}>
+                                    {{ $brand->name }}
+                                </option>
+                            @endforeach
+                        </select>
                         @error('brand') <span class="error">{{ $message }}</span> @enderror
                     </div>
 
@@ -124,7 +134,10 @@
                     </div>
                 </div>
 
-                <!-- Right Column -->
+                <!-- 
+                    Media and Advanced Details 
+                    Includes image uploads, descriptions, SEO settings, and variations.
+                -->
                 <div class="form-column">
                     <!-- Main Image Section -->
                     <div class="form-group">
@@ -414,6 +427,10 @@ small {
 
 @section('scripts')
 <script>
+/**
+ * Previews the main product image after selection.
+ * Switches between the upload placeholder and the actual image preview.
+ */
 function previewImage(input) {
     const preview = document.getElementById('imagePreview');
     const placeholder = document.getElementById('uploadPlaceholder');
@@ -429,12 +446,18 @@ function previewImage(input) {
     }
 }
 
+/**
+ * Resets the main image field and restores the upload placeholder.
+ */
 function removeImage() {
     document.getElementById('image').value = '';
     document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('uploadPlaceholder').style.display = 'block';
 }
 
+/**
+ * Previews multiple gallery images simultaneously.
+ */
 function previewGallery(input) {
     const previewContainer = document.getElementById('newGalleryPreview');
     previewContainer.innerHTML = '';

@@ -209,6 +209,115 @@
         margin-bottom: 10px;
         border: 1px solid #ffe4e6;
     }
+
+    /* Action Buttons Fixes */
+    .action-buttons {
+        display: flex;
+        gap: 12px;
+        margin-top: 25px;
+        flex-wrap: nowrap;
+    }
+
+    .btn-buy, .btn-add-cart {
+        flex: 1;
+        white-space: nowrap;
+        padding: 12px 20px;
+        font-size: 15px;
+        font-weight: 700;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-buy {
+        background: #ff9017;
+        color: white !important;
+    }
+
+    .btn-buy:hover {
+        background: #e67e00;
+        transform: translateY(-2px);
+    }
+
+    .btn-add-cart {
+        background: #0d6efd;
+        color: white !important;
+    }
+
+    .btn-add-cart:hover {
+        background: #0b5ed7;
+        transform: translateY(-2px);
+    }
+
+    .btn-heart {
+        width: 48px;
+        height: 48px;
+        flex-shrink: 0;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        color: #64748b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-heart:hover {
+        border-color: #ef4444;
+        color: #ef4444;
+        background: #fff5f5;
+    }
+
+    @media (max-width: 480px) {
+        .action-buttons {
+            gap: 8px;
+        }
+        .btn-buy, .btn-add-cart {
+            padding: 12px 10px;
+            font-size: 13px;
+        }
+    }
+
+    /* Dynamic Price Styles */
+    .dynamic-price-wrapper {
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        padding: 18px 22px;
+        border-radius: 14px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #e2e8f0;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .price-label {
+        font-weight: 700;
+        color: #64748b;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .total-price-value {
+        font-size: 26px;
+        font-weight: 800;
+        color: var(--primary);
+        transition: all 0.2s ease;
+    }
+
+    .total-price-value.updating {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+</style>
 </style>
 @endsection
 
@@ -330,6 +439,12 @@
                 </div>
             </div>
 
+            <!-- Dynamic Total Price Display -->
+            <div class="dynamic-price-wrapper">
+                <span class="price-label">Estimated Total:</span>
+                <span class="total-price-value" id="dynamicTotalPrice">{{ App\Services\CurrencyService::convert($product->price) }}</span>
+            </div>
+
             <!-- Quantity Selector -->
             <div class="quantity-section {{ $product->stock_quantity <= 0 ? 'disabled-section' : '' }}">
                 <label>Quantity:</label>
@@ -354,26 +469,6 @@
             </div>
         </div>
 
-        <!-- Right Column - Supplier Card -->
-        <div class="supplier-card">
-            <div class="supplier-header">
-                <i class="fa-solid fa-store"></i>
-                <h4>Supplier</h4>
-            </div>
-            <div class="supplier-name">{{ $product->supplier_name ?? 'Guanji Trading LLC' }}</div>
-            <div class="supplier-location">
-                <i class="fa-solid fa-location-dot"></i>
-                <span>{{ $product->supplier_location ?? 'Germany, Berlin' }}</span>
-            </div>
-            <div class="supplier-badge">
-                <i class="fa-solid fa-circle-check"></i>
-                <span>Verified Seller</span>
-            </div>
-            <div class="supplier-shipping">
-                <i class="fa-solid fa-truck"></i>
-                <span>Worldwide shipping</span>
-            </div>
-            <button class="btn btn-primary btn-inquiry">Send inquiry</button>
         </div>
     </div>
 
@@ -632,6 +727,85 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Dynamic Price Update Logic
+        const qtyInput = document.querySelector('.qty-input');
+        const minusBtn = document.querySelector('.qty-btn.minus');
+        const plusBtn = document.querySelector('.qty-btn.plus');
+        const totalPriceDisplay = document.getElementById('dynamicTotalPrice');
+        
+        const basePrice = {{ $product->price }};
+        const currentCurrency = "{{ App\Services\CurrencyService::getCurrentCurrency() }}";
+        const rates = @json(App\Services\CurrencyService::getRates());
+        const priceTiers = @json(json_decode($product->price_tiers, true) ?? []);
+
+        function formatCurrency(amount) {
+            const config = rates[currentCurrency] || rates['USD'];
+            const converted = amount * config.rate;
+            const formatted = converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            
+            if (config.position === 'before') {
+                return config.symbol + ' ' + formatted;
+            } else {
+                return formatted + ' ' + config.symbol;
+            }
+        }
+
+        function updatePrice() {
+            let qty = parseInt(qtyInput.value) || 0;
+            let pricePerUnit = basePrice;
+
+            // Tier calculation logic
+            if (priceTiers && priceTiers.length > 0) {
+                priceTiers.forEach(tier => {
+                    const range = tier.range;
+                    if (range.includes('+')) {
+                        const min = parseInt(range);
+                        if (qty >= min) pricePerUnit = parseFloat(tier.price);
+                    } else {
+                        const parts = range.split('-');
+                        const min = parseInt(parts[0]);
+                        const max = parseInt(parts[1]);
+                        if (qty >= min && qty <= max) pricePerUnit = parseFloat(tier.price);
+                    }
+                });
+            } else {
+                // Default bulk discounts if no tiers defined
+                if (qty >= 100) pricePerUnit = basePrice * 0.9;
+                else if (qty >= 50) pricePerUnit = basePrice * 0.95;
+            }
+
+            const total = qty * pricePerUnit;
+            if (totalPriceDisplay) {
+                totalPriceDisplay.classList.add('updating');
+                setTimeout(() => {
+                    totalPriceDisplay.innerText = formatCurrency(total);
+                    totalPriceDisplay.classList.remove('updating');
+                }, 100);
+            }
+        }
+
+        // Initialize price
+        updatePrice();
+
+        if (plusBtn) {
+            plusBtn.addEventListener('click', () => {
+                // Note: The existing script might already be handling the increment
+                // We just need to make sure we trigger updatePrice
+                setTimeout(updatePrice, 0);
+            });
+        }
+
+        if (minusBtn) {
+            minusBtn.addEventListener('click', () => {
+                setTimeout(updatePrice, 0);
+            });
+        }
+
+        if (qtyInput) {
+            qtyInput.addEventListener('input', updatePrice);
+            qtyInput.addEventListener('change', updatePrice);
+        }
+
         // Tab Switching Logic
         const tabBtns = document.querySelectorAll('.tab-btn');
         const tabContents = document.querySelectorAll('.tab-content');

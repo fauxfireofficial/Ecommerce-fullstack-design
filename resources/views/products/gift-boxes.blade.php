@@ -344,6 +344,8 @@
     }
 
     .btn-add-cart {
+        position: relative;
+        z-index: 10;
         background: #0d6efd;
         color: white;
         border: none;
@@ -356,6 +358,16 @@
         display: flex;
         align-items: center;
         gap: 10px;
+    }
+
+    .stretched-link::after {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        z-index: 1;
+        content: "";
     }
 
     .btn-add-cart:hover {
@@ -519,7 +531,11 @@
                 </div>
                 <div class="card-info">
                     <span class="category-label">{{ $product->category->name ?? '' }}</span>
-                    <h4>{{ $product->name }}</h4>
+                    <h4>
+                        <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="stretched-link" style="text-decoration: none; color: inherit;">
+                            {{ $product->name }}
+                        </a>
+                    </h4>
                     
                     <div class="rating-row" style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
                         <i class="fa-solid fa-star" style="color: #f59e0b;"></i>

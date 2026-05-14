@@ -69,6 +69,7 @@
                                     </div>
                                     <div class="text-right">
                                         <p class="text-base font-bold text-[#1C1C1C]">{{ App\Services\CurrencyService::convert($item['price'] * $item['quantity']) }}</p>
+                                        <p class="text-xs text-[#8B96A5] mt-1">{{ App\Services\CurrencyService::convert($item['price']) }} / pc</p>
                                         <div class="mt-4">
                                             <select class="qty-dropdown-update w-24 px-2 py-1.5 border border-[#E3E8EE] rounded-md text-sm font-medium text-[#1C1C1C] outline-none bg-white cursor-pointer" data-id="{{ $id }}">
                                                 @for($i = 1; $i <= 10; $i++)

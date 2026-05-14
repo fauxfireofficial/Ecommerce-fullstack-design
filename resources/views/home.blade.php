@@ -18,22 +18,20 @@
                                 </a>
                             </li>
                         @endforeach
-                        <li>
-                            <a href="{{ route('products.index', ['category' => 'Accessories']) }}" 
-                               class="{{ request('category') == 'Accessories' ? 'active' : '' }}">
-                                Accessories
-                            </a>
-                        </li>
+
                         <li><hr style="border: 0; border-top: 1px solid #eee; margin: 5px 0;"></li>
                         <li><a href="{{ route('services') }}"><i class="fa-solid fa-handshake-angle" style="margin-right: 8px;"></i> Our Services</a></li>
                     </ul>
                 </aside>
 
                 <div class="hero-banner">
-                    <img src="{{ asset('images/cardbg/Banner-img.jpg') }}" alt="Banner-Image" class="hero-banner-bg">
+                    <img src="{{ str_starts_with($homeSettings['home_hero_image'] ?? '', 'data:') ? $homeSettings['home_hero_image'] : asset($homeSettings['home_hero_image'] ?? 'Images/cardbg/Banner-img.jpg') }}" alt="Banner-Image" class="hero-banner-bg">
                     <div class="hero-banner-content">
-                        <h2>Latest trending<br><span>Electronic items</span></h2>
-                        <a href="{{ route('products.index') }}" class="btn btn-white" style="display: inline-block; text-decoration: none;">Learn more</a>
+                        <h2 style="font-size: {{ $homeSettings['home_hero_title_size'] ?? '32' }}px; color: {{ $homeSettings['home_hero_title_color'] ?? '#1c1c1c' }};">{!! nl2br(e($homeSettings['home_hero_title'] ?? 'Latest trending Electronic items')) !!}</h2>
+                        @if(isset($homeSettings['home_hero_subtitle']))
+                            <p class="hero-subtitle" style="font-size: {{ $homeSettings['home_hero_subtitle_size'] ?? '18' }}px; font-weight: 700; color: {{ $homeSettings['home_hero_subtitle_color'] ?? '#1c1c1c' }};">{{ $homeSettings['home_hero_subtitle'] }}</p>
+                        @endif
+                        <a href="{{ route('products.index') }}" class="btn btn-white" style="display: inline-block; text-decoration: none;">{{ $homeSettings['home_hero_btn_text'] ?? 'Learn more' }}</a>
                     </div>
                 </div>
 
@@ -64,11 +62,11 @@
                             </form>
                         @endguest
                     </div>
-                    <div class="promo-card promo-orange">
-                        Get US $10 off<br>with a new<br>supplier
+                    <div class="promo-card" style="background-color: {{ $homeSettings['home_card_1_bg_color'] ?? '#f38332' }}; color: {{ $homeSettings['home_card_1_text_color'] ?? '#ffffff' }};">
+                        {!! nl2br(e($homeSettings['home_card_1_text'] ?? "Get US $10 off\nwith a new\nsupplier")) !!}
                     </div>
-                    <div class="promo-card promo-teal">
-                        Send quotes with<br>supplier<br>preferences
+                    <div class="promo-card" style="background-color: {{ $homeSettings['home_card_2_bg_color'] ?? '#55bdc3' }}; color: {{ $homeSettings['home_card_2_text_color'] ?? '#ffffff' }};">
+                        {!! nl2br(e($homeSettings['home_card_2_text'] ?? "Send quotes with\nsupplier\npreferences")) !!}
                     </div>
                 </aside>
             </div>
@@ -80,8 +78,8 @@
                 <div style="display: flex; flex-direction: column; width: 100%;">
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div>
-                            <h3>Deals and offers</h3>
-                            <p>Limited time discounts</p>
+                            <h3>{{ $homeSettings['home_deals_title'] ?? 'Deals and offers' }}</h3>
+                            <p>{{ $homeSettings['home_deals_subtitle'] ?? 'Limited time discounts' }}</p>
                         </div>
                         <div class="deals-header-right desktop-only">
                             <a href="{{ route('products.offers') }}" class="view-all-btn">
@@ -90,7 +88,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="timer">
+                <div class="timer" id="deals-countdown" data-expiry="{{ $homeSettings['home_deals_expiry'] ?? date('Y-m-d H:i:s', strtotime('+4 days')) }}">
                     <div class="timer-box desktop-only"><span id="days">04</span><span>Days</span></div>
                     <div class="timer-box"><span id="hours">13</span><span>Hour</span></div>
                     <div class="timer-box"><span id="mins">34</span><span>Min</span></div>
@@ -120,26 +118,39 @@
         </section>
 
         @php
-            $categoryStyles = [
-                'Home & Outdoor' => ['class' => 'home-outdoor', 'img' => 'images/cardbg/outdoor.jpg'],
-                'Electronics & Gadgets' => ['class' => 'electronics', 'img' => 'images/cardbg/gadgets.png'],
-                'Fashion' => ['class' => 'clothing', 'img' => 'images/cardbg/Banner-img.jpg'],
+            // Map the hardcoded categories to our dynamic settings
+            $categoryBlocks = [
+                1 => [
+                    'name' => $homeSettings['home_cat_block_1_title'] ?? 'Home & Outdoor',
+                    'color' => $homeSettings['home_cat_block_1_color'] ?? '#1c1c1c',
+                    'img' => $homeSettings['home_cat_block_1_img'] ?? 'images/cardbg/outdoor.jpg',
+                    'class' => 'home-outdoor'
+                ],
+                2 => [
+                    'name' => $homeSettings['home_cat_block_2_title'] ?? 'Electronics & Gadgets',
+                    'color' => $homeSettings['home_cat_block_2_color'] ?? '#1c1c1c',
+                    'img' => $homeSettings['home_cat_block_2_img'] ?? 'images/cardbg/gadgets.png',
+                    'class' => 'electronics'
+                ],
+                3 => [
+                    'name' => $homeSettings['home_cat_block_3_title'] ?? 'Fashion',
+                    'color' => $homeSettings['home_cat_block_3_color'] ?? '#1c1c1c',
+                    'img' => $homeSettings['home_cat_block_3_img'] ?? 'images/cardbg/Banner-img.jpg',
+                    'class' => 'clothing'
+                ],
             ];
-            
-            // Only show these specific blocks on the home page as requested
-            $homePageCategories = ['Home & Outdoor', 'Electronics & Gadgets', 'Fashion'];
         @endphp
 
-        @foreach($homePageCategories as $categoryName)
-            @php $products = $categoryProducts[$categoryName] ?? collect(); @endphp
+        @foreach($categoryBlocks as $block)
+            @php 
+                $categoryName = $block['name'];
+                $products = $categoryProducts[$categoryName] ?? collect(); 
+            @endphp
             @if($products->count() > 0)
-                @php 
-                    $style = $categoryStyles[$categoryName] ?? ['class' => 'default-cat', 'img' => 'images/cardbg/Banner-img.jpg'];
-                @endphp
                 <section class="category-block card">
-                    <div class="cat-main {{ $style['class'] }}">
-                        <img src="{{ asset($style['img']) }}" alt="image" class="cat-main-bg" loading="lazy">
-                        <h3>{{ $categoryName }}</h3>
+                    <div class="cat-main {{ $block['class'] }}">
+                        <img src="{{ str_starts_with($block['img'], 'data:') ? $block['img'] : asset($block['img']) }}" alt="image" class="cat-main-bg" loading="lazy">
+                        <h3 style="color: {{ $block['color'] }};">{{ $categoryName }}</h3>
                         <a href="{{ route('products.index', ['category' => $categoryName]) }}" class="btn btn-white desktop-only" style="display: inline-block; text-decoration: none;">Source now</a>
                     </div>
                     <div class="cat-grid">

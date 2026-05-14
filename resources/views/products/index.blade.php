@@ -266,18 +266,32 @@
             position: absolute;
             right: 0;
             top: 0;
+            z-index: 5; /* Above stretched link */
         }
 
-        .product-view.grid-view .btn-heart {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            color: #0d6efd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .product-card {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .stretched-link::after {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1;
+            content: "";
+        }
+
+        .card-actions, .btn-heart {
+            position: relative;
+            z-index: 10;
         }
 
         @media (min-width: 769px) {
@@ -565,7 +579,11 @@
                             <img src="{{ asset($product->image ?? 'Images/items/1.png') }}" alt="{{ $product->name }}" style="{{ $product->stock_quantity <= 0 ? 'opacity: 0.5;' : '' }}">
                         </div>
                         <div class="product-info">
-                            <h4 class="product-title">{{ $product->name }}</h4>
+                            <h4 class="product-title">
+                                <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="stretched-link" style="text-decoration: none; color: inherit;">
+                                    {{ $product->name }}
+                                </a>
+                            </h4>
                             <div class="product-price-wrapper">
                                 <span class="price-now">{{ App\Services\CurrencyService::convert($product->price) }}</span>
                                 <span class="price-was">{{ App\Services\CurrencyService::convert($product->compare_price ?: ($product->price * 1.2)) }}</span>
@@ -584,7 +602,7 @@
                                 <span class="shipping list-only">Free Shipping</span>
                             </div>
                             <p class="product-desc list-only">{{ Str::limit($product->description, 150) }}</p>
-                            <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="view-details list-only">View details</a>
+                            <span class="view-details list-only" style="color: #0d6efd; font-weight: 600;">View details</span>
                         </div>
                     </div>
                     @empty
@@ -808,6 +826,10 @@
     }
 
     // Reuse mobile pref logic but for sorting
+    /**
+     * Opens the mobile sorting preference modal.
+     * Populates the modal with sorting options and triggers the URL update on selection.
+     */
     function openMobileSort() {
         const modal = document.getElementById('mobilePrefModal');
         const title = document.getElementById('mobilePrefTitle');
@@ -826,6 +848,11 @@
     }
 
     // AJAX Filtering Logic
+    /**
+     * Updates the browser URL parameters and triggers a fresh AJAX product fetch.
+     * Handles both single values and arrays (e.g., multiple brands).
+     * @param {Object} params - Key-value pairs of parameters to update.
+     */
     function updateUrlParams(params) {
         const url = new URL(window.location.href);
         
@@ -843,11 +870,16 @@
         fetchFilteredProducts(url);
     }
 
+    /**
+     * Performs an asynchronous fetch request to get filtered products.
+     * Updates the main list content without a full page reload.
+     * @param {URL} url - The URL with current filter parameters.
+     */
     function fetchFilteredProducts(url) {
         const content = document.getElementById('mainListContent');
         if (!content) return;
 
-        // Show loading state
+        // Visual feedback: dim the content while loading
         content.style.opacity = '0.5';
         content.style.pointerEvents = 'none';
 
@@ -861,19 +893,23 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             
+            // Extract the new product grid from the response
             const newContent = doc.getElementById('mainListContent');
             if (newContent) {
                 content.innerHTML = newContent.innerHTML;
             }
             
+            // Restore visual state and update browser history
             content.style.opacity = '1';
             content.style.pointerEvents = 'auto';
             window.history.pushState({}, '', url);
             
+            // Re-initialize animations if present
             if (window.AOS) AOS.refresh();
         })
         .catch(err => {
             console.error('Filter failed:', err);
+            // Fallback: Perform a hard reload if AJAX fails
             window.location.href = url;
         });
     }
@@ -883,6 +919,9 @@
         el.addEventListener('change', applyDesktopFilters);
     });
 
+    /**
+     * Gathers all active desktop sidebar filters and triggers a URL update.
+     */
     function applyDesktopFilters() {
         const min = document.getElementById('minPriceInput').value;
         const max = document.getElementById('maxPriceInput').value;
@@ -912,11 +951,17 @@
     });
 
     // Remove filter pill logic
+    /**
+     * Removes a specific filter value or an entire filter key from the current view.
+     * @param {string} key - The parameter key to remove (e.g., 'brands[]').
+     * @param {string|null} value - The specific value to remove if multiple values exist for the key.
+     */
     function removeFilter(key, value = null) {
         const url = new URL(window.location.href);
         if (value) {
             const values = url.searchParams.getAll(key);
             url.searchParams.delete(key);
+            // Append back all values except the one being removed
             values.filter(v => v !== value).forEach(v => url.searchParams.append(key, v));
         } else {
             url.searchParams.delete(key);

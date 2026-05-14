@@ -22,6 +22,9 @@ class ProductSeeder extends Seeder
             'Fashion',
             'Home & Outdoor',
             'Personal Care',
+            'Accessories',
+            'Toys & Hobbies',
+            'Sports',
         ];
 
         $categoryMap = [];
