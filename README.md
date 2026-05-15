@@ -76,6 +76,9 @@ php artisan serve
 ```
 
 ---
+## 🎥 Project Demo Video (Must Watch)
+👉 **[Watch Demo Video on Google Drive](https://drive.google.com/file/d/17czdPEdEdxaZdKct4tKSfLmiWvdikE7b/view?usp=sharing)**
+---
 
 ## 📸 Project Structure
 
