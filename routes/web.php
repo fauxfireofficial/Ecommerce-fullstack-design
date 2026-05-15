@@ -157,7 +157,7 @@ Route::prefix('admin')->group(function () {
         Route::delete('/orders/{id}', [\App\Http\Controllers\Admin\OrderController::class, 'destroy'])->name('admin.orders.destroy');
 
         // Product Management
-        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->names([
+        Route::resource('products', \App\Http\Controllers\Admin\ProductController::class)->except(['show'])->names([
             'index' => 'admin.products.index',
             'create' => 'admin.products.create',
             'store' => 'admin.products.store',
