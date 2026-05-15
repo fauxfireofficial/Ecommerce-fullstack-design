@@ -665,8 +665,7 @@
 @section('scripts')
 <script>
     // Countdown Timer Logic
-    const countdownDate = new Date();
-    countdownDate.setDate(countdownDate.getDate() + 3); // 3 days from now
+    const countdownDate = new Date("{{ $settings['home_deals_expiry'] ?? date('Y-m-d H:i:s', strtotime('+3 days')) }}").getTime();
 
     const timer = setInterval(function() {
         const now = new Date().getTime();
