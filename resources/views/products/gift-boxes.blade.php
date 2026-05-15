@@ -453,53 +453,76 @@
         </div>
 
         <div class="varieties-grid">
-            <div class="variety-card">
-                <div class="v-icon birthday"><i class="fa-solid fa-cake-candles"></i></div>
-                <h3>Birthday Box</h3>
-                <p>Includes gourmet chocolates, a handcrafted mini card, and a luxury mini perfume.</p>
-                <span class="v-price">From $35.00</span>
+            @foreach($giftBoxes as $box)
+            <div class="variety-card" style="position: relative;">
+                <div class="v-icon {{ str_contains(strtolower($box->name), 'birthday') ? 'birthday' : (str_contains(strtolower($box->name), 'corporate') ? 'corporate' : 'wedding') }}">
+                    <i class="fa-solid {{ str_contains(strtolower($box->name), 'birthday') ? 'fa-cake-candles' : (str_contains(strtolower($box->name), 'corporate') ? 'fa-briefcase' : 'fa-rings-wedding') }}"></i>
+                </div>
+                <h3>
+                    <a href="{{ route('giftboxes.show', $box->slug) }}" class="stretched-link" style="color: inherit; text-decoration: none;">
+                        {{ $box->name }}
+                    </a>
+                </h3>
+                <p>{{ $box->description }}</p>
+                <span class="v-price">From ${{ number_format($box->base_price, 2) }}</span>
+                <div style="margin-top: 15px; position: relative; z-index: 2;">
+                    <a href="{{ route('giftboxes.show', $box->slug) }}" class="btn-gift-outline" style="padding: 8px 20px; font-size: 12px; display:inline-block;">Customize & View Details</a>
+                </div>
             </div>
-            <div class="variety-card">
-                <div class="v-icon corporate"><i class="fa-solid fa-briefcase"></i></div>
-                <h3>Corporate Box</h3>
-                <p>Premium notebook, executive pen, and a ceramic coffee mug. Perfect for pros.</p>
-                <span class="v-price">From $50.00</span>
-            </div>
-            <div class="variety-card">
-                <div class="v-icon wedding"><i class="fa-solid fa-rings-wedding"></i></div>
-                <h3>Wedding Box</h3>
-                <p>Luxury items, customized scented candles, and premium textiles for the couple.</p>
-                <span class="v-price">From $75.00</span>
-            </div>
+            @endforeach
         </div>
     </section>
 
-    <!-- Personalization Section -->
+    <!-- Custom Box / Personalization Section -->
     <section class="personalization-section" id="personalize">
         <div class="container">
             <div class="personalization-grid">
                 <div class="form-box">
-                    <h3>Personalize Your Gift</h3>
+                    <h3>Personalize a Custom Gift</h3>
                     
-                    <div class="field-group">
-                        <label>1. Add a Custom Note</label>
-                        <textarea class="form-control" rows="4" placeholder="Type your personal message here..."></textarea>
-                        <p style="font-size: 12px; color: var(--gray-500); margin-top: 5px;">This will be beautifully printed on a premium card.</p>
-                    </div>
-
-                    <div class="field-group">
-                        <label>2. Choose Wrapping Color</label>
-                        <select class="form-select">
-                            <option value="gold">Gold (Luxury)</option>
-                            <option value="red">Red (Classic)</option>
-                            <option value="blue">Royal Blue (Elegant)</option>
+                    <div class="field-group" style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:13px; font-weight:bold; margin-bottom:5px;">Select a Base Box</label>
+                        <select id="selectedBoxId" class="form-select">
+                            <option value="">-- Choose a Box --</option>
+                            @foreach($giftBoxes as $box)
+                                <option value="{{ $box->id }}">{{ $box->name }} - ${{ number_format($box->base_price, 2) }}</option>
+                            @endforeach
                         </select>
                     </div>
 
-                    <div style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
-                        <input type="checkbox" id="receipt" checked>
-                        <label for="receipt">Include Gift Receipt (Hide Price Tags)</label>
+                    <div style="display:flex; gap:15px; margin-bottom: 15px;">
+                        <div class="field-group" style="flex:1; margin-bottom:0;">
+                            <label style="display:block; font-size:13px; font-weight:bold; margin-bottom:5px;">To</label>
+                            <input type="text" id="giftTo" class="form-control" placeholder="Recipient Name">
+                        </div>
+                        <div class="field-group" style="flex:1; margin-bottom:0;">
+                            <label style="display:block; font-size:13px; font-weight:bold; margin-bottom:5px;">From</label>
+                            <input type="text" id="giftFrom" class="form-control" placeholder="Your Name">
+                        </div>
                     </div>
+
+                    <div class="field-group" style="margin-bottom: 15px;">
+                        <label style="display:block; font-size:13px; font-weight:bold; margin-bottom:5px;">Custom Message</label>
+                        <textarea id="giftMessage" class="form-control" rows="3" placeholder="Type your personal message here (max 500 characters)..."></textarea>
+                    </div>
+
+                    <div style="display:flex; gap:15px; margin-bottom: 15px;">
+                        <div class="field-group" style="flex:2; margin-bottom:0;">
+                            <label style="display:block; font-size:13px; font-weight:bold; margin-bottom:5px;">Wrapping Color</label>
+                            <select id="wrappingColor" class="form-select">
+                                <option value="gold">Gold (Luxury)</option>
+                                <option value="red">Red (Classic)</option>
+                                <option value="blue">Royal Blue (Elegant)</option>
+                                <option value="silver">Silver (Minimalist)</option>
+                            </select>
+                        </div>
+                        <div class="field-group" style="flex:1; margin-bottom:0;">
+                            <label style="display:block; font-size:13px; font-weight:bold; margin-bottom:5px;">Qty</label>
+                            <input type="number" id="quantity" class="form-control" value="1" min="1" max="10">
+                        </div>
+                    </div>
+
+                    <button onclick="addGiftToCart()" class="btn-gift-primary" style="width: 100%; border: none; cursor: pointer;"><i class="fa-solid fa-cart-plus"></i> Add to Cart</button>
                 </div>
 
                 <div class="cta-content">
@@ -629,4 +652,95 @@
     </section>
 
 </main>
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function selectBox(id, name) {
+        document.getElementById('selectedBoxId').value = id;
+        document.getElementById('selectedBoxName').value = name;
+        
+        // Visual feedback
+        document.querySelector('.form-box').style.borderColor = 'var(--primary)';
+        document.querySelector('.form-box').style.boxShadow = '0 0 0 4px rgba(13, 110, 253, 0.1)';
+        
+        setTimeout(() => {
+            document.querySelector('.form-box').style.borderColor = 'var(--gray-300)';
+            document.querySelector('.form-box').style.boxShadow = '0 4px 6px rgba(0,0,0,0.02)';
+        }, 2000);
+    }
+
+    function addGiftToCart() {
+        const boxId = document.getElementById('selectedBoxId').value;
+        const to = document.getElementById('giftTo').value.trim();
+        const from = document.getElementById('giftFrom').value.trim();
+        const message = document.getElementById('giftMessage').value;
+        const wrapping = document.getElementById('wrappingColor').value;
+        const quantity = document.getElementById('quantity').value;
+
+        if (!boxId || !wrapping || quantity < 1) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Missing Details',
+                text: 'Please select a box and fill all required details.',
+                confirmButtonColor: '#0d6efd'
+            });
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('gift_box_id', boxId);
+        formData.append('gift_to', to);
+        formData.append('gift_from', from);
+        formData.append('quantity', quantity);
+        formData.append('gift_message', message);
+        formData.append('wrapping_color', wrapping);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        fetch('{{ route("giftbox.add") }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added to Cart!',
+                    text: data.message,
+                    showCancelButton: true,
+                    confirmButtonText: 'View Cart',
+                    cancelButtonText: 'Continue Shopping',
+                    confirmButtonColor: '#0d6efd'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '{{ route("cart.index") }}';
+                    }
+                });
+                
+                // Update cart count in header if it exists
+                const cartBadge = document.querySelector('.cart-count-badge');
+                if (cartBadge) cartBadge.innerText = data.cartCount;
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: data.message || 'Something went wrong!'
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to add gift box to cart.'
+            });
+        });
+    }
+</script>
+@endpush
 @endsection

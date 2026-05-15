@@ -108,6 +108,9 @@ class ProductController extends Controller
         $product->weight = $request->weight;
         $product->dimensions = $request->dimensions;
         $product->is_deal = $request->has('is_deal');
+        $product->is_free_shipping = $request->has('is_free_shipping');
+        $product->shipping_fee_national = $request->shipping_fee_national ?? 0;
+        $product->shipping_fee_international = $request->shipping_fee_international ?? 0;
         $product->discount_percent = $request->discount_percent;
         $product->search_tags = $request->search_tags;
         $product->meta_title = $request->meta_title;
@@ -193,6 +196,9 @@ class ProductController extends Controller
         $product->weight = $request->weight;
         $product->dimensions = $request->dimensions;
         $product->is_deal = $request->has('is_deal');
+        $product->is_free_shipping = $request->has('is_free_shipping');
+        $product->shipping_fee_national = $request->shipping_fee_national ?? 0;
+        $product->shipping_fee_international = $request->shipping_fee_international ?? 0;
         $product->discount_percent = $request->discount_percent;
         $product->search_tags = $request->search_tags;
         $product->meta_title = $request->meta_title;

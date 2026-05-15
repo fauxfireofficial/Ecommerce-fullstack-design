@@ -31,7 +31,7 @@ class OrderController extends Controller
     // Get order details (AJAX)
     public function show($id)
     {
-        $order = Order::with(['user', 'items.product'])->findOrFail($id);
+        $order = Order::with(['user', 'items.product', 'items.giftBox'])->findOrFail($id);
         return response()->json($order);
     }
 

@@ -20,11 +20,22 @@ class OrderController extends Controller
         }
 
         $total = 0;
-        foreach($cart as $item) {
+        $total_national_shipping = 0;
+        $total_international_shipping = 0;
+
+        foreach($cart as $id => $item) {
             $total += $item['price'] * $item['quantity'];
+            
+            if(empty($item['is_gift'])) {
+                $product = \App\Models\Product::find($id);
+                if($product && !$product->is_free_shipping) {
+                    $total_national_shipping += ($product->shipping_fee_national ?? 0) * $item['quantity'];
+                    $total_international_shipping += ($product->shipping_fee_international ?? 0) * $item['quantity'];
+                }
+            }
         }
 
-        return view('checkout', compact('cart', 'total'));
+        return view('checkout', compact('cart', 'total', 'total_national_shipping', 'total_international_shipping'));
     }
 
     /**
@@ -48,8 +59,19 @@ class OrderController extends Controller
         }
 
         $total = 0;
-        foreach($cart as $item) {
+        $shipping_cost = 0;
+        
+        $isNational = strtolower($request->country) === 'pakistan';
+
+        foreach($cart as $id => $item) {
             $total += $item['price'] * $item['quantity'];
+            
+            if(empty($item['is_gift'])) {
+                $product = \App\Models\Product::find($id);
+                if($product && !$product->is_free_shipping) {
+                    $shipping_cost += ($isNational ? ($product->shipping_fee_national ?? 0) : ($product->shipping_fee_international ?? 0)) * $item['quantity'];
+                }
+            }
         }
 
         // Create Order
@@ -58,8 +80,8 @@ class OrderController extends Controller
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
             'subtotal' => $total,
             'tax' => 0,
-            'shipping_cost' => 0,
-            'total_amount' => $total,
+            'shipping_cost' => $shipping_cost,
+            'total_amount' => $total + $shipping_cost,
             'shipping_phone' => $request->phone_number,
             'shipping_address' => $request->address . ', ' . $request->city,
             'email' => $request->email,
@@ -73,12 +95,20 @@ class OrderController extends Controller
 
         // Create Order Items
         foreach ($cart as $id => $details) {
+            $isGift = isset($details['is_gift']) && $details['is_gift'];
+            
             OrderItem::create([
                 'order_id' => $order->id,
-                'product_id' => $id,
+                'product_id' => $isGift ? null : $id,
+                'gift_box_id' => $isGift ? $details['gift_box_id'] : null,
                 'quantity' => $details['quantity'],
                 'price' => $details['price'],
                 'total' => $details['price'] * $details['quantity'],
+                'is_gift' => $isGift,
+                'gift_to' => $details['gift_to'] ?? null,
+                'gift_from' => $details['gift_from'] ?? null,
+                'gift_message' => $details['gift_message'] ?? null,
+                'wrapping_color' => $details['wrapping_color'] ?? null,
             ]);
         }
 
@@ -88,6 +118,11 @@ class OrderController extends Controller
 
             // Deduct Stock
             foreach ($cart as $id => $details) {
+                if (isset($details['is_gift']) && $details['is_gift']) {
+                    // Gift boxes might not have stock tracked in the same way, or skip for now
+                    continue;
+                }
+                
                 $product = \App\Models\Product::find($id);
                 if ($product) {
                     $product->decrement('stock_quantity', $details['quantity']);

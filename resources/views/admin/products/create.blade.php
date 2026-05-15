@@ -132,6 +132,41 @@
                             <input type="number" id="discount_percent" name="discount_percent" class="form-control" value="{{ old('discount_percent') }}" placeholder="e.g. 25">
                         </div>
                     </div>
+                    
+                    <h4 class="section-title mt-4 mb-3" style="font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 8px; color: #10b981;">Shipping Perks</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Free Shipping?</label>
+                            <div style="display: flex; align-items: center; gap: 10px; margin-top: 5px;">
+                                <label class="switch">
+                                    <input type="checkbox" name="is_free_shipping" value="1" {{ old('is_free_shipping') ? 'checked' : '' }} onchange="document.getElementById('shipping_fees_div').style.display = this.checked ? 'none' : 'block'">
+                                    <span class="slider round" style="background-color: #ccc;"></span>
+                                </label>
+                                <span>Yes, offer free shipping</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="shipping_fees_div" style="display: {{ old('is_free_shipping') ? 'none' : 'block' }};">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="shipping_fee_national">National Delivery Fee</label>
+                                <div class="input-prefix">
+                                    <span>$</span>
+                                    <input type="number" id="shipping_fee_national" name="shipping_fee_national" class="form-control" step="0.01" value="{{ old('shipping_fee_national', 0) }}">
+                                </div>
+                                <small>Charges for local/national deliveries</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="shipping_fee_international">International Delivery Fee</label>
+                                <div class="input-prefix">
+                                    <span>$</span>
+                                    <input type="number" id="shipping_fee_international" name="shipping_fee_international" class="form-control" step="0.01" value="{{ old('shipping_fee_international', 0) }}">
+                                </div>
+                                <small>Charges for international deliveries</small>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- 

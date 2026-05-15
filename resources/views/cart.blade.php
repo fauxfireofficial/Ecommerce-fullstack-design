@@ -54,9 +54,18 @@
                                         <h3 class="text-base font-bold text-[#1C1C1C] mb-1 leading-tight">
                                             {{ $item['name'] }}
                                         </h3>
-                                        <div class="text-sm text-[#8B96A5] space-y-0.5">
-                                            <p>Size: medium, Color: blue,  Material: Plastic</p>
-                                            <p>Seller: Artel Market</p>
+                                        <div class="text-sm text-[#8B96A5] space-y-0.5 mt-2">
+                                            @if(isset($item['is_gift']) && $item['is_gift'])
+                                                <p><span class="text-[#d97706] font-bold"><i class="fa-solid fa-gift"></i> Gift Box</span></p>
+                                                @if(!empty($item['gift_to'])) <p><strong>To:</strong> {{ $item['gift_to'] }}</p> @endif
+                                                @if(!empty($item['gift_from'])) <p><strong>From:</strong> {{ $item['gift_from'] }}</p> @endif
+                                                <p><strong>Wrapping:</strong> {{ ucfirst($item['wrapping_color'] ?? 'Standard') }}</p>
+                                                @if(!empty($item['gift_message']))
+                                                    <p class="italic text-gray-500 mt-1 border-l-2 border-gray-300 pl-2">"{{ \Illuminate\Support\Str::limit($item['gift_message'], 50) }}"</p>
+                                                @endif
+                                            @else
+                                                <p>Standard Item</p>
+                                            @endif
                                         </div>
                                         <div class="mt-3 flex gap-2">
                                             <button class="btn-remove-item px-3 py-1.5 border border-[#E3E8EE] rounded-md text-sm font-medium text-[#FA3434] hover:bg-rose-50 transition-colors">

@@ -178,15 +178,30 @@ class ProductController extends Controller
     // Gift Boxes page
     public function giftBoxes()
     {
-        $category = Category::where('name', 'Gift Boxes')->first();
+        $giftBoxes = \App\Models\GiftBox::where('status', 'active')->get();
         
+        $category = Category::where('name', 'Gift Boxes')->first();
         $products = Product::with('category')
             ->where('status', 'active')
             ->where('category_id', $category ? $category->id : -1)
             ->orderBy('created_at', 'desc')
             ->paginate(16);
 
-        return view('products.gift-boxes', compact('products'));
+        return view('products.gift-boxes', compact('products', 'giftBoxes'));
+    }
+
+    // Individual Gift Box page
+    public function showGiftBox($slug)
+    {
+        $giftBox = \App\Models\GiftBox::where('slug', $slug)->firstOrFail();
+        
+        // Fetch related or popular boxes
+        $relatedBoxes = \App\Models\GiftBox::where('id', '!=', $giftBox->id)
+                            ->where('status', 'active')
+                            ->take(4)
+                            ->get();
+
+        return view('products.gift-box-show', compact('giftBox', 'relatedBoxes'));
     }
 }
 

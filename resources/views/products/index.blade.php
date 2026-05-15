@@ -593,13 +593,24 @@
                             </div>
                             <div class="product-meta">
                                 <div class="stars">
-                                    <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star-half-stroke"></i> 
-                                    <span class="rating-score">4.5</span>
+                                    @php $rating = $product->average_rating; @endphp
+                                    @for($i=1; $i<=5; $i++)
+                                        @if($i <= $rating)
+                                            <i class="fa-solid fa-star"></i>
+                                        @elseif($i - 0.5 <= $rating)
+                                            <i class="fa-solid fa-star-half-stroke"></i>
+                                        @else
+                                            <i class="fa-regular fa-star" style="color: #ccc;"></i>
+                                        @endif
+                                    @endfor
+                                    <span class="rating-score">{{ number_format($rating, 1) }}</span>
                                 </div>
                                 <span class="dot list-only"></span>
-                                <span class="orders list-only">{{ rand(100, 500) }} orders</span>
+                                <span class="orders list-only">{{ $product->total_orders }} orders</span>
+                                @if($product->is_free_shipping)
                                 <span class="dot list-only"></span>
                                 <span class="shipping list-only">Free Shipping</span>
+                                @endif
                             </div>
                             <p class="product-desc list-only">{{ Str::limit($product->description, 150) }}</p>
                             <span class="view-details list-only" style="color: #0d6efd; font-weight: 600;">View details</span>
@@ -951,22 +962,85 @@
     });
 
     // Remove filter pill logic
-    /**
-     * Removes a specific filter value or an entire filter key from the current view.
-     * @param {string} key - The parameter key to remove (e.g., 'brands[]').
-     * @param {string|null} value - The specific value to remove if multiple values exist for the key.
-     */
     function removeFilter(key, value = null) {
         const url = new URL(window.location.href);
         if (value) {
             const values = url.searchParams.getAll(key);
             url.searchParams.delete(key);
-            // Append back all values except the one being removed
             values.filter(v => v !== value).forEach(v => url.searchParams.append(key, v));
         } else {
             url.searchParams.delete(key);
         }
         fetchFilteredProducts(url);
     }
+
+    // Filter Accordion Logic
+    document.querySelectorAll('.filter-block h4').forEach(header => {
+        header.style.cursor = 'pointer';
+        header.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            const contentElements = Array.from(this.parentElement.children).filter(el => el !== this && el.tagName !== 'BUTTON');
+            
+            // Only target the immediate containers
+            contentElements.forEach(el => {
+                if (el.style.display === 'none') {
+                    el.style.display = '';
+                    // If button exists (like Price apply), show it
+                    const btn = this.parentElement.querySelector('button');
+                    if(btn) btn.style.display = '';
+                } else {
+                    el.style.display = 'none';
+                    // If button exists, hide it
+                    const btn = this.parentElement.querySelector('button');
+                    if(btn) btn.style.display = 'none';
+                }
+            });
+            
+            if (icon) {
+                if (icon.classList.contains('fa-chevron-up')) {
+                    icon.classList.remove('fa-chevron-up');
+                    icon.classList.add('fa-chevron-down');
+                } else {
+                    icon.classList.remove('fa-chevron-down');
+                    icon.classList.add('fa-chevron-up');
+                }
+            }
+        });
+    });
+
+    // See all logic
+    document.querySelectorAll('.see-all').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const group = this.parentElement.tagName === 'LI' ? this.closest('ul') : this.parentElement;
+            
+            // Identify hidden items
+            const hiddenItems = group.querySelectorAll('.hidden-filter-item');
+            
+            if (this.textContent.trim() === 'See all') {
+                hiddenItems.forEach(el => el.style.display = '');
+                this.textContent = 'Show less';
+            } else {
+                hiddenItems.forEach(el => el.style.display = 'none');
+                this.textContent = 'See all';
+            }
+        });
+    });
+
+    // Initialize hidden items (hide beyond index 3)
+    document.querySelectorAll('.filter-block').forEach(block => {
+        const items = block.querySelectorAll('label, li:not(:last-child)');
+        if (items.length > 4) {
+            items.forEach((item, index) => {
+                if (index >= 4) {
+                    item.classList.add('hidden-filter-item');
+                    item.style.display = 'none';
+                }
+            });
+        } else {
+            const seeAll = block.querySelector('.see-all');
+            if (seeAll) seeAll.style.display = 'none'; // Hide "See all" if not enough items
+        }
+    });
 </script>
 @endsection

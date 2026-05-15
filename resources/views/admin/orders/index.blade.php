@@ -485,14 +485,26 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        ${(data.items && data.items.length > 0) ? data.items.map(item => `
+                                        ${(data.items && data.items.length > 0) ? data.items.map(item => {
+                                            const isGift = item.is_gift == 1 || item.is_gift === true;
+                                            const imagePath = isGift && item.gift_box ? '/' + item.gift_box.image.replace(/^\//, '') : (item.product?.image ? '/' + item.product.image.replace(/^\//, '') : 'https://placehold.co/100x100?text=Gift');
+                                            const name = isGift && item.gift_box ? item.gift_box.name : (item.product?.name || 'Product');
+                                            const skuOrGift = isGift ? 
+                                                `<span style="color:#d97706; font-weight:bold; font-size:12px;">🎁 Gift Box</span>
+                                                 ${item.gift_to ? `<p style="margin:2px 0 0; font-size:11px; color:#1e293b;"><strong>To:</strong> ${item.gift_to}</p>` : ''}
+                                                 ${item.gift_from ? `<p style="margin:2px 0 0; font-size:11px; color:#1e293b;"><strong>From:</strong> ${item.gift_from}</p>` : ''}
+                                                 <p style="margin:2px 0 0; font-size:11px; color:#64748b;">Wrapping: ${item.wrapping_color || 'Standard'}</p>
+                                                 ${item.gift_message ? `<p style="margin:4px 0 0; font-size:11px; color:#64748b; font-style:italic; border-left:2px solid #cbd5e1; padding-left:4px;">"${item.gift_message}"</p>` : ''}` 
+                                                : `SKU: ${item.product?.sku || 'N/A'}`;
+                                            
+                                            return `
                                             <tr>
                                                 <td>
                                                     <div class="product-info-admin">
-                                                        <img src="${item.product?.image ? '/' + item.product.image.replace(/^\//, '') : '/images/placeholder.jpg'}" alt="Product">
+                                                        <img src="${imagePath}" alt="Item">
                                                         <div>
-                                                            <p class="p-name-admin">${item.product?.name || 'Product'}</p>
-                                                            <p class="p-sku-admin">SKU: ${item.product?.sku || 'N/A'}</p>
+                                                            <p class="p-name-admin">${name}</p>
+                                                            <div class="p-sku-admin">${skuOrGift}</div>
                                                         </div>
                                                     </div>
                                                 </td>
@@ -500,7 +512,8 @@
                                                 <td>x ${item.quantity}</td>
                                                 <td class="item-total-admin">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
                                             </tr>
-                                        `).join('') : '<tr><td colspan="4" class="text-center">No items found</td></tr>'}
+                                            `;
+                                        }).join('') : '<tr><td colspan="4" class="text-center">No items found</td></tr>'}
                                     </tbody>
                                 </table>
                             </div>

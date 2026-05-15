@@ -15,6 +15,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 // Product List Page (Grid/List View)
 Route::get('/hot-offers', [ProductController::class, 'hotOffers'])->name('products.offers');
 Route::get('/gift-boxes', [ProductController::class, 'giftBoxes'])->name('products.gift-boxes');
+Route::get('/gift-boxes/{slug}', [ProductController::class, 'showGiftBox'])->name('giftboxes.show');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
 Route::get('/brands', [ProductController::class, 'brands'])->name('brands');
 Route::get('/services', function () {
@@ -33,6 +34,7 @@ use App\Http\Controllers\CartController;
     Route::get('/cart/latest', [CartController::class, 'getLatest'])->name('cart.latest');
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/add-to-cart', [CartController::class, 'add'])->name('cart.add');
+Route::post('/gift-box/add', [\App\Http\Controllers\GiftBoxController::class, 'addToCart'])->name('giftbox.add');
 Route::post('/update-cart', [CartController::class, 'update'])->name('cart.update');
 Route::post('/remove-from-cart', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/clear-cart', [CartController::class, 'clearAll'])->name('cart.clear');

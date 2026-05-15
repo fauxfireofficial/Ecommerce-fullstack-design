@@ -14,8 +14,20 @@ class OrderItem extends Model
         'product_id',
         'quantity',
         'price',
-        'total'
+        'total',
+        'is_gift',
+        'gift_message',
+        'wrapping_color',
+        'gift_box_id',
+        'gift_to',
+        'gift_from'
     ];
+
+    // Relationship with GiftBox
+    public function giftBox()
+    {
+        return $this->belongsTo(GiftBox::class);
+    }
 
     // Relationship with Order
     public function order()

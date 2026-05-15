@@ -42,6 +42,9 @@ class Product extends Model
         'status',
         'is_recommended',
         'is_deal',
+        'is_free_shipping',
+        'shipping_fee_national',
+        'shipping_fee_international',
         'discount_percent',
         'views',
         'sold_count',
@@ -138,5 +141,13 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+
+
+    // Get total orders count
+    public function getTotalOrdersAttribute()
+    {
+        return $this->orderItems()->sum('quantity');
     }
 }

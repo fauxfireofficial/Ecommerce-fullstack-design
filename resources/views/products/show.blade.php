@@ -389,7 +389,10 @@
                 </div>
                 <span class="rating-score">{{ number_format($avgRating, 1) }}</span>
                 <span class="review-count">{{ $product->reviews->count() }} reviews</span>
-                <span class="sold-count">{{ $product->sold_count ?? 0 }} sold</span>
+                <span class="sold-count">{{ $product->total_orders ?? 0 }} sold</span>
+                @if($product->is_free_shipping)
+                    <span class="shipping-badge" style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-left: 10px;"><i class="fa-solid fa-truck-fast"></i> Free Shipping</span>
+                @endif
             </div>
 
             <!-- Price Tiers -->

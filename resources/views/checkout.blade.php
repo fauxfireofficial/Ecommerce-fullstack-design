@@ -126,6 +126,12 @@
                         </div>
                         <div class="sum-item-info">
                             <p class="sum-name">{{ Str::limit($item['name'], 30) }}</p>
+                            @if(isset($item['is_gift']) && $item['is_gift'])
+                                <div style="font-size: 11px; color: #64748b; margin-bottom: 5px;">
+                                    <span style="color:#d97706; font-weight:bold;">🎁 Gift Box</span>
+                                    @if(!empty($item['gift_to'])) <br>To: {{ $item['gift_to'] }} @endif
+                                </div>
+                            @endif
                             <p class="sum-price">{{ App\Services\CurrencyService::convert($item['price'] * $item['quantity']) }}</p>
                         </div>
                     </div>
@@ -139,11 +145,11 @@
                     </div>
                     <div class="sum-row">
                         <span>Shipping:</span>
-                        <span style="color: #10b981; font-weight: 700;">Free</span>
+                        <span id="shipping-display" style="color: #64748b; font-weight: 700;">Select Country</span>
                     </div>
                     <div class="sum-total-row">
                         <span class="total-label">Total:</span>
-                        <span class="total-amount">{{ App\Services\CurrencyService::convert($total) }}</span>
+                        <span class="total-amount" id="total-display">{{ App\Services\CurrencyService::convert($total) }}</span>
                     </div>
                 </div>
             </div>
@@ -476,11 +482,62 @@
         }
     }
 
+    // Dynamic Shipping Calculation
+    const subtotal = {{ $total ?? 0 }};
+    const nationalShipping = {{ $total_national_shipping ?? 0 }};
+    const internationalShipping = {{ $total_international_shipping ?? 0 }};
+    
+    // We get current rate info for JS formatting
+    const currencySymbol = "{!! App\Services\CurrencyService::getRates()[App\Services\CurrencyService::getCurrentCurrency()]['symbol'] ?? '$' !!}";
+    const currencyRate = {{ App\Services\CurrencyService::getRates()[App\Services\CurrencyService::getCurrentCurrency()]['rate'] ?? 1 }};
+    const currencyPos = "{!! App\Services\CurrencyService::getRates()[App\Services\CurrencyService::getCurrentCurrency()]['position'] ?? 'before' !!}";
+
+    function formatMoney(amount) {
+        const converted = amount * currencyRate;
+        const formatted = converted.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return currencyPos === 'before' ? currencySymbol + ' ' + formatted : formatted + ' ' + currencySymbol;
+    }
+
+    function updateShipping() {
+        const countrySelect = document.querySelector('select[name="country"]');
+        if(!countrySelect) return;
+        
+        const country = countrySelect.value;
+        const shippingDisplay = document.getElementById('shipping-display');
+        const totalDisplay = document.getElementById('total-display');
+        
+        if (!country) {
+            shippingDisplay.innerHTML = 'Select Country';
+            shippingDisplay.style.color = '#64748b';
+            totalDisplay.innerHTML = formatMoney(subtotal);
+            return;
+        }
+
+        const isNational = country.toLowerCase() === 'pakistan';
+        const shippingCost = isNational ? nationalShipping : internationalShipping;
+
+        if (shippingCost === 0) {
+            shippingDisplay.innerHTML = 'Free';
+            shippingDisplay.style.color = '#10b981';
+        } else {
+            shippingDisplay.innerHTML = formatMoney(shippingCost);
+            shippingDisplay.style.color = '#1e293b';
+        }
+
+        totalDisplay.innerHTML = formatMoney(subtotal + shippingCost);
+    }
+
     // Initialize on load
     document.addEventListener('DOMContentLoaded', () => {
         const checked = document.querySelector('input[name="payment_method"]:checked');
         if (checked) {
             togglePaymentSelection(checked.value);
+        }
+        
+        const countrySelect = document.querySelector('select[name="country"]');
+        if(countrySelect) {
+            countrySelect.addEventListener('change', updateShipping);
+            updateShipping(); // Run initially
         }
     });
 </script>
