@@ -316,6 +316,8 @@
     }
 
     .btn-checkout-green:hover {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+        color: white !important;
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
