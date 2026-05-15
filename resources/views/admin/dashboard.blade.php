@@ -244,10 +244,10 @@
         <div class="card-body">
             @forelse($topProducts as $product)
             <div class="product-mini">
-                <img src="{{ asset('storage/' . $product->image) }}" onerror="this.src='https://placehold.co/100x100?text=Product'" alt="{{ $product->name }}">
+                <img src="{{ asset($product->image) }}" onerror="this.src='https://placehold.co/100x100?text=Product'" alt="{{ $product->name }}">
                 <div class="product-mini-info">
                     <h4>{{ $product->name }}</h4>
-                    <p>{{ $product->orders_count }} Sales • ${{ number_format($product->price, 2) }}</p>
+                    <p>{{ number_format($product->total_sold ?: 0) }} Sales • ${{ number_format($product->price, 2) }}</p>
                 </div>
             </div>
             @empty
