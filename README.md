@@ -40,9 +40,13 @@ The platform features **Dual Registration Tracks**:
 1. **User Registration**: Standard checkout and profile access for retail customers.
 2. **Admin Registration**: Secure signup for staff. Requires a specific security key.
 
+### 🛡️ Default Admin Credentials (for testing)
+- **Admin Email:** `admin@example.com`
+- **Admin Password:** `admin@brand`
+- **Admin Security Key:** `MyStore@2026`
+
 > [!IMPORTANT]
-> **Admin Security Key:** `MyStore@2026`  
-> *This key is required during the Admin registration process to grant administrative privileges.*
+> **Security Warning:** Please change these default credentials and the security key immediately after deploying to a production environment.
 
 ---
 
