@@ -21,7 +21,8 @@ class HomeController extends Controller
         }
 
         $recommended = Product::where('is_recommended', true)->take(10)->get();
+        $allProducts = Product::select('id', 'name')->get();
 
-        return view('home', compact('deals', 'categories', 'categoryProducts', 'recommended'));
+        return view('home', compact('deals', 'categories', 'categoryProducts', 'recommended', 'allProducts'));
     }
 }

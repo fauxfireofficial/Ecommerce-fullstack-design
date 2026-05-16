@@ -255,6 +255,11 @@
             font-size: 11px;
             color: #94a3b8;
             text-decoration: line-through;
+            margin-left: 8px;
+        }
+
+        .price-was {
+            margin-left: 8px;
         }
 
         .product-view.grid-view .product-price-wrapper {
@@ -613,7 +618,9 @@
                                 @endif
                             </div>
                             <p class="product-desc list-only">{{ Str::limit($product->description, 150) }}</p>
-                            <span class="view-details list-only" style="color: #0d6efd; font-weight: 600;">View details</span>
+                            <a href="{{ route('products.show', $product->slug ?? $product->id) }}" class="view-details list-only" style="color: #0d6efd; font-weight: 700; text-decoration: none; font-size: 14px; display: inline-block; margin-top: 10px;">
+                                View details <i class="fa-solid fa-arrow-right" style="font-size: 11px; margin-left: 5px;"></i>
+                            </a>
                         </div>
                     </div>
                     @empty

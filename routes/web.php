@@ -56,6 +56,13 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/profile/addresses', [\App\Http\Controllers\ProfileController::class, 'addAddress'])->name('profile.addresses.store');
     Route::post('/profile/addresses/{id}/default', [\App\Http\Controllers\ProfileController::class, 'setDefaultAddress'])->name('profile.addresses.default');
     Route::delete('/profile/addresses/{id}', [\App\Http\Controllers\ProfileController::class, 'deleteAddress'])->name('profile.addresses.destroy');
+    
+    // Inquiry Routes
+    Route::post('/inquiry/store', [\App\Http\Controllers\InquiryController::class, 'storeInquiry'])->name('inquiry.store');
+    Route::post('/inquiry/{id}/reply', [\App\Http\Controllers\InquiryController::class, 'userReply'])->name('inquiry.reply');
+    Route::get('/inquiry/{id}/checkout', [\App\Http\Controllers\InquiryController::class, 'bulkCheckout'])->name('inquiry.checkout');
+    Route::post('/inquiry/{id}/place-order', [\App\Http\Controllers\InquiryController::class, 'placeBulkOrder'])->name('inquiry.placeOrder');
+
     // Wishlist Routes
     Route::get('/wishlist', [\App\Http\Controllers\WishlistController::class, 'index'])->name('wishlist.index');
     Route::get('/api/wishlist/latest', [\App\Http\Controllers\WishlistController::class, 'getLatest'])->name('wishlist.latest');
@@ -194,6 +201,22 @@ Route::prefix('admin')->group(function () {
         Route::put('/reviews/{id}/status', [\App\Http\Controllers\Admin\ReviewController::class, 'updateStatus'])->name('admin.reviews.updateStatus');
         Route::post('/reviews/{id}/reply', [\App\Http\Controllers\Admin\ReviewController::class, 'reply'])->name('admin.reviews.reply');
         Route::delete('/reviews/{id}', [\App\Http\Controllers\Admin\ReviewController::class, 'destroy'])->name('admin.reviews.destroy');
+
+        // Coupon Management
+        Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class)->names([
+            'index' => 'admin.coupons.index',
+            'create' => 'admin.coupons.create',
+            'store' => 'admin.coupons.store',
+            'edit' => 'admin.coupons.edit',
+            'update' => 'admin.coupons.update',
+            'destroy' => 'admin.coupons.destroy',
+        ]);
+        Route::post('coupons/{coupon}/toggle', [\App\Http\Controllers\Admin\CouponController::class, 'toggleStatus'])->name('admin.coupons.toggle');
+
+        // Sourcing Inquiries
+        Route::get('/inquiries', [\App\Http\Controllers\Admin\DashboardController::class, 'inquiries'])->name('admin.inquiries');
+        Route::post('/inquiries/{id}/status', [\App\Http\Controllers\Admin\DashboardController::class, 'updateInquiryStatus'])->name('admin.inquiries.status');
+        Route::delete('/inquiries/{id}', [\App\Http\Controllers\Admin\DashboardController::class, 'destroyInquiry'])->name('admin.inquiries.destroy');
 
         Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
     });

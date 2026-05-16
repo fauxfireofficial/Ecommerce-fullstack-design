@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Address;
+use App\Models\SupplierInquiry;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -24,6 +25,7 @@ class ProfileController extends Controller
             'recentOrders' => Order::where('user_id', $user->id)->latest()->take(5)->get(),
             'allOrders' => Order::where('user_id', $user->id)->latest()->paginate(10),
             'addresses' => Address::where('user_id', $user->id)->get(),
+            'inquiries' => SupplierInquiry::with('product')->where('user_id', $user->id)->latest()->get(),
         ];
         
         return view('profile.index', $data);

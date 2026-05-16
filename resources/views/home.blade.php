@@ -179,21 +179,72 @@
             <div class="inquiry-text">
                 <h2>An easy way to send requests to all suppliers</h2>
                 <p class="desktop-only">Get multiple quotes from verified sellers within minutes. Streamline your sourcing process today.</p>
-                <button class="btn-mobile-inquiry mobile-only">Send inquiry</button>
             </div>
-            <div class="inquiry-form desktop-only">
+            <div class="inquiry-form" id="inquiryFormBox">
                 <h3>Send quote to suppliers</h3>
-                <input type="text" class="form-control" placeholder="What item you need?">
-                <textarea class="form-control" rows="3" placeholder="Type more details"></textarea>
-                <div class="form-row">
-                    <input type="text" class="form-control" placeholder="Quantity">
-                    <select class="form-control">
-                        <option>Pcs</option>
-                    </select>
-                </div>
-                <button class="btn btn-primary">Send inquiry</button>
+                @if(session('success') && session('inquiry_submitted'))
+                    <div class="alert alert-success" style="background: #dcfce7; color: #166534; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; border: 1px solid #bbf7d0;">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if($errors->any())
+                    <div class="alert alert-danger" style="background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; border: 1px solid #fecaca;">
+                        <ul class="mb-0">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form action="{{ route('inquiry.store') }}" method="POST">
+                    @csrf
+                    <div style="margin-bottom: 15px;">
+                        <select name="product_id" id="inquiry_product_id" class="form-control" style="margin-bottom: 10px;" onchange="toggleCustomItemField()">
+                            <option value="">-- Select a product from our store --</option>
+                            @foreach($allProducts as $product)
+                                <option value="{{ $product->id }}">{{ $product->name }}</option>
+                            @endforeach
+                        </select>
+                        <div id="custom_item_wrapper">
+                            <div style="text-align: center; color: #94a3b8; font-size: 12px; margin-bottom: 10px; font-weight: 600;">OR</div>
+                            <input type="text" name="custom_item_name" id="inquiry_custom_item" class="form-control" placeholder="Type custom item name (e.g. Black Leather Jackets)">
+                        </div>
+                    </div>
+                    <textarea name="details" class="form-control" rows="3" placeholder="Type more details (e.g. I need this for corporate gifting)" required></textarea>
+                    <div class="form-row">
+                        <input type="number" name="quantity" class="form-control" placeholder="Quantity" min="1" required>
+                        <select name="unit" class="form-control">
+                            <option value="Pcs">Pcs</option>
+                            <option value="Kg">Kg</option>
+                            <option value="Liters">Liters</option>
+                            <option value="Tons">Tons</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Send inquiry</button>
+                </form>
             </div>
         </section>
+
+        <script>
+            function toggleCustomItemField() {
+                var selectBox = document.getElementById('inquiry_product_id');
+                var customWrapper = document.getElementById('custom_item_wrapper');
+                var customInput = document.getElementById('inquiry_custom_item');
+                
+                if (selectBox.value !== "") {
+                    customWrapper.style.display = 'none';
+                    customInput.removeAttribute('required');
+                    customInput.value = '';
+                } else {
+                    customWrapper.style.display = 'block';
+                    customInput.setAttribute('required', 'required');
+                }
+            }
+            // Initialize on load
+            document.addEventListener('DOMContentLoaded', function() {
+                toggleCustomItemField();
+            });
+        </script>
 
         <!-- Recommended Items Grid -->
         <h3 class="section-title">Recommended items</h3>
@@ -312,6 +363,46 @@
         </section>
 
     </main>
+
+    @if(Session::has('show_welcome_modal'))
+    <!-- Welcome Coupon Modal -->
+    <div id="welcomeModal" class="welcome-modal-overlay">
+        <div class="welcome-modal-content">
+            <button class="close-welcome" onclick="closeWelcomeModal()">&times;</button>
+            <div class="welcome-modal-body">
+                <div class="confetti-container" id="confetti"></div>
+                <div class="welcome-icon-wrapper">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <h2 class="welcome-title">Welcome to the Family!</h2>
+                <p class="welcome-text">We're so excited to have you here. As a special gift, here is your first purchase voucher:</p>
+                
+                <div class="coupon-premium">
+                    <div class="coupon-inner">
+                        <div class="coupon-left">
+                            <span class="coupon-tag">VOUCHER</span>
+                            <span class="coupon-amount">$100 OFF</span>
+                        </div>
+                        <div class="coupon-divider"></div>
+                        <div class="coupon-right">
+                            <span class="coupon-label">COUPON CODE</span>
+                            <span class="coupon-code-text">WELCOME100</span>
+                            <button class="btn-copy-v" onclick="copyCouponCode('WELCOME100', this)">
+                                <i class="fa-solid fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <p class="coupon-terms">Valid on your first order over $1,000.00</p>
+                
+                <div class="welcome-footer">
+                    <button onclick="closeWelcomeModal()" class="btn btn-primary btn-claim">Claim My Discount</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 @endsection
 
 @section('styles')
@@ -428,5 +519,270 @@
             display: block;
         }
     }
+
+    /* Welcome Modal Premium Styles */
+    .welcome-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(10px);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        animation: fadeIn 0.4s ease;
+    }
+
+    .welcome-modal-content {
+        background: white;
+        width: 100%;
+        max-width: 500px;
+        border-radius: 40px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        animation: slideUpModal 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes slideUpModal {
+        from { transform: translateY(50px) scale(0.9); opacity: 0; }
+        to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .close-welcome {
+        position: absolute;
+        top: 20px; right: 25px;
+        background: none; border: none;
+        font-size: 32px; color: #94a3b8;
+        cursor: pointer; z-index: 10;
+        transition: 0.3s;
+    }
+    .close-welcome:hover { color: #1e293b; transform: rotate(90deg); }
+
+    .welcome-modal-body {
+        padding: 50px 40px;
+        text-align: center;
+    }
+
+    .welcome-icon-wrapper {
+        width: 80px; height: 80px;
+        background: linear-gradient(135deg, #3b82f6, #6366f1);
+        color: white;
+        border-radius: 24px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 36px;
+        margin: 0 auto 25px;
+        box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.5);
+        animation: bounceIcon 2s infinite;
+    }
+
+    @keyframes bounceIcon {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+
+    .welcome-title {
+        font-size: 28px; font-weight: 900;
+        color: #0f172a; margin-bottom: 15px;
+    }
+
+    .welcome-text {
+        color: #64748b; font-size: 16px;
+        line-height: 1.6; margin-bottom: 30px;
+    }
+
+    /* Coupon Design */
+    .coupon-premium {
+        background: #f8fafc;
+        border: 2px dashed #cbd5e1;
+        border-radius: 24px;
+        padding: 4px;
+        margin-bottom: 20px;
+    }
+
+    .coupon-inner {
+        background: white;
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        padding: 20px;
+        position: relative;
+    }
+
+    .coupon-left {
+        flex: 1; text-align: center;
+        padding-right: 20px;
+    }
+
+    .coupon-tag {
+        display: block; font-size: 10px;
+        font-weight: 900; color: #94a3b8;
+        letter-spacing: 0.1em; margin-bottom: 4px;
+    }
+
+    .coupon-amount {
+        font-size: 24px; font-weight: 900;
+        color: #3b82f6; white-space: nowrap;
+    }
+
+    .coupon-divider {
+        width: 2px; height: 50px;
+        background: #f1f5f9;
+    }
+
+    .coupon-right {
+        flex: 1.5; padding-left: 20px;
+        text-align: left;
+    }
+
+    .coupon-label {
+        font-size: 10px; font-weight: 800;
+        color: #94a3b8; display: block;
+        margin-bottom: 5px;
+    }
+
+    .coupon-code-text {
+        font-size: 20px; font-weight: 800;
+        color: #1e293b; display: block;
+        letter-spacing: 1px;
+    }
+
+    .btn-copy-v {
+        background: #f1f5f9; border: none;
+        padding: 5px 12px; border-radius: 8px;
+        font-size: 12px; font-weight: 700;
+        color: #475569; cursor: pointer;
+        margin-top: 8px; transition: 0.2s;
+        display: flex; align-items: center; gap: 5px;
+    }
+    .btn-copy-v:hover { background: #e2e8f0; color: #1e293b; }
+
+    .coupon-terms {
+        font-size: 13px; font-weight: 600;
+        color: #94a3b8; margin-bottom: 35px;
+    }
+
+    .btn-claim {
+        width: 100%; padding: 18px;
+        border-radius: 18px; font-size: 18px;
+        font-weight: 800; box-shadow: 0 10px 20px -5px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Confetti Effect */
+    .confetti-container {
+        position: absolute; top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+    }
+
+    /* Responsive Adjustments for Modal */
+    @media (max-width: 576px) {
+        .welcome-modal-body {
+            padding: 40px 25px;
+        }
+
+        .welcome-title {
+            font-size: 22px;
+        }
+
+        .welcome-text {
+            font-size: 14px;
+        }
+
+        .coupon-inner {
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .coupon-left {
+            padding-right: 0;
+            border-bottom: 1px solid #f1f5f9;
+            padding-bottom: 15px;
+            width: 100%;
+        }
+
+        .coupon-divider {
+            display: none;
+        }
+
+        .coupon-right {
+            padding-left: 0;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn-copy-v {
+            margin: 10px auto 0;
+        }
+
+        .welcome-modal-content {
+            border-radius: 30px;
+            margin: 0 15px;
+        }
+
+        .btn-claim {
+            padding: 15px;
+            font-size: 16px;
+        }
+    }
 </style>
+
+<script>
+    function closeWelcomeModal() {
+        const modal = document.getElementById('welcomeModal');
+        if(modal) {
+            modal.style.opacity = '0';
+            modal.style.transform = 'scale(0.9)';
+            modal.style.transition = '0.4s';
+            setTimeout(() => modal.remove(), 400);
+        }
+    }
+
+    function copyCouponCode(code, btn) {
+        navigator.clipboard.writeText(code).then(() => {
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+            btn.style.background = '#dcfce7';
+            btn.style.color = '#15803d';
+            
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.style.background = '#f1f5f9';
+                btn.style.color = '#475569';
+            }, 2000);
+        });
+    }
+
+    // Optional: Add simple confetti
+    window.onload = function() {
+        const confettiBox = document.getElementById('confetti');
+        if(confettiBox) {
+            for(let i=0; i<50; i++) {
+                const conf = document.createElement('div');
+                conf.style.position = 'absolute';
+                conf.style.width = '10px';
+                conf.style.height = '10px';
+                conf.style.backgroundColor = ['#3b82f6', '#6366f1', '#f59e0b', '#10b981', '#f43f5e'][Math.floor(Math.random()*5)];
+                conf.style.left = Math.random() * 100 + '%';
+                conf.style.top = '-10px';
+                conf.style.borderRadius = '50%';
+                conf.style.opacity = Math.random();
+                conf.style.transform = `rotate(${Math.random() * 360}deg)`;
+                confettiBox.appendChild(conf);
+                
+                const duration = 2 + Math.random() * 3;
+                conf.animate([
+                    { top: '-10px', opacity: 1 },
+                    { top: '100%', opacity: 0 }
+                ], {
+                    duration: duration * 1000,
+                    iterations: 1,
+                    easing: 'cubic-bezier(0, 0, 0.2, 1)'
+                });
+            }
+        }
+    }
+</script>
 @endsection

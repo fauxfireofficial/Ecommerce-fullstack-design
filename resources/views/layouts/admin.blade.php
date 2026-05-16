@@ -438,6 +438,12 @@
             <a href="{{ route('admin.reviews.index') }}" class="menu-item {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
                 <i class="fa-solid fa-star"></i> Customer Reviews
             </a>
+            <a href="{{ route('admin.coupons.index') }}" class="menu-item {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}">
+                <i class="fa-solid fa-ticket-simple"></i> Manage Coupons
+            </a>
+            <a href="{{ route('admin.inquiries') }}" class="menu-item {{ request()->routeIs('admin.inquiries*') ? 'active' : '' }}">
+                <i class="fa-solid fa-file-invoice-dollar"></i> Bulk Order Requests
+            </a>
         </nav>
 
         <div class="sidebar-footer">

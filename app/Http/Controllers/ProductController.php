@@ -35,7 +35,16 @@ class ProductController extends Controller
             })->where('product_id', $product->id)->exists();
         }
         
-        return view('products.show', compact('product', 'relatedProducts', 'userHasPurchased'));
+        $discountRule = \App\Models\DiscountRule::active();
+        if ($discountRule && auth()->check()) {
+            // Check if user is eligible (no previous orders)
+            $hasPreviousOrders = \App\Models\Order::where('user_id', auth()->id())->exists();
+            if ($hasPreviousOrders) {
+                $discountRule = null; // Hide or mark as ineligible
+            }
+        }
+        
+        return view('products.show', compact('product', 'relatedProducts', 'userHasPurchased', 'discountRule'));
     }
     
     /**

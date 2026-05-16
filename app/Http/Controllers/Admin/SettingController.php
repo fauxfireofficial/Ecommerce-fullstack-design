@@ -38,8 +38,21 @@ class SettingController extends Controller
         $footerSettings = Setting::where('key', 'like', 'social_%')
             ->orWhere('key', 'like', 'footer_%')
             ->get()->pluck('value', 'key');
+            
+        // Active Discount Rule
+        $discountRule = \App\Models\DiscountRule::active();
+        if (!$discountRule) {
+            // Create a default if none exists
+            $discountRule = \App\Models\DiscountRule::create([
+                'name' => 'Default Super Discount',
+                'min_amount' => 100,
+                'discount_value' => 10,
+                'type' => 'percentage',
+                'is_active' => true
+            ]);
+        }
 
-        return view('admin.settings.index', compact('settings', 'hotOffers', 'siteSettings', 'homeSettings', 'footerSettings'));
+        return view('admin.settings.index', compact('settings', 'hotOffers', 'siteSettings', 'homeSettings', 'footerSettings', 'discountRule'));
     }
 
     /**
@@ -47,7 +60,19 @@ class SettingController extends Controller
      */
     public function update(Request $request)
     {
-        foreach ($request->except(['_token', 'new_categories', 'deleted_categories', 'deleted_settings']) as $key => $value) {
+        // Handle Discount Rule Updates
+        if ($request->has('discount_rule_min')) {
+            $rule = \App\Models\DiscountRule::active();
+            if ($rule) {
+                $rule->update([
+                    'name' => $request->discount_rule_name ?? $rule->name,
+                    'min_amount' => $request->discount_rule_min,
+                    'discount_value' => $request->discount_rule_value,
+                ]);
+            }
+        }
+
+        foreach ($request->except(['_token', 'new_categories', 'deleted_categories', 'deleted_settings', 'discount_rule_min', 'discount_rule_value', 'discount_rule_name']) as $key => $value) {
             // Handle images vs text
             if ($request->hasFile($key)) {
                 $file = $request->file($key);

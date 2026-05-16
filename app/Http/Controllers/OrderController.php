@@ -35,7 +35,33 @@ class OrderController extends Controller
             }
         }
 
-        return view('checkout', compact('cart', 'total', 'total_national_shipping', 'total_international_shipping'));
+        $discount = 0;
+        $coupon = null;
+        $couponCode = request('coupon_code');
+        
+        if ($couponCode) {
+            $coupon = \App\Models\Coupon::where('code', $couponCode)->where('is_active', true)->first();
+            if ($coupon) {
+                [$valid, $error] = $coupon->isValid($total, auth()->id());
+                if ($valid) {
+                    $discount = $coupon->calculateDiscount($total);
+                } else {
+                    session()->flash('error', $error);
+                }
+            } else {
+                session()->flash('error', 'Invalid coupon code.');
+            }
+        }
+
+        // Only apply automatic rule if no valid coupon is applied
+        if ($discount <= 0) {
+            $rule = \App\Models\DiscountRule::active();
+            if ($rule) {
+                $discount = $rule->calculateDiscount($total, auth()->id());
+            }
+        }
+
+        return view('checkout', compact('cart', 'total', 'total_national_shipping', 'total_international_shipping', 'discount', 'coupon'));
     }
 
     /**
@@ -64,13 +90,61 @@ class OrderController extends Controller
         $isNational = strtolower($request->country) === 'pakistan';
 
         foreach($cart as $id => $item) {
-            $total += $item['price'] * $item['quantity'];
+            $product = \App\Models\Product::find($id);
+            if (!$product) continue;
+
+            $price = $product->price;
+            
+            // Re-calculate bulk discount if applicable
+            if ($product->price_tiers) {
+                $tiers = json_decode($product->price_tiers, true) ?? [];
+                foreach ($tiers as $tier) {
+                    $range = $tier['range'];
+                    if (str_contains($range, '+')) {
+                        if ($item['quantity'] >= (int)$range) $price = (float)$tier['price'];
+                    } else {
+                        $parts = explode('-', $range);
+                        if ($item['quantity'] >= (int)$parts[0] && $item['quantity'] <= (int)$parts[1]) {
+                            $price = (float)$tier['price'];
+                        }
+                    }
+                }
+            } else {
+                if ($item['quantity'] >= 100) $price = $product->price * 0.9;
+                elseif ($item['quantity'] >= 50) $price = $product->price * 0.95;
+            }
+
+            $total += $price * $item['quantity'];
             
             if(empty($item['is_gift'])) {
-                $product = \App\Models\Product::find($id);
-                if($product && !$product->is_free_shipping) {
+                if(!$product->is_free_shipping) {
                     $shipping_cost += ($isNational ? ($product->shipping_fee_national ?? 0) : ($product->shipping_fee_international ?? 0)) * $item['quantity'];
                 }
+            }
+        }
+
+        // Calculate Discount
+        $discountAmount = 0;
+        $couponId = null;
+        $couponCode = $request->coupon_code;
+
+        if ($couponCode) {
+            $coupon = \App\Models\Coupon::where('code', $couponCode)->where('is_active', true)->first();
+            if ($coupon) {
+                [$valid, $error] = $coupon->isValid($total, auth()->id());
+                if ($valid) {
+                    $discountAmount = $coupon->calculateDiscount($total);
+                    $couponId = $coupon->id;
+                    $coupon->increment('used_count');
+                }
+            }
+        }
+
+        // Only apply automatic rule if no valid coupon was used
+        if ($discountAmount <= 0) {
+            $rule = \App\Models\DiscountRule::active();
+            if ($rule) {
+                $discountAmount = $rule->calculateDiscount($total, auth()->id());
             }
         }
 
@@ -79,9 +153,11 @@ class OrderController extends Controller
             'user_id' => auth()->id(),
             'order_number' => 'ORD-' . strtoupper(Str::random(10)),
             'subtotal' => $total,
+            'discount' => $discountAmount,
+            'coupon_id' => $couponId,
             'tax' => 0,
             'shipping_cost' => $shipping_cost,
-            'total_amount' => $total + $shipping_cost,
+            'total_amount' => ($total - $discountAmount) + $shipping_cost,
             'shipping_phone' => $request->phone_number,
             'shipping_address' => $request->address . ', ' . $request->city,
             'email' => $request->email,
@@ -96,14 +172,39 @@ class OrderController extends Controller
         // Create Order Items
         foreach ($cart as $id => $details) {
             $isGift = isset($details['is_gift']) && $details['is_gift'];
+            $price = $details['price'];
+
+            if (!$isGift) {
+                $product = \App\Models\Product::find($id);
+                if ($product) {
+                    $price = $product->price;
+                    if ($product->price_tiers) {
+                        $tiers = json_decode($product->price_tiers, true) ?? [];
+                        foreach ($tiers as $tier) {
+                            $range = $tier['range'];
+                            if (str_contains($range, '+')) {
+                                if ($details['quantity'] >= (int)$range) $price = (float)$tier['price'];
+                            } else {
+                                $parts = explode('-', $range);
+                                if ($details['quantity'] >= (int)$parts[0] && $details['quantity'] <= (int)$parts[1]) {
+                                    $price = (float)$tier['price'];
+                                }
+                            }
+                        }
+                    } else {
+                        if ($details['quantity'] >= 100) $price = $product->price * 0.9;
+                        elseif ($details['quantity'] >= 50) $price = $product->price * 0.95;
+                    }
+                }
+            }
             
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $isGift ? null : $id,
                 'gift_box_id' => $isGift ? $details['gift_box_id'] : null,
                 'quantity' => $details['quantity'],
-                'price' => $details['price'],
-                'total' => $details['price'] * $details['quantity'],
+                'price' => $price,
+                'total' => $price * $details['quantity'],
                 'is_gift' => $isGift,
                 'gift_to' => $details['gift_to'] ?? null,
                 'gift_from' => $details['gift_from'] ?? null,

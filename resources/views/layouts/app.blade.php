@@ -864,7 +864,7 @@
                         <h4>{{ $colTitle }}</h4>
                         <ul>
                             @foreach($colLinks as $link)
-                                <li><a href="{{ $link['url'] }}">{{ $link['name'] }}</a></li>
+                                <li><a href="{{ url($link['url']) }}">{{ $link['name'] }}</a></li>
                             @endforeach
                         </ul>
                     </div>

@@ -84,11 +84,21 @@
                 <div class="order-summary-card">
                     <div class="summary-row">
                         <span>Subtotal</span>
-                        <span>${{ number_format($order->total_amount, 2) }}</span>
+                        <span>${{ number_format($order->subtotal, 2) }}</span>
                     </div>
+                    @if($order->discount > 0)
+                    <div class="summary-row" style="color: #16a34a; font-weight: 700;">
+                        <span>Discount</span>
+                        <span>- ${{ number_format($order->discount, 2) }}</span>
+                    </div>
+                    @endif
                     <div class="summary-row">
                         <span>Shipping Fee</span>
-                        <span class="text-success">Free</span>
+                        @if($order->shipping_cost > 0)
+                            <span>${{ number_format($order->shipping_cost, 2) }}</span>
+                        @else
+                            <span class="text-success">Free</span>
+                        @endif
                     </div>
                     <div class="summary-row total-row">
                         <span>Total Amount</span>

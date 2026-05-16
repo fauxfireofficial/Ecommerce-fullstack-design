@@ -26,7 +26,9 @@ class Order extends Model
         'email',
         'postal_code',
         'country',
-        'state'
+        'state',
+        'discount',
+        'coupon_id'
     ];
 
     protected $casts = [

@@ -57,6 +57,10 @@
                             <i class="fa-solid fa-location-dot"></i>
                             <span>Addresses</span>
                         </a>
+                        <a href="#bulk-requests" class="nav-link" data-tab="bulk-requests">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <span>Bulk Requests</span>
+                        </a>
                         <form method="POST" action="{{ route('logout') }}" id="logout-form-profile" style="display: none;">
                             @csrf
                         </form>
@@ -329,10 +333,191 @@
                     </div>
                 </div>
 
+                <!-- Bulk Requests Tab -->
+                <div id="bulk-requests" class="tab-content">
+                    <h2 class="tab-title">My Bulk Requests</h2>
+                    <p style="color: #64748b; margin-bottom: 25px; font-size: 14px;">Track the status of your bulk order inquiries. Our team will contact you for the best deal.</p>
+
+                    <div class="inquiries-list">
+                        @forelse($inquiries ?? [] as $inquiry)
+                        <div class="inquiry-card" style="background: white; border: 1px solid #f1f5f9; border-radius: 16px; padding: 0; margin-bottom: 20px; overflow: hidden; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.03);">
+                            {{-- Header --}}
+                            <div style="background: #f8fafc; padding: 16px 22px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <span style="font-weight: 700; color: #1e293b; font-size: 15px;">Request #{{ $inquiry->id }}</span>
+                                    <span style="font-size: 12px; color: #94a3b8;"><i class="fa-regular fa-calendar" style="margin-right: 4px;"></i>{{ $inquiry->created_at->format('d M Y') }}</span>
+                                </div>
+                                @php
+                                    $statusMap = [
+                                        'pending'     => ['bg' => '#fef3c7', 'text' => '#92400e', 'icon' => 'fa-clock',        'label' => 'Pending Review'],
+                                        'contacted'   => ['bg' => '#dbeafe', 'text' => '#1e40af', 'icon' => 'fa-phone',        'label' => 'Admin Contacted You'],
+                                        'in_progress' => ['bg' => '#ede9fe', 'text' => '#5b21b6', 'icon' => 'fa-spinner',      'label' => 'Deal In Progress'],
+                                        'completed'   => ['bg' => '#dcfce7', 'text' => '#166534', 'icon' => 'fa-circle-check', 'label' => 'Completed'],
+                                        'rejected'    => ['bg' => '#fee2e2', 'text' => '#991b1b', 'icon' => 'fa-ban',          'label' => 'Rejected'],
+                                    ];
+                                    $st = $statusMap[$inquiry->status] ?? $statusMap['pending'];
+                                @endphp
+                                <span style="padding: 5px 14px; border-radius: 50px; font-size: 11px; font-weight: 700; background: {{ $st['bg'] }}; color: {{ $st['text'] }}; display: inline-flex; align-items: center; gap: 5px; text-transform: uppercase; letter-spacing: 0.03em;">
+                                    <i class="fa-solid {{ $st['icon'] }}"></i> {{ $st['label'] }}
+                                </span>
+                            </div>
+
+                            {{-- Body --}}
+                            <div style="padding: 22px;">
+                                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                                    {{-- Item Info --}}
+                                    <div style="flex: 1; min-width: 200px;">
+                                        <p style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Requested Item</p>
+                                        <h4 style="font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 4px;">
+                                            @if($inquiry->product_id)
+                                                {{ $inquiry->product->name ?? 'Product Removed' }}
+                                                <span style="font-size: 10px; color: #10b981; background: #dcfce7; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">Store Product</span>
+                                            @else
+                                                {{ $inquiry->custom_item_name }}
+                                                <span style="font-size: 10px; color: #f59e0b; background: #fef3c7; padding: 2px 6px; border-radius: 4px; margin-left: 4px;">Custom</span>
+                                            @endif
+                                        </h4>
+                                    </div>
+
+                                    {{-- Quantity --}}
+                                    <div style="min-width: 120px;">
+                                        <p style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px;">Quantity</p>
+                                        <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 15px; font-weight: 800; color: #3b82f6; background: #eff6ff; padding: 4px 12px; border-radius: 6px;">
+                                            <i class="fa-solid fa-cubes-stacked" style="font-size: 12px;"></i> {{ number_format($inquiry->quantity) }} {{ $inquiry->unit }}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {{-- Details --}}
+                                @if($inquiry->details)
+                                <div style="margin-top: 15px; padding: 12px 16px; background: #f8fafc; border-radius: 8px; border-left: 3px solid #e2e8f0;">
+                                    <p style="font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px;">Your Message</p>
+                                    <p style="font-size: 13px; color: #475569; line-height: 1.6;">{{ $inquiry->details }}</p>
+                                </div>
+                                @endif
+
+                                {{-- Status Timeline --}}
+                                <div style="margin-top: 18px; display: flex; align-items: center; gap: 0; overflow-x: auto; padding-bottom: 5px;">
+                                    @php
+                                        $steps = ['pending', 'contacted', 'in_progress', 'completed'];
+                                        $currentIndex = array_search($inquiry->status, $steps);
+                                        if ($inquiry->status === 'rejected') $currentIndex = -1;
+                                    @endphp
+                                    @foreach($steps as $i => $step)
+                                        @php
+                                            $isDone = ($currentIndex !== false && $i <= $currentIndex);
+                                            $stepLabels = ['Submitted', 'Contacted', 'In Progress', 'Completed'];
+                                        @endphp
+                                        <div style="display: flex; align-items: center; flex-shrink: 0;">
+                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                                <div style="width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; {{ $isDone ? 'background: #3b82f6; color: white;' : 'background: #f1f5f9; color: #94a3b8;' }} transition: all 0.3s;">
+                                                    @if($isDone)
+                                                        <i class="fa-solid fa-check" style="font-size: 10px;"></i>
+                                                    @else
+                                                        {{ $i + 1 }}
+                                                    @endif
+                                                </div>
+                                                <span style="font-size: 10px; font-weight: 600; {{ $isDone ? 'color: #3b82f6;' : 'color: #cbd5e1;' }} white-space: nowrap;">{{ $stepLabels[$i] }}</span>
+                                            </div>
+                                            @if($i < count($steps) - 1)
+                                                <div style="width: 35px; height: 2px; {{ ($currentIndex !== false && $i < $currentIndex) ? 'background: #3b82f6;' : 'background: #e2e8f0;' }} margin: 0 4px; margin-bottom: 18px;"></div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+
+                                    @if($inquiry->status === 'rejected')
+                                        <div style="margin-left: 15px; display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0;">
+                                            <div style="width: 28px; height: 28px; border-radius: 50%; background: #ef4444; color: white; display: flex; align-items: center; justify-content: center;">
+                                                <i class="fa-solid fa-xmark" style="font-size: 12px;"></i>
+                                            </div>
+                                            <span style="font-size: 10px; font-weight: 600; color: #ef4444;">Rejected</span>
+                                        </div>
+                                    @endif
+                                </div>
+
+                                {{-- Quotation from Admin (visible when in_progress or completed) --}}
+                                @if(in_array($inquiry->status, ['in_progress', 'completed']) && $inquiry->offered_price)
+                                <div style="margin-top: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); border: 1px solid #86efac; border-radius: 12px; padding: 20px; position: relative; overflow: hidden;">
+                                    <div style="position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; background: rgba(16, 185, 129, 0.08); border-radius: 50%;"></div>
+                                    <h5 style="font-size: 13px; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                                        <i class="fa-solid fa-receipt"></i> Admin's Quotation
+                                    </h5>
+                                    <div style="display: flex; align-items: baseline; gap: 8px; margin-bottom: 12px;">
+                                        <span style="font-size: 28px; font-weight: 900; color: #065f46;">{{ App\Services\CurrencyService::convert($inquiry->offered_price) }}</span>
+                                        <span style="font-size: 12px; color: #6ee7b7; font-weight: 600;">TOTAL DEAL AMOUNT</span>
+                                    </div>
+                                    @if($inquiry->admin_message)
+                                    <div style="background: white; border-radius: 8px; padding: 12px 15px; border-left: 3px solid #10b981;">
+                                        <p style="font-size: 11px; font-weight: 700; color: #059669; margin-bottom: 4px;"><i class="fa-solid fa-comment-dots" style="margin-right: 4px;"></i> Message from Admin</p>
+                                        <p style="font-size: 13px; color: #374151; line-height: 1.6; margin: 0;">{{ $inquiry->admin_message }}</p>
+                                    </div>
+                                    @endif
+                                </div>
+                                @endif
+
+                                {{-- User Action Buttons (only when in_progress) --}}
+                                @if($inquiry->status === 'in_progress' && $inquiry->offered_price)
+                                <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap;">
+                                    {{-- Need More Info Button --}}
+                                    <button type="button" onclick="openReplyModal({{ $inquiry->id }})" style="flex: 1; min-width: 160px; padding: 12px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; border: 2px solid #e2e8f0; background: white; color: #475569; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;">
+                                        <i class="fa-solid fa-comments"></i> Need More Info
+                                    </button>
+
+                                    {{-- Accept & Proceed --}}
+                                    <a href="{{ route('inquiry.checkout', $inquiry->id) }}" style="flex: 1; min-width: 160px; padding: 12px 20px; border-radius: 10px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; text-decoration: none; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); transition: all 0.2s;">
+                                        <i class="fa-solid fa-check-circle"></i> Accept & Proceed to Pay
+                                    </a>
+                                </div>
+                                @endif
+                            </div>
+                        </div>
+                        @empty
+                        <div class="empty-state">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                            <p>You haven't submitted any bulk requests yet</p>
+                            <a href="{{ route('home') }}#inquiryFormBox" class="btn btn-primary">Send Bulk Request</a>
+                        </div>
+                        @endforelse
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
 </div>
+
+<!-- Bulk Reply Modal -->
+<div id="replyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; border-radius: 16px; max-width: 460px; width: 92%; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); animation: replyPop 0.25s ease-out;">
+        <div style="padding: 20px 25px; border-bottom: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #1e293b;">
+                <i class="fa-solid fa-comments" style="margin-right: 8px; color: #3b82f6;"></i>Send Message to Admin
+            </h3>
+            <button onclick="closeReplyModal()" style="background: none; border: none; font-size: 22px; cursor: pointer; color: #94a3b8; padding: 0; line-height: 1;">&times;</button>
+        </div>
+        <form id="replyForm" method="POST" style="padding: 25px;">
+            @csrf
+            <p style="font-size: 13px; color: #64748b; margin-bottom: 15px; line-height: 1.5;">
+                <i class="fa-solid fa-info-circle" style="color: #3b82f6; margin-right: 4px;"></i>
+                Write your message below. Admin will review and update the quotation accordingly.
+            </p>
+            <textarea name="user_reply" rows="4" required placeholder="e.g., Kindly lower the price to $1,100/Kg. Also, can you include delivery charges?" style="width: 100%; padding: 14px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 13px; resize: vertical; font-family: inherit; box-sizing: border-box;"></textarea>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                <button type="button" onclick="closeReplyModal()" style="padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: 1.5px solid #e2e8f0; background: white; color: #64748b; font-size: 13px;">Cancel</button>
+                <button type="submit" style="padding: 10px 24px; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; background: #3b82f6; color: white; font-size: 13px; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-paper-plane"></i> Send Message
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+@keyframes replyPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+</style>
 
 <!-- Add Address Modal -->
 <div id="addressModal" class="modal">
@@ -1336,5 +1521,26 @@ function deleteAddress(id) {
         }).then(() => location.reload());
     }
 }
+
+// Bulk Reply Modal
+function openReplyModal(id) {
+    const form = document.getElementById('replyForm');
+    form.action = '/inquiry/' + id + '/reply';
+    document.getElementById('replyModal').style.display = 'flex';
+}
+
+function closeReplyModal() {
+    document.getElementById('replyModal').style.display = 'none';
+}
+
+// Close reply modal on escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeReplyModal();
+});
+
+// Close reply modal on click outside
+document.getElementById('replyModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeReplyModal();
+});
 </script>
 @endsection

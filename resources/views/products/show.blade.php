@@ -215,12 +215,12 @@
         display: flex;
         gap: 12px;
         margin-top: 25px;
-        flex-wrap: nowrap;
+        flex-wrap: wrap;
     }
 
     .btn-buy, .btn-add-cart {
         flex: 1;
-        white-space: nowrap;
+        min-width: 140px;
         padding: 12px 20px;
         font-size: 15px;
         font-weight: 700;
@@ -275,13 +275,29 @@
         background: #fff5f5;
     }
 
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
+        .product-detail-grid {
+            display: flex;
+            flex-direction: column;
+        }
         .action-buttons {
-            gap: 8px;
+            gap: 10px;
         }
         .btn-buy, .btn-add-cart {
-            padding: 12px 10px;
-            font-size: 13px;
+            padding: 12px 15px;
+            font-size: 14px;
+            flex: 1;
+        }
+        .main-image {
+            height: 300px !important;
+            padding: 10px !important;
+        }
+        .product-inquiry-box {
+            padding: 15px !important;
+        }
+        .inquiry-form-row {
+            flex-direction: column;
+            gap: 10px;
         }
     }
 
@@ -317,7 +333,6 @@
         transform: scale(1.05);
         opacity: 0.8;
     }
-</style>
 </style>
 @endsection
 
@@ -470,6 +485,70 @@
                 @endif
                 <button class="btn btn-heart btn-wishlist" data-id="{{ $product->id }}"><i class="fa-regular fa-heart"></i></button>
             </div>
+            
+            <!-- Product Specific Bulk Inquiry (Collapsible) -->
+            <div class="product-inquiry-box" style="margin-top: 25px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+                <div class="inquiry-toggle-header" id="toggleInquiry" style="padding: 15px 20px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='transparent'">
+                    <h4 style="margin: 0; font-size: 15px; font-weight: 800; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-envelope-open-text" style="color: #3b82f6;"></i> Request Bulk Quotation
+                    </h4>
+                    <i class="fa-solid fa-chevron-down toggle-icon" style="transition: transform 0.3s; color: #64748b;"></i>
+                </div>
+                
+                <div class="inquiry-form-content" id="inquiryContent" style="display: none; padding: 0 20px 20px;">
+                    <div style="padding-top: 10px; border-top: 1px solid #e2e8f0; margin-bottom: 15px;"></div>
+                    
+                    @if(session('success') && session('inquiry_submitted'))
+                        <div style="background: #dcfce7; color: #166534; padding: 10px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; border: 1px solid #bbf7d0; font-weight: 600;">
+                            <i class="fa-solid fa-check-circle" style="margin-right: 4px;"></i> Inquiry Sent Successfully!
+                        </div>
+                    @endif
+                    
+                    <form action="{{ route('inquiry.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="product_id" value="{{ $product->id }}">
+                        <input type="hidden" name="custom_item_name" value="">
+                        
+                        <div style="margin-bottom: 12px;">
+                            <textarea name="details" class="form-control" rows="2" placeholder="e.g. I need this for corporate gifting, can you offer a discount?" required style="font-size: 13px; border-radius: 8px; resize: none; border-color: #cbd5e1;"></textarea>
+                        </div>
+                        
+                        <div class="inquiry-form-row" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <input type="number" name="quantity" class="form-control" placeholder="Quantity" min="1" required style="font-size: 13px; border-radius: 8px; border-color: #cbd5e1; flex: 2;">
+                            <select name="unit" class="form-control" style="font-size: 13px; border-radius: 8px; border-color: #cbd5e1; flex: 1;">
+                                <option value="Pcs">Pcs</option>
+                                <option value="Kg">Kg</option>
+                                <option value="Liters">Liters</option>
+                                <option value="Tons">Tons</option>
+                            </select>
+                        </div>
+                        
+                        <button type="submit" style="width: 100%; background: #eff6ff; color: #1d4ed8; border: 1.5px solid #bfdbfe; border-radius: 8px; font-size: 14px; font-weight: 700; padding: 10px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+                            Send Inquiry
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const toggleHeader = document.getElementById('toggleInquiry');
+                    const content = document.getElementById('inquiryContent');
+                    const icon = toggleHeader.querySelector('.toggle-icon');
+
+                    @if(session('success') && session('inquiry_submitted'))
+                        // Keep open if just submitted
+                        content.style.display = 'block';
+                        icon.style.transform = 'rotate(180deg)';
+                    @endif
+
+                    toggleHeader.addEventListener('click', function() {
+                        const isOpen = content.style.display === 'block';
+                        content.style.display = isOpen ? 'none' : 'block';
+                        icon.style.transform = isOpen ? 'rotate(0deg)' : 'rotate(180deg)';
+                    });
+                });
+            </script>
         </div>
 
         </div>
@@ -706,13 +785,23 @@
     </div>
 
     <!-- Promo Banner -->
+    @if($discountRule)
     <div class="promo-banner">
         <div class="promo-content">
-            <h3>Super discount on more than {{ App\Services\CurrencyService::convert(100) }}</h3>
-            <p>Exclusive offers for our valued customers. Grab your favorites today!</p>
-            <button class="btn btn-white">Shop now</button>
+            <h3>Super discount on orders more than {{ App\Services\CurrencyService::convert($discountRule->min_amount) }}</h3>
+            <p>Use code <strong style="color: #fff; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px;">WELCOME100</strong> for {{ $discountRule->type === 'percentage' ? $discountRule->discount_value . '%' : App\Services\CurrencyService::convert($discountRule->discount_value) }} off on your first order!</p>
+            <a href="{{ route('products.index') }}" class="btn btn-white" style="text-decoration: none;">Shop now</a>
         </div>
     </div>
+    @else
+    <div class="promo-banner">
+        <div class="promo-content">
+            <h3>Quality you can trust, prices you'll love</h3>
+            <p>Exclusive offers for our valued customers. Grab your favorites today!</p>
+            <a href="{{ route('products.index') }}" class="btn btn-white" style="text-decoration: none;">Shop now</a>
+        </div>
+    </div>
+    @endif
 
 </main>
 

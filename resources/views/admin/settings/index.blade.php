@@ -29,6 +29,10 @@
                  <a href="#hot-offers" class="nav-item">
                     <i class="fa-solid fa-fire"></i> Hot Offers Page
                 </a>
+
+                <a href="#discount-rules" class="nav-item">
+                    <i class="fa-solid fa-tag"></i> Discount Rules
+                </a>
                 
                 <a href="#footer-settings" class="nav-item">
                     <i class="fa-solid fa-window-minimize"></i> Footer Settings
@@ -379,6 +383,49 @@
                                 </button>
                             </div>
                             <div id="deleted-categories-input-wrapper"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Discount Rules Settings Section -->
+                <div id="discount-rules" class="settings-section">
+                    <div class="section-header">
+                        <h3><i class="fa-solid fa-tag"></i> Discount Rules Configuration</h3>
+                        <p>Manage automatic cart discounts based on minimum purchase amount.</p>
+                    </div>
+                    
+                    <div class="form-card">
+                        <div class="form-group mb-4">
+                            <label>Promotion Name</label>
+                            <input type="text" name="discount_rule_name" class="form-control" value="{{ $discountRule->name ?? 'Super Discount Banner' }}" placeholder="e.g. Super Discount Banner">
+                            <small>The name used internally and in some display areas.</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label>Minimum Amount ($)</label>
+                                    <input type="number" step="0.01" name="discount_rule_min" class="form-control" value="{{ $discountRule->min_amount ?? 100.00 }}" placeholder="100.00">
+                                    <small>User must spend at least this much to get the discount.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group mb-4">
+                                    <label>Discount Value</label>
+                                    <input type="number" step="0.01" name="discount_rule_value" class="form-control" value="{{ $discountRule->discount_value ?? 100.00 }}" placeholder="100.00">
+                                    <small>The amount to deduct (e.g. 100 for $100 or 10 for 10%). Currently: {{ strtoupper($discountRule->type) }}</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info" style="border-radius: 18px; background: #eff6ff; border: 1px solid #dbeafe; color: #1e40af; padding: 20px;">
+                            <div class="d-flex align-items-center gap-3">
+                                <i class="fa-solid fa-circle-info fa-2x"></i>
+                                <div>
+                                    <h5 class="mb-1" style="font-weight: 700;">Automatic Application</h5>
+                                    <p class="mb-0" style="font-size: 14px;">This discount is currently set to apply <strong>automatically</strong> when the subtotal exceeds the minimum amount. Only one rule can be active at a time.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -56,6 +56,8 @@ class OTPController extends Controller
 
         auth()->login($user);
 
+        Session::flash('show_welcome_modal', true);
+
         return redirect()->route('home')->with('success', 'Account verified and created successfully!');
     }
 
